@@ -1,7 +1,11 @@
 # Ignore node_modules only, not the folder
 client/node_modules/
 server/node_modules/
-server/public/
+server/public/qrcodes/
+server/public/uploads/foto/
+server/public/uploads/lampiran/
+server/public/uploads/surat-masuk/
+server/public/uploads/tanda-tangan/
 
 
 # Ignore environment files
