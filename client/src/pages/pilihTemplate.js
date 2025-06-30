@@ -68,7 +68,7 @@ function PilihTemplate() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Menu />
-      <div className="flex-1 p-4">
+      <div className="flex flex-col flex-1 p-4 lg:ml-48 transition-all duration-200">
         <Header />
         <div className="bg-white shadow-sm rounded-lg p-5 mt-2 h-[calc(100vh-100px)] overflow-hidden">
           <div className="flex justify-end mb-4 gap-2">

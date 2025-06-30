@@ -139,11 +139,11 @@ function FormTemplate() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Menu />
-      <div className="flex-1 p-3">
+      <div className="flex flex-col flex-1 p-4 lg:ml-48 transition-all duration-200">
         <Header />
-        <div className="max-w-7xl mx-auto mt-4">
+        <div className="mt-4">
           {/* Form Section */}
-          <div className="bg-white shadow-sm rounded-lg p-3 mt-2">
+          <div className="bg-white shadow-sm rounded-lg p-3 mt-2 px-0 sm:px-2 md:px-4">
             <div className="mb-3">
               <h2 className="text-lg font-semibold text-gray-800">
                 {isEditing ? "Edit Template Surat" : "Buat Template Surat Baru"}

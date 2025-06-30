@@ -284,317 +284,313 @@ function FormSuratKeluar() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Menu />
-      <div className="flex-1 p-3">
+      <div className="flex flex-col flex-1 p-4 lg:ml-48 transition-all duration-200">
         <Header />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-7xl mx-auto mt-4">
+        <div className="mt-4">
           {/* Form Section */}
-          <div className="col-span-2">
-            <div className="bg-white shadow-sm rounded-lg p-3 mt-2">
-              <div className="mb-3 flex justify-between items-center">
-                <h2 className={`text-lg font-semibold text-gray-800`}>
-                  {isReadOnly
-                    ? "Info Surat Keluar"
-                    : isEditing
-                      ? "Edit Surat Keluar"
-                      : "Buat Surat Keluar Baru"}
-                </h2>
-                <div className="flex items-center gap-2">
-                  <label className="text-sm font-medium text-gray-700">
-                    Nomor Surat:
-                  </label>
-                  <input
-                    type="text"
-                    name="nomor_surat"
-                    value={formData.nomor_surat}
-                    readOnly
-                    className={`px-2 py-1 text-sm border border-gray-200 bg-gray-100 rounded focus:outline-none cursor-not-allowed ${isReadOnly ? "bg-gray-100" : ""}`}
-                    placeholder="Diisi oleh admin"
-                  />
-                </div>
+          <div className="bg-white shadow-sm rounded-lg p-3 mt-2 px-0 sm:px-2 md:px-4">
+            <div className="mb-3 flex justify-between items-center">
+              <h2 className={`text-lg font-semibold text-gray-800`}>
+                {isReadOnly
+                  ? "Info Surat Keluar"
+                  : isEditing
+                    ? "Edit Surat Keluar"
+                    : "Buat Surat Keluar Baru"}
+              </h2>
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium text-gray-700">
+                  Nomor Surat:
+                </label>
+                <input
+                  type="text"
+                  name="nomor_surat"
+                  value={formData.nomor_surat}
+                  readOnly
+                  className={`px-2 py-1 text-sm border border-gray-200 bg-gray-100 rounded focus:outline-none cursor-not-allowed ${isReadOnly ? "bg-gray-100" : ""}`}
+                  placeholder="Diisi oleh admin"
+                />
               </div>
+            </div>
 
-              <form
-                onSubmit={(e) => handleSubmit(e, "simpan")}
-                className="space-y-3"
-              >
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                  {/* Kategori */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Kategori <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      name="kode_kategori"
-                      value={formData.kode_kategori}
-                      onChange={handleInputChange}
-                      required
-                      className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly ? "bg-gray-100" : ""}`}
-                      disabled={isReadOnly}
-                      modules={{
-                        keyboard: {
-                          bindings: {
-                            tab: {
-                              key: 9,
-                              handler: function (range, context) {
-                                this.quill.insertText(range.index, "\t"); // Tab karakter
-                                this.quill.setSelection(range.index + 1);
-                                return false;
-                              },
+            <form
+              onSubmit={(e) => handleSubmit(e, "simpan")}
+              className="space-y-3"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                {/* Kategori */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Kategori <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="kode_kategori"
+                    value={formData.kode_kategori}
+                    onChange={handleInputChange}
+                    required
+                    className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly ? "bg-gray-100" : ""}`}
+                    disabled={isReadOnly}
+                    modules={{
+                      keyboard: {
+                        bindings: {
+                          tab: {
+                            key: 9,
+                            handler: function (range, context) {
+                              this.quill.insertText(range.index, "\t"); // Tab karakter
+                              this.quill.setSelection(range.index + 1);
+                              return false;
                             },
                           },
                         },
-                      }}
-                    >
-                      <option value="">Pilih Kategori</option>
-                      {kategori.map((kat) => (
-                        <option
-                          key={kat.kode_kategori}
-                          value={kat.kode_kategori}
-                        >
-                          {kat.nama_kategori}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                      },
+                    }}
+                  >
+                    <option value="">Pilih Kategori</option>
+                    {kategori.map((kat) => (
+                      <option
+                        key={kat.kode_kategori}
+                        value={kat.kode_kategori}
+                      >
+                        {kat.nama_kategori}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-                  {/* Sifat */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Sifat <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      name="sifat"
-                      value={formData.sifat}
-                      onChange={handleInputChange}
-                      required
-                      className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly ? "bg-gray-100" : ""}`}
-                      disabled={isReadOnly}
-                    >
-                      <option value="Biasa">Biasa</option>
-                      <option value="Segera">Segera</option>
-                      <option value="Sangat Segera">Sangat Segera</option>
-                      <option value="Rahasia">Rahasia</option>
-                    </select>
-                  </div>
+                {/* Sifat */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Sifat <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="sifat"
+                    value={formData.sifat}
+                    onChange={handleInputChange}
+                    required
+                    className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly ? "bg-gray-100" : ""}`}
+                    disabled={isReadOnly}
+                  >
+                    <option value="Biasa">Biasa</option>
+                    <option value="Segera">Segera</option>
+                    <option value="Sangat Segera">Sangat Segera</option>
+                    <option value="Rahasia">Rahasia</option>
+                  </select>
+                </div>
 
-                  {/* Perihal */}
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Perihal <span className="text-red-500">*</span>
-                    </label>
+                {/* Perihal */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Perihal <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="perihal"
+                    value={formData.perihal}
+                    onChange={handleInputChange}
+                    required
+                    className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly ? "bg-gray-100" : ""}`}
+                    placeholder="Perihal surat"
+                    readOnly={isReadOnly}
+                  />
+                </div>
+
+                {/* Tanggal Surat */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tanggal <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    name="tanggal_surat"
+                    value={formData.tanggal_surat}
+                    readOnly
+                    disabled={isReadOnly}
+                    className={`w-full px-2 py-1 text-sm border border-gray-300 rounded ${isReadOnly ? "bg-gray-100" : "bg-gray-50"} cursor-not-allowed`}
+                  />
+                </div>
+
+                {/* Toggle Kepada */}
+                <div className="md:col-span-2">
+                  <div className="flex items-center space-x-2 mb-1">
                     <input
-                      type="text"
-                      name="perihal"
-                      value={formData.perihal}
-                      onChange={handleInputChange}
-                      required
-                      className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly ? "bg-gray-100" : ""}`}
-                      placeholder="Perihal surat"
-                      readOnly={isReadOnly}
-                    />
-                  </div>
-
-                  {/* Tanggal Surat */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Tanggal <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="date"
-                      name="tanggal_surat"
-                      value={formData.tanggal_surat}
-                      readOnly
+                      type="checkbox"
+                      id="showKepada"
+                      checked={showKepada}
+                      onChange={(e) => setShowKepada(e.target.checked)}
+                      className="rounded border-gray-300 text-green-600 focus:ring-green-500"
                       disabled={isReadOnly}
-                      className={`w-full px-2 py-1 text-sm border border-gray-300 rounded ${isReadOnly ? "bg-gray-100" : "bg-gray-50"} cursor-not-allowed`}
                     />
+                    <label
+                      htmlFor="showKepada"
+                      className="text-sm text-gray-700 font-medium"
+                    >
+                      Yth Kepada:
+                    </label>
                   </div>
+                  <input
+                    type="text"
+                    name="kepada"
+                    value={formData.kepada}
+                    onChange={handleInputChange}
+                    disabled={!showKepada || isReadOnly}
+                    className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly || !showKepada ? "bg-gray-100" : ""}`}
+                    placeholder="contoh: Kepala A; Ketua Umum B; Direktur C"
+                  />
+                </div>
 
-                  {/* Toggle Kepada */}
-                  <div className="md:col-span-2">
-                    <div className="flex items-center space-x-2 mb-1">
+                {/* Tujuan */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tujuan <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="tujuan"
+                    value={formData.tujuan}
+                    onChange={handleInputChange}
+                    required
+                    className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly ? "bg-gray-100" : ""}`}
+                    placeholder="Tujuan surat"
+                    readOnly={isReadOnly}
+                  />
+                </div>
+
+                {/* Lampiran */}
+                <div className="md:col-span-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Lampiran
+                  </label>
+                  <input
+                    type="text"
+                    name="lampiran"
+                    value={formData.lampiran}
+                    onChange={handleInputChange}
+                    className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly ? "bg-gray-100" : ""}`}
+                    placeholder="contoh: 1 lembar"
+                    readOnly={isReadOnly}
+                  />
+                </div>
+
+                {/* File Upload Section */}
+                <div className="md:col-span-1">
+                  {selectedFiles.length === 0 ? (
+                    <div className="w-full max-w-md border border-dashed border-gray-300 rounded px-3 py-2 bg-white">
                       <input
-                        type="checkbox"
-                        id="showKepada"
-                        checked={showKepada}
-                        onChange={(e) => setShowKepada(e.target.checked)}
-                        className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                        type="file"
+                        onChange={handleFileChange}
+                        className="hidden"
+                        id="file-upload"
+                        accept=".pdf"
                         disabled={isReadOnly}
                       />
                       <label
-                        htmlFor="showKepada"
-                        className="text-sm text-gray-700 font-medium"
+                        htmlFor="file-upload"
+                        className={`cursor-pointer text-blue-500 text-sm hover:underline hover:text-gray-900 ${isReadOnly ? "opacity-50 cursor-not-allowed" : ""}`}
                       >
-                        Yth Kepada:
+                        Upload Lampiran disini
                       </label>
+                      <p className="text-xs text-gray-500">(Hanya PDF)</p>
                     </div>
-                    <input
-                      type="text"
-                      name="kepada"
-                      value={formData.kepada}
-                      onChange={handleInputChange}
-                      disabled={!showKepada || isReadOnly}
-                      className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly || !showKepada ? "bg-gray-100" : ""}`}
-                      placeholder="contoh: Kepala A; Ketua Umum B; Direktur C"
-                    />
-                  </div>
-
-                  {/* Tujuan */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Tujuan <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="tujuan"
-                      value={formData.tujuan}
-                      onChange={handleInputChange}
-                      required
-                      className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly ? "bg-gray-100" : ""}`}
-                      placeholder="Tujuan surat"
-                      readOnly={isReadOnly}
-                    />
-                  </div>
-
-                  {/* Lampiran */}
-                  <div className="md:col-span-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Lampiran
-                    </label>
-                    <input
-                      type="text"
-                      name="lampiran"
-                      value={formData.lampiran}
-                      onChange={handleInputChange}
-                      className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly ? "bg-gray-100" : ""}`}
-                      placeholder="contoh: 1 lembar"
-                      readOnly={isReadOnly}
-                    />
-                  </div>
-
-                  {/* File Upload Section */}
-                  <div className="md:col-span-1">
-                    {selectedFiles.length === 0 ? (
-                      <div className="w-full max-w-md border border-dashed border-gray-300 rounded px-3 py-2 bg-white">
-                        <input
-                          type="file"
-                          onChange={handleFileChange}
-                          className="hidden"
-                          id="file-upload"
-                          accept=".pdf"
-                          disabled={isReadOnly}
-                        />
-                        <label
-                          htmlFor="file-upload"
-                          className={`cursor-pointer text-blue-500 text-sm hover:underline hover:text-gray-900 ${isReadOnly ? "opacity-50 cursor-not-allowed" : ""}`}
+                  ) : (
+                    <div className="space-y-1 text-sm text-gray-700 max-w-md">
+                      {selectedFiles.map((file, index) => (
+                        <div
+                          key={index}
+                          className="flex justify-between items-center border rounded px-2 py-1 bg-gray-50"
                         >
-                          Upload Lampiran disini
-                        </label>
-                        <p className="text-xs text-gray-500">(Hanya PDF)</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-1 text-sm text-gray-700 max-w-md">
-                        {selectedFiles.map((file, index) => (
-                          <div
-                            key={index}
-                            className="flex justify-between items-center border rounded px-2 py-1 bg-gray-50"
-                          >
-                            <div className="flex flex-col">
-                              <label className="text-sm font-medium text-gray-700 mb-1">
-                                lampiran:
-                              </label>
-                              <span className="truncate max-w-[200px]">
-                                {file.name}
-                              </span>
-                            </div>
-                            {!isReadOnly && (
-                              <button
-                                type="button"
-                                onClick={() => removeFile(index)}
-                                className="text-red-500 hover:text-red-700 text-xs"
-                              >
-                                Hapus
-                              </button>
-                            )}
+                          <div className="flex flex-col">
+                            <label className="text-sm font-medium text-gray-700 mb-1">
+                              lampiran:
+                            </label>
+                            <span className="truncate max-w-[200px]">
+                              {file.name}
+                            </span>
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Catatan (Read Only) */}
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Catatan
-                    </label>
-                    <input
-                      type="text"
-                      name="catatan"
-                      value={formData.catatan}
-                      readOnly
-                      className={`w-full px-2 py-1 text-sm border border-gray-200 bg-gray-100 rounded focus:outline-none cursor-not-allowed ${isReadOnly ? "bg-gray-100" : ""}`}
-                      placeholder="Diisi oleh admin"
-                      disabled={isReadOnly}
-                    />
-                  </div>
-                </div>
-                {/* Isi Surat - Text Editor */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Isi Surat <span className="text-red-500">*</span>
-                  </label>
-                  <div className="max-h-[300px] overflow-y-auto">
-                    <ReactQuill
-                      theme="snow"
-                      value={formData.isi_surat}
-                      onChange={(value) => handleEditorChange(value)}
-                      className={`h-[250px] w-full text-sm border-0 focus:outline-none ${isReadOnly ? "bg-gray-100" : ""}`}
-                      readOnly={isReadOnly}
-                      placeholder="Masukkan isi surat... "
-                    />
-                  </div>
-                </div>
-                {/* Action Buttons */}
-                <div className="flex justify-end gap-2 pt-2 border-t">
-                  <button
-                    type="button"
-                    onClick={() => navigate("/surat-keluar")}
-                    className="px-3 py-1 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded"
-                  >
-                    Kembali
-                  </button>
-                  {!isReadOnly && (
-                    <>
-                      <button
-                        type="submit"
-                        disabled={loading}
-                        className="px-3 py-1 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded disabled:opacity-50"
-                      >
-                        {loading
-                          ? "Menyimpan..."
-                          : isEditing
-                            ? "Update"
-                            : "Simpan"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={(e) => handleSubmit(e, "ajukan")}
-                        disabled={loading}
-                        className="px-3 py-1 text-sm text-white bg-green-600 hover:bg-green-700 rounded disabled:opacity-50"
-                      >
-                        {loading ? "Mengajukan..." : "Ajukan"}
-                      </button>
-                    </>
+                          {!isReadOnly && (
+                            <button
+                              type="button"
+                              onClick={() => removeFile(index)}
+                              className="text-red-500 hover:text-red-700 text-xs"
+                            >
+                              Hapus
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
-              </form>
-            </div>
+
+                {/* Catatan (Read Only) */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Catatan
+                  </label>
+                  <input
+                    type="text"
+                    name="catatan"
+                    value={formData.catatan}
+                    readOnly
+                    className={`w-full px-2 py-1 text-sm border border-gray-200 bg-gray-100 rounded focus:outline-none cursor-not-allowed ${isReadOnly ? "bg-gray-100" : ""}`}
+                    placeholder="Diisi oleh admin"
+                    disabled={isReadOnly}
+                  />
+                </div>
+              </div>
+              {/* Isi Surat - Text Editor */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Isi Surat <span className="text-red-500">*</span>
+                </label>
+                <div className="max-h-[300px] overflow-y-auto">
+                  <ReactQuill
+                    theme="snow"
+                    value={formData.isi_surat}
+                    onChange={(value) => handleEditorChange(value)}
+                    className={`h-[250px] w-full text-sm border-0 focus:outline-none ${isReadOnly ? "bg-gray-100" : ""}`}
+                    readOnly={isReadOnly}
+                    placeholder="Masukkan isi surat... "
+                  />
+                </div>
+              </div>
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-2 pt-2 border-t">
+                <button
+                  type="button"
+                  onClick={() => navigate("/surat-keluar")}
+                  className="px-3 py-1 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded"
+                >
+                  Kembali
+                </button>
+                {!isReadOnly && (
+                  <>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="px-3 py-1 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded disabled:opacity-50"
+                    >
+                      {loading
+                        ? "Menyimpan..."
+                        : isEditing
+                          ? "Update"
+                          : "Simpan"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => handleSubmit(e, "ajukan")}
+                      disabled={loading}
+                      className="px-3 py-1 text-sm text-white bg-green-600 hover:bg-green-700 rounded disabled:opacity-50"
+                    >
+                      {loading ? "Mengajukan..." : "Ajukan"}
+                    </button>
+                  </>
+                )}
+              </div>
+            </form>
           </div>
-          {/* SearchData Component */}
-          <div className="col-span-1">
-            <div className="bg-white shadow-sm rounded-lg p-3 mt-2">
-              <SearchData />
-            </div>
-          </div>
+        </div>
+        {/* SearchData Component di bawah form, melebar penuh */}
+        <div className="bg-white shadow-sm rounded-lg p-3 mt-4 px-0 sm:px-2 md:px-4">
+          <SearchData />
         </div>
       </div>
     </div>

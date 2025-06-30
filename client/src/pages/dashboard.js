@@ -176,7 +176,7 @@ function Dashboard() {
   return (
     <div className="flex min-h-screen bg-gray-100">
       <Menu />
-      <div className="flex flex-col flex-1 p-4">
+      <div className="flex flex-col flex-1 p-4 lg:ml-48 transition-all duration-200">
         <Header />
         <div className="bg-white shadow-md rounded-lg p-6 mt-2">
           {renderCards()}

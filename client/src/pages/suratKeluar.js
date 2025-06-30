@@ -199,7 +199,7 @@ function SuratKeluar() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Menu />
-      <div className="flex-1 p-4">
+      <div className="flex flex-col flex-1 p-4 lg:ml-48 transition-all duration-200">
         <Header />
         <div className="bg-white shadow-sm rounded-lg p-5 mt-2">
           <div className="flex justify-between items-center mb-4">

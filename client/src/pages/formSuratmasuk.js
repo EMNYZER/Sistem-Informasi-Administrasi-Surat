@@ -137,7 +137,7 @@ function FormSuratMasuk() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Menu />
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col lg:ml-48 transition-all duration-200">
         <Header />
         <main className="flex-1 p-4 sm:p-6">
           <form onSubmit={handleSubmit} className="max-w-7xl mx-auto">
