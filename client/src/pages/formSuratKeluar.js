@@ -4,8 +4,8 @@ import Header from "../components/Header";
 import Menu from "../components/Menu";
 import SearchData from "../components/SearchData";
 import axios from "axios";
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 function FormSuratKeluar() {
   const navigate = useNavigate();
@@ -17,16 +17,16 @@ function FormSuratKeluar() {
   const [lampiranFile, setLampiranFile] = useState(null);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [formData, setFormData] = useState({
-    kode_kategori: '',
-    perihal: '',
-    sifat: 'Biasa',
-    lampiran: '',
-    kepada: '',
-    tujuan: '',
-    catatan: '',
-    nomor_surat: '',
-    tanggal_surat: new Date().toISOString().split('T')[0],
-    isi_surat: ''
+    kode_kategori: "",
+    perihal: "",
+    sifat: "Biasa",
+    lampiran: "",
+    kepada: "",
+    tujuan: "",
+    catatan: "",
+    nomor_surat: "",
+    tanggal_surat: new Date().toISOString().split("T")[0],
+    isi_surat: "",
   });
   const [isReadOnly, setIsReadOnly] = useState(false);
 
@@ -41,163 +41,190 @@ function FormSuratKeluar() {
 
   const fetchKategori = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        navigate('/login');
+        navigate("/login");
         return;
       }
-      const response = await axios.get('http://localhost:3001/kategori', {
+      const response = await axios.get("http://localhost:3001/kategori", {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       setKategori(response.data);
     } catch (error) {
-      console.error('Error fetching kategori:', error);
+      console.error("Error fetching kategori:", error);
     }
   };
 
   const fetchSuratData = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        navigate('/login');
+        navigate("/login");
         return;
       }
-      
-      const response = await axios.get(`http://localhost:3001/suratKeluar/${id_surat}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      
+
+      const response = await axios.get(
+        `http://localhost:3001/suratKeluar/${id_surat}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
       const suratData = response.data;
       setFormData({
-        kode_kategori: suratData.kode_kategori || '',
-        perihal: suratData.perihal || '',
-        sifat: suratData.sifat || 'Biasa',
-        lampiran: suratData.lampiran || '',
-        kepada: suratData.kepada || '',
-        tujuan: suratData.tujuan || '',
-        catatan: suratData.catatan || '',
-        nomor_surat: suratData.nomor_surat || '',
-        tanggal_surat: suratData.tanggal_surat ? new Date(suratData.tanggal_surat).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-        isi_surat: suratData.isi_surat || ''
+        kode_kategori: suratData.kode_kategori || "",
+        perihal: suratData.perihal || "",
+        sifat: suratData.sifat || "Biasa",
+        lampiran: suratData.lampiran || "",
+        kepada: suratData.kepada || "",
+        tujuan: suratData.tujuan || "",
+        catatan: suratData.catatan || "",
+        nomor_surat: suratData.nomor_surat || "",
+        tanggal_surat: suratData.tanggal_surat
+          ? new Date(suratData.tanggal_surat).toISOString().split("T")[0]
+          : new Date().toISOString().split("T")[0],
+        isi_surat: suratData.isi_surat || "",
       });
-      
+
       // Set showKepada if kepada field has value
       if (suratData.kepada) {
         setShowKepada(true);
       }
-      
+
       setIsEditing(true);
       // Set isReadOnly jika status bukan draft/revisi
-      setIsReadOnly(suratData.status !== 'draft' && suratData.status !== 'revisi');
+      setIsReadOnly(
+        suratData.status !== "draft" && suratData.status !== "revisi",
+      );
     } catch (error) {
-      console.error('Error fetching surat data:', error);
-      alert('Gagal mengambil data surat');
+      console.error("Error fetching surat data:", error);
+      alert("Gagal mengambil data surat");
     }
   };
 
   const fetchTemplateData = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        navigate('/login');
+        navigate("/login");
         return;
       }
-      const response = await axios.get(`http://localhost:3001/template/${id_template}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await axios.get(
+        `http://localhost:3001/template/${id_template}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
       const templateData = response.data;
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        kode_kategori: templateData.kode_kategori || templateData.kategori?.kode_kategori || '',
-        perihal: templateData.perihal || '',
-        isi_surat: templateData.isi_surat || '',
+        kode_kategori:
+          templateData.kode_kategori ||
+          templateData.kategori?.kode_kategori ||
+          "",
+        perihal: templateData.perihal || "",
+        isi_surat: templateData.isi_surat || "",
         // deskripsi: templateData.deskripsi || '', // jika ingin menambah field deskripsi
       }));
     } catch (error) {
-      console.error('Error fetching template data:', error);
-      alert('Gagal mengambil data template');
+      console.error("Error fetching template data:", error);
+      alert("Gagal mengambil data template");
     }
   };
 
   const uploadLampiranPDF = async (id) => {
     if (!lampiranFile) return;
-  
+
     const formDataPDF = new FormData();
-    formDataPDF.append('file', lampiranFile);
-  
+    formDataPDF.append("file", lampiranFile);
+
     const token = localStorage.getItem("token");
-    await axios.post(`http://localhost:3001/suratKeluar/upload-lampiran/${id}`, formDataPDF, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${token}`
-      }
-    });
+    await axios.post(
+      `http://localhost:3001/suratKeluar/upload-lampiran/${id}`,
+      formDataPDF,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
   };
 
   const handleSubmit = async (e, action) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        navigate('/login');
+        navigate("/login");
         return;
       }
 
       // Get NIK from localStorage or user context
       const nik = localStorage.getItem("nik");
-      
+
       const submitData = {
         ...formData,
         NIK: nik,
         tanggal_surat: new Date(formData.tanggal_surat).toISOString(),
-        status: action === 'ajukan' ? 'diajukan' : 'draft'
+        status: action === "ajukan" ? "diajukan" : "draft",
       };
 
       if (isEditing) {
-
         if (lampiranFile) {
           submitData.ganti_lampiran = "true";
         }
         // Update existing surat
-        await axios.put(`http://localhost:3001/suratKeluar/${id_surat}`, submitData, {
-          
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+        await axios.put(
+          `http://localhost:3001/suratKeluar/${id_surat}`,
+          submitData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
 
         if (lampiranFile) {
           await uploadLampiranPDF(id_surat);
         }
-        alert(`Surat keluar berhasil ${action === 'ajukan' ? 'diajukan' : 'diperbarui'}!`);
-        navigate('/surat-keluar')
+        alert(
+          `Surat keluar berhasil ${action === "ajukan" ? "diajukan" : "diperbarui"}!`,
+        );
+        navigate("/surat-keluar");
       } else {
         // Create new surat
-        const createRes = await axios.post('http://localhost:3001/suratKeluar', submitData, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-        
+        const createRes = await axios.post(
+          "http://localhost:3001/suratKeluar",
+          submitData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
         // Upload lampiran jika ada
         if (lampiranFile && createRes.data.id_surat) {
           await uploadLampiranPDF(createRes.data.id_surat);
         }
-        alert(`Surat keluar berhasil ${action === 'ajukan' ? 'diajukan' : 'disimpan'}!`);
+        alert(
+          `Surat keluar berhasil ${action === "ajukan" ? "diajukan" : "disimpan"}!`,
+        );
       }
-      
-      navigate('/surat-keluar');
+
+      navigate("/surat-keluar");
     } catch (error) {
-      console.error('Error creating/updating surat keluar:', error);
-      alert(error.response?.data?.message || 'Terjadi kesalahan');
+      console.error("Error creating/updating surat keluar:", error);
+      alert(error.response?.data?.message || "Terjadi kesalahan");
     } finally {
       setLoading(false);
     }
@@ -205,16 +232,16 @@ function FormSuratKeluar() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleEditorChange = (content) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      isi_surat: content
+      isi_surat: content,
     }));
   };
 
@@ -225,7 +252,7 @@ function FormSuratKeluar() {
         alert("Lampiran hanya boleh berupa file PDF");
         return;
       }
-  
+
       setLampiranFile(file);
       setSelectedFiles([file]);
       // setFormData(prev => ({
@@ -238,20 +265,20 @@ function FormSuratKeluar() {
   const removeFile = (index) => {
     const newFiles = selectedFiles.filter((_, i) => i !== index);
     setSelectedFiles(newFiles);
-    
-    const fileNames = newFiles.map(file => file.name).join(', ');
-    setFormData(prev => ({
+
+    const fileNames = newFiles.map((file) => file.name).join(", ");
+    setFormData((prev) => ({
       ...prev,
-      lampiran: fileNames
+      lampiran: fileNames,
     }));
   };
 
   const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   return (
@@ -265,7 +292,11 @@ function FormSuratKeluar() {
             <div className="bg-white shadow-sm rounded-lg p-3 mt-2">
               <div className="mb-3 flex justify-between items-center">
                 <h2 className={`text-lg font-semibold text-gray-800`}>
-                  {isReadOnly ? 'Info Surat Keluar' : (isEditing ? 'Edit Surat Keluar' : 'Buat Surat Keluar Baru')}
+                  {isReadOnly
+                    ? "Info Surat Keluar"
+                    : isEditing
+                      ? "Edit Surat Keluar"
+                      : "Buat Surat Keluar Baru"}
                 </h2>
                 <div className="flex items-center gap-2">
                   <label className="text-sm font-medium text-gray-700">
@@ -276,13 +307,16 @@ function FormSuratKeluar() {
                     name="nomor_surat"
                     value={formData.nomor_surat}
                     readOnly
-                    className={`px-2 py-1 text-sm border border-gray-200 bg-gray-100 rounded focus:outline-none cursor-not-allowed ${isReadOnly ? 'bg-gray-100' : ''}`}
+                    className={`px-2 py-1 text-sm border border-gray-200 bg-gray-100 rounded focus:outline-none cursor-not-allowed ${isReadOnly ? "bg-gray-100" : ""}`}
                     placeholder="Diisi oleh admin"
                   />
                 </div>
               </div>
 
-              <form onSubmit={(e) => handleSubmit(e, 'simpan')} className="space-y-3">
+              <form
+                onSubmit={(e) => handleSubmit(e, "simpan")}
+                className="space-y-3"
+              >
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                   {/* Kategori */}
                   <div>
@@ -294,26 +328,29 @@ function FormSuratKeluar() {
                       value={formData.kode_kategori}
                       onChange={handleInputChange}
                       required
-                      className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly ? 'bg-gray-100' : ''}`}
+                      className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly ? "bg-gray-100" : ""}`}
                       disabled={isReadOnly}
                       modules={{
                         keyboard: {
                           bindings: {
                             tab: {
                               key: 9,
-                              handler: function(range, context) {
-                                this.quill.insertText(range.index, '\t'); // Tab karakter
+                              handler: function (range, context) {
+                                this.quill.insertText(range.index, "\t"); // Tab karakter
                                 this.quill.setSelection(range.index + 1);
                                 return false;
-                              }
-                            }
-                          }
-                        }
+                              },
+                            },
+                          },
+                        },
                       }}
                     >
                       <option value="">Pilih Kategori</option>
                       {kategori.map((kat) => (
-                        <option key={kat.kode_kategori} value={kat.kode_kategori}>
+                        <option
+                          key={kat.kode_kategori}
+                          value={kat.kode_kategori}
+                        >
                           {kat.nama_kategori}
                         </option>
                       ))}
@@ -330,7 +367,7 @@ function FormSuratKeluar() {
                       value={formData.sifat}
                       onChange={handleInputChange}
                       required
-                      className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly ? 'bg-gray-100' : ''}`}
+                      className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly ? "bg-gray-100" : ""}`}
                       disabled={isReadOnly}
                     >
                       <option value="Biasa">Biasa</option>
@@ -351,7 +388,7 @@ function FormSuratKeluar() {
                       value={formData.perihal}
                       onChange={handleInputChange}
                       required
-                      className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly ? 'bg-gray-100' : ''}`}
+                      className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly ? "bg-gray-100" : ""}`}
                       placeholder="Perihal surat"
                       readOnly={isReadOnly}
                     />
@@ -368,9 +405,9 @@ function FormSuratKeluar() {
                       value={formData.tanggal_surat}
                       readOnly
                       disabled={isReadOnly}
-                      className={`w-full px-2 py-1 text-sm border border-gray-300 rounded ${isReadOnly ? 'bg-gray-100' : 'bg-gray-50'} cursor-not-allowed`}
+                      className={`w-full px-2 py-1 text-sm border border-gray-300 rounded ${isReadOnly ? "bg-gray-100" : "bg-gray-50"} cursor-not-allowed`}
                     />
-                  </div>      
+                  </div>
 
                   {/* Toggle Kepada */}
                   <div className="md:col-span-2">
@@ -383,7 +420,10 @@ function FormSuratKeluar() {
                         className="rounded border-gray-300 text-green-600 focus:ring-green-500"
                         disabled={isReadOnly}
                       />
-                      <label htmlFor="showKepada" className="text-sm text-gray-700 font-medium">
+                      <label
+                        htmlFor="showKepada"
+                        className="text-sm text-gray-700 font-medium"
+                      >
                         Yth Kepada:
                       </label>
                     </div>
@@ -393,7 +433,7 @@ function FormSuratKeluar() {
                       value={formData.kepada}
                       onChange={handleInputChange}
                       disabled={!showKepada || isReadOnly}
-                      className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly || !showKepada ? 'bg-gray-100' : ''}`}
+                      className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly || !showKepada ? "bg-gray-100" : ""}`}
                       placeholder="contoh: Kepala A; Ketua Umum B; Direktur C"
                     />
                   </div>
@@ -409,7 +449,7 @@ function FormSuratKeluar() {
                       value={formData.tujuan}
                       onChange={handleInputChange}
                       required
-                      className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly ? 'bg-gray-100' : ''}`}
+                      className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly ? "bg-gray-100" : ""}`}
                       placeholder="Tujuan surat"
                       readOnly={isReadOnly}
                     />
@@ -425,7 +465,7 @@ function FormSuratKeluar() {
                       name="lampiran"
                       value={formData.lampiran}
                       onChange={handleInputChange}
-                      className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly ? 'bg-gray-100' : ''}`}
+                      className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 ${isReadOnly ? "bg-gray-100" : ""}`}
                       placeholder="contoh: 1 lembar"
                       readOnly={isReadOnly}
                     />
@@ -445,7 +485,7 @@ function FormSuratKeluar() {
                         />
                         <label
                           htmlFor="file-upload"
-                          className={`cursor-pointer text-blue-500 text-sm hover:underline hover:text-gray-900 ${isReadOnly ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          className={`cursor-pointer text-blue-500 text-sm hover:underline hover:text-gray-900 ${isReadOnly ? "opacity-50 cursor-not-allowed" : ""}`}
                         >
                           Upload Lampiran disini
                         </label>
@@ -454,12 +494,17 @@ function FormSuratKeluar() {
                     ) : (
                       <div className="space-y-1 text-sm text-gray-700 max-w-md">
                         {selectedFiles.map((file, index) => (
-                          <div key={index} className="flex justify-between items-center border rounded px-2 py-1 bg-gray-50">
+                          <div
+                            key={index}
+                            className="flex justify-between items-center border rounded px-2 py-1 bg-gray-50"
+                          >
                             <div className="flex flex-col">
                               <label className="text-sm font-medium text-gray-700 mb-1">
                                 lampiran:
                               </label>
-                              <span className="truncate max-w-[200px]">{file.name}</span>
+                              <span className="truncate max-w-[200px]">
+                                {file.name}
+                              </span>
                             </div>
                             {!isReadOnly && (
                               <button
@@ -477,21 +522,20 @@ function FormSuratKeluar() {
                   </div>
 
                   {/* Catatan (Read Only) */}
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Catatan
-                      </label>
-                      <input
-                        type="text"
-                        name="catatan"
-                        value={formData.catatan}
-                        readOnly
-                        className={`w-full px-2 py-1 text-sm border border-gray-200 bg-gray-100 rounded focus:outline-none cursor-not-allowed ${isReadOnly ? 'bg-gray-100' : ''}`}
-                        placeholder="Diisi oleh admin"
-                        disabled={isReadOnly}
-                      />
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Catatan
+                    </label>
+                    <input
+                      type="text"
+                      name="catatan"
+                      value={formData.catatan}
+                      readOnly
+                      className={`w-full px-2 py-1 text-sm border border-gray-200 bg-gray-100 rounded focus:outline-none cursor-not-allowed ${isReadOnly ? "bg-gray-100" : ""}`}
+                      placeholder="Diisi oleh admin"
+                      disabled={isReadOnly}
+                    />
                   </div>
-
                 </div>
                 {/* Isi Surat - Text Editor */}
                 <div>
@@ -503,7 +547,7 @@ function FormSuratKeluar() {
                       theme="snow"
                       value={formData.isi_surat}
                       onChange={(value) => handleEditorChange(value)}
-                      className={`h-[250px] w-full text-sm border-0 focus:outline-none ${isReadOnly ? 'bg-gray-100' : ''}`}
+                      className={`h-[250px] w-full text-sm border-0 focus:outline-none ${isReadOnly ? "bg-gray-100" : ""}`}
                       readOnly={isReadOnly}
                       placeholder="Masukkan isi surat... "
                     />
@@ -513,7 +557,7 @@ function FormSuratKeluar() {
                 <div className="flex justify-end gap-2 pt-2 border-t">
                   <button
                     type="button"
-                    onClick={() => navigate('/surat-keluar')}
+                    onClick={() => navigate("/surat-keluar")}
                     className="px-3 py-1 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded"
                   >
                     Kembali
@@ -525,15 +569,19 @@ function FormSuratKeluar() {
                         disabled={loading}
                         className="px-3 py-1 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded disabled:opacity-50"
                       >
-                        {loading ? 'Menyimpan...' : (isEditing ? 'Update' : 'Simpan')}
+                        {loading
+                          ? "Menyimpan..."
+                          : isEditing
+                            ? "Update"
+                            : "Simpan"}
                       </button>
                       <button
                         type="button"
-                        onClick={(e) => handleSubmit(e, 'ajukan')}
+                        onClick={(e) => handleSubmit(e, "ajukan")}
                         disabled={loading}
                         className="px-3 py-1 text-sm text-white bg-green-600 hover:bg-green-700 rounded disabled:opacity-50"
                       >
-                        {loading ? 'Mengajukan...' : 'Ajukan'}
+                        {loading ? "Mengajukan..." : "Ajukan"}
                       </button>
                     </>
                   )}

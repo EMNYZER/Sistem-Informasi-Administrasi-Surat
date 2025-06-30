@@ -1,22 +1,25 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import logo from '../assets/logo.png';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import logo from "../assets/logo.png";
 
 function Login() {
-  const [NIK, setNIK] = useState('');
-  const [password, setPassword] = useState('');
+  const [NIK, setNIK] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:3001/login", { NIK, password });
+      const response = await axios.post("http://localhost:3001/login", {
+        NIK,
+        password,
+      });
 
       if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('nik', response.data.user.NIK);
-        navigate('/dashboard');
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("nik", response.data.user.NIK);
+        navigate("/dashboard");
       } else {
         alert("Login gagal. Periksa NIK dan password.");
       }
@@ -33,8 +36,11 @@ function Login() {
           <img src={logo} alt="Logo" className="mb-4" />
         </div>
         <form onSubmit={handleLogin}>
-          <div className='mb-4'>
-            <label htmlFor="NIK" className="block text-gray-700 text-sm font-bold mb-2">
+          <div className="mb-4">
+            <label
+              htmlFor="NIK"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
               NIK
             </label>
             <input
@@ -47,8 +53,11 @@ function Login() {
               required
             />
           </div>
-          <div className='mb-4'>
-            <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">
+          <div className="mb-4">
+            <label
+              htmlFor="password"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
               Password
             </label>
             <input
@@ -69,7 +78,9 @@ function Login() {
           </button>
         </form>
         <div className="mt-4 text-center">
-          <p className='text-sm text-gray-500'>Lupa Password? Segera Hubungi Admin</p>
+          <p className="text-sm text-gray-500">
+            Lupa Password? Segera Hubungi Admin
+          </p>
         </div>
       </div>
     </div>

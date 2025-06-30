@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
+import profile_pic from "../assets/profile.jpg";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
 import axios from "axios";
@@ -51,10 +52,13 @@ function Profile() {
     };
     const fetchTtd = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:3001/user/kepala-sekolah', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const token = localStorage.getItem("token");
+        const res = await axios.get(
+          "http://localhost:3001/user/kepala-sekolah",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
         setTtdPreview(res.data.kepalaSekolah?.tanda_tangan || null);
       } catch (err) {
         setTtdPreview(null);
@@ -67,10 +71,13 @@ function Profile() {
   useEffect(() => {
     const fetchTtd = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:3001/user/kepala-sekolah', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const token = localStorage.getItem("token");
+        const res = await axios.get(
+          "http://localhost:3001/user/kepala-sekolah",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
         setTtdPreview(res.data.kepalaSekolah?.tanda_tangan || null);
       } catch (err) {
         setTtdPreview(null);
@@ -171,14 +178,18 @@ function Profile() {
       // Jika ada file tanda tangan baru, upload dulu
       if (ttdFile) {
         const formData = new FormData();
-        formData.append('image', ttdFile);
+        formData.append("image", ttdFile);
         const nik = localStorage.getItem("nik");
-        await axios.post(`http://localhost:3001/user/upload/${nik}/tanda-tangan`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`
-          }
-        });
+        await axios.post(
+          `http://localhost:3001/user/upload/${nik}/tanda-tangan`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
         setTtdSuccess("Tanda tangan berhasil diupload.");
         setTtdFile(null);
       }
@@ -186,15 +197,19 @@ function Profile() {
       // Jika ada file foto baru, upload dulu
       if (fotoFile) {
         const formData = new FormData();
-        formData.append('image', fotoFile);
+        formData.append("image", fotoFile);
         const nik = localStorage.getItem("nik");
 
-        await axios.post(`http://localhost:3001/user/upload/${nik}/foto`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`
-          }
-        });
+        await axios.post(
+          `http://localhost:3001/user/upload/${nik}/foto`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
         setFotoSuccess("Foto profil berhasil diupload.");
         setFotoFile(null);
       }
@@ -224,7 +239,7 @@ function Profile() {
             "Terjadi kesalahan saat memperbarui profile",
         );
         setTtdError("Gagal upload tanda tangan.");
-        console.log(error.message)
+        console.log(error.message);
       }
     } finally {
       setIsUpdating(false);
@@ -245,7 +260,11 @@ function Profile() {
                     <div className="relative w-40 h-40 mx-auto">
                       <img
                         className="w-full h-full object-cover rounded-lg"
-                        src={fotoPreview || profileData.profile_picture || "https://via.placeholder.com/300"}
+                        src={
+                          fotoPreview ||
+                          profileData.profile_picture ||
+                          profile_pic
+                        }
                         alt="Profile"
                       />
                       <label className="absolute bottom-2 right-2 bg-white p-1.5 rounded-full shadow-sm cursor-pointer hover:bg-gray-50 transition-colors">
@@ -281,8 +300,16 @@ function Profile() {
                       <h2 className="text-lg font-medium text-gray-800">
                         {profileData.nama}
                       </h2>
-                      {fotoError && <div className="text-red-600 text-xs mt-1">{fotoError}</div>}
-                      {fotoSuccess && <div className="text-green-600 text-xs mt-1">{fotoSuccess}</div>}
+                      {fotoError && (
+                        <div className="text-red-600 text-xs mt-1">
+                          {fotoError}
+                        </div>
+                      )}
+                      {fotoSuccess && (
+                        <div className="text-green-600 text-xs mt-1">
+                          {fotoSuccess}
+                        </div>
+                      )}
                       <p className="text-xs text-gray-500">
                         {profileData.jabatan?.nama_jabatan || "-"}
                       </p>
@@ -291,11 +318,22 @@ function Profile() {
                       </p>
                     </div>
                     {/* Form Upload Tanda Tangan */}
-                    {profileData.role === 'Approval' && (
+                    {profileData.role === "Approval" && (
                       <div className="mt-8 border-2 border-blue-200 bg-blue-50 rounded-lg p-3">
-                        <TandaTanganProfile onFileChange={handleTtdFileChange} preview={ttdPreview} />
-                        {ttdError && <div className="text-red-600 text-xs mt-1">{ttdError}</div>}
-                        {ttdSuccess && <div className="text-green-600 text-xs mt-1">{ttdSuccess}</div>}
+                        <TandaTanganProfile
+                          onFileChange={handleTtdFileChange}
+                          preview={ttdPreview}
+                        />
+                        {ttdError && (
+                          <div className="text-red-600 text-xs mt-1">
+                            {ttdError}
+                          </div>
+                        )}
+                        {ttdSuccess && (
+                          <div className="text-green-600 text-xs mt-1">
+                            {ttdSuccess}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -310,57 +348,108 @@ function Profile() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">NIK</label>
-                      <p className="text-sm text-gray-800 bg-gray-50 px-2.5 py-1.5 rounded">{profileData.NIK}</p>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        NIK
+                      </label>
+                      <p className="text-sm text-gray-800 bg-gray-50 px-2.5 py-1.5 rounded">
+                        {profileData.NIK}
+                      </p>
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Nama Lengkap</label>
-                      <p className="text-sm text-gray-800 bg-gray-50 px-2.5 py-1.5 rounded">{profileData.nama}</p>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">NRG</label>
-                      <p className="text-sm text-gray-800 bg-gray-50 px-2.5 py-1.5 rounded">{profileData.NRG}</p>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">UKG</label>
-                      <p className="text-sm text-gray-800 bg-gray-50 px-2.5 py-1.5 rounded">{profileData.UKG}</p>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">NUPTK</label>
-                      <p className="text-sm text-gray-800 bg-gray-50 px-2.5 py-1.5 rounded">{profileData.NUPTK}</p>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Jabatan</label>
-                      <p className="text-sm text-gray-800 bg-gray-50 px-2.5 py-1.5 rounded">{profileData.jabatan?.nama_jabatan || '-'}</p>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        Nama Lengkap
+                      </label>
+                      <p className="text-sm text-gray-800 bg-gray-50 px-2.5 py-1.5 rounded">
+                        {profileData.nama}
+                      </p>
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Tempat Lahir</label>
-                      <input 
-                        type="text" 
-                        className="w-full text-sm bg-gray-50 border border-gray-200 rounded px-2.5 py-1.5 text-gray-800 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-transparent" 
-                        value={profileData.tempat_lahir || ''} 
-                        onChange={(e) => setProfileData({ ...profileData, tempat_lahir: e.target.value })}
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        NRG
+                      </label>
+                      <p className="text-sm text-gray-800 bg-gray-50 px-2.5 py-1.5 rounded">
+                        {profileData.NRG}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        UKG
+                      </label>
+                      <p className="text-sm text-gray-800 bg-gray-50 px-2.5 py-1.5 rounded">
+                        {profileData.UKG}
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        NUPTK
+                      </label>
+                      <p className="text-sm text-gray-800 bg-gray-50 px-2.5 py-1.5 rounded">
+                        {profileData.NUPTK}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        Jabatan
+                      </label>
+                      <p className="text-sm text-gray-800 bg-gray-50 px-2.5 py-1.5 rounded">
+                        {profileData.jabatan?.nama_jabatan || "-"}
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        Tempat Lahir
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full text-sm bg-gray-50 border border-gray-200 rounded px-2.5 py-1.5 text-gray-800 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-transparent"
+                        value={profileData.tempat_lahir || ""}
+                        onChange={(e) =>
+                          setProfileData({
+                            ...profileData,
+                            tempat_lahir: e.target.value,
+                          })
+                        }
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Tanggal Lahir</label>
-                      <input 
-                        type="date" 
-                        className="w-full text-sm bg-gray-50 border border-gray-200 rounded px-2.5 py-1.5 text-gray-800 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-transparent" 
-                        value={profileData.tanggal_lahir ? new Date(profileData.tanggal_lahir).toISOString().split('T')[0] : ''}
-                        onChange={(e) => setProfileData({ ...profileData, tanggal_lahir: e.target.value })}
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        Tanggal Lahir
+                      </label>
+                      <input
+                        type="date"
+                        className="w-full text-sm bg-gray-50 border border-gray-200 rounded px-2.5 py-1.5 text-gray-800 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-transparent"
+                        value={
+                          profileData.tanggal_lahir
+                            ? new Date(profileData.tanggal_lahir)
+                                .toISOString()
+                                .split("T")[0]
+                            : ""
+                        }
+                        onChange={(e) =>
+                          setProfileData({
+                            ...profileData,
+                            tanggal_lahir: e.target.value,
+                          })
+                        }
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Jenis Kelamin</label>
-                      <select 
-                        className="w-full text-sm bg-gray-50 border border-gray-200 rounded px-2.5 py-1.5 text-gray-800 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-transparent" 
-                        value={profileData.jenis_kelamin || ''} 
-                        onChange={(e) => setProfileData({ ...profileData, jenis_kelamin: e.target.value })}
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        Jenis Kelamin
+                      </label>
+                      <select
+                        className="w-full text-sm bg-gray-50 border border-gray-200 rounded px-2.5 py-1.5 text-gray-800 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-transparent"
+                        value={profileData.jenis_kelamin || ""}
+                        onChange={(e) =>
+                          setProfileData({
+                            ...profileData,
+                            jenis_kelamin: e.target.value,
+                          })
+                        }
                       >
                         <option value="">Pilih Jenis Kelamin</option>
                         <option value="Laki-laki">Laki-laki</option>
@@ -368,11 +457,18 @@ function Profile() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Agama</label>
-                      <select 
-                        className="w-full text-sm bg-gray-50 border border-gray-200 rounded px-2.5 py-1.5 text-gray-800 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-transparent" 
-                        value={profileData.agama || ''} 
-                        onChange={(e) => setProfileData({ ...profileData, agama: e.target.value })}
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        Agama
+                      </label>
+                      <select
+                        className="w-full text-sm bg-gray-50 border border-gray-200 rounded px-2.5 py-1.5 text-gray-800 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-transparent"
+                        value={profileData.agama || ""}
+                        onChange={(e) =>
+                          setProfileData({
+                            ...profileData,
+                            agama: e.target.value,
+                          })
+                        }
                       >
                         <option value="">Pilih Agama</option>
                         <option value="Islam">Islam</option>
@@ -385,45 +481,66 @@ function Profile() {
                     </div>
 
                     <div className="md:col-span-2">
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Alamat</label>
-                      <textarea 
-                        className="w-full text-sm bg-gray-50 border border-gray-200 rounded px-2.5 py-1.5 text-gray-800 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-transparent" 
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        Alamat
+                      </label>
+                      <textarea
+                        className="w-full text-sm bg-gray-50 border border-gray-200 rounded px-2.5 py-1.5 text-gray-800 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-transparent"
                         rows="2"
-                        value={profileData.alamat || ''} 
-                        onChange={(e) => setProfileData({ ...profileData, alamat: e.target.value })}
+                        value={profileData.alamat || ""}
+                        onChange={(e) =>
+                          setProfileData({
+                            ...profileData,
+                            alamat: e.target.value,
+                          })
+                        }
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Nomor HP</label>
-                      <input 
-                        type="text" 
-                        className="w-full text-sm bg-gray-50 border border-gray-200 rounded px-2.5 py-1.5 text-gray-800 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-transparent" 
-                        value={profileData.no_HP || ''} 
-                        onChange={(e) => setProfileData({ ...profileData, no_HP: e.target.value })}
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        Nomor HP
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full text-sm bg-gray-50 border border-gray-200 rounded px-2.5 py-1.5 text-gray-800 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-transparent"
+                        value={profileData.no_HP || ""}
+                        onChange={(e) =>
+                          setProfileData({
+                            ...profileData,
+                            no_HP: e.target.value,
+                          })
+                        }
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Email</label>
-                      <input 
-                        type="email" 
-                        className="w-full text-sm bg-gray-50 border border-gray-200 rounded px-2.5 py-1.5 text-gray-800 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-transparent" 
-                        value={profileData.email || ''} 
-                        onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        className="w-full text-sm bg-gray-50 border border-gray-200 rounded px-2.5 py-1.5 text-gray-800 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-transparent"
+                        value={profileData.email || ""}
+                        onChange={(e) =>
+                          setProfileData({
+                            ...profileData,
+                            email: e.target.value,
+                          })
+                        }
                       />
                     </div>
                   </div>
 
                   <div className="mt-4 flex space-x-2">
-                    <button 
+                    <button
                       className="bg-green-600 text-white text-sm px-3 py-1.5 rounded hover:bg-green-700 transition-colors focus:outline-none focus:ring-1 focus:ring-green-500 focus:ring-offset-1 disabled:opacity-50"
                       onClick={handleProfileUpdate}
                       disabled={isUpdating}
                     >
-                      {isUpdating ? 'Menyimpan...' : 'Simpan Perubahan'}
+                      {isUpdating ? "Menyimpan..." : "Simpan Perubahan"}
                     </button>
-                    <button 
+                    <button
                       className="bg-gray-100 text-gray-700 text-sm px-3 py-1.5 rounded hover:bg-gray-200 transition-colors focus:outline-none focus:ring-1 focus:ring-gray-500 focus:ring-offset-1"
                       onClick={() => setShowPasswordModal(true)}
                     >
@@ -530,12 +647,20 @@ function TandaTanganProfile({ onFileChange, preview }) {
     <div className="flex flex-col sm:flex-row items-center gap-4 w-full">
       {/* Preview di kiri */}
       <div className="w-full sm:w-2/3 flex flex-col items-center">
-        <span className="text-gray-600 text-xs mb-1">Preview Tanda Tangan:</span>
+        <span className="text-gray-600 text-xs mb-1">
+          Preview Tanda Tangan:
+        </span>
         <div className="border rounded-lg bg-gray-100 flex items-center justify-center w-full h-24 mb-2">
           {preview ? (
-            <img src={preview} alt="Tanda Tangan" className="max-h-20 object-contain" />
+            <img
+              src={preview}
+              alt="Tanda Tangan"
+              className="max-h-20 object-contain"
+            />
           ) : (
-            <span className="text-gray-400 text-xs">Belum ada tanda tangan</span>
+            <span className="text-gray-400 text-xs">
+              Belum ada tanda tangan
+            </span>
           )}
         </div>
       </div>

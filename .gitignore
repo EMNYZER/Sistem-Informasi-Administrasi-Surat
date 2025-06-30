@@ -1,4 +1,11 @@
-# Ignore global things
-.DS_Store
+# Ignore node_modules only, not the folder
+client/node_modules/
+server/node_modules/
+
+# Ignore environment files
+client/.env
+server/.env
+
+# Editor / OS
 .vscode/
-.env
+.DS_Store

@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import profile_pic from "../assets/profile.jpg";
 
 function Menu() {
   const [userData, setUserData] = useState({
     name: "",
     nik: "",
     profileImage: "",
-    role: ""
+    role: "",
   });
   const [expandedMenu, setExpandedMenu] = useState(null);
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ function Menu() {
           navigate("/login");
           return;
         }
-        
+
         const response = await axios.get(`http://localhost:3001/user/${nik}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -35,7 +36,9 @@ function Menu() {
         setUserData({
           name: response.data.profileData.nama,
           nik: response.data.profileData.NIK,
-          profileImage: response.data.profileData.profile_picture || "https://via.placeholder.com/150",
+          profileImage:
+            response.data.profileData.profile_picture ||
+            profile_pic,
           role: response.data.profileData.role,
         });
       } catch (error) {
@@ -50,8 +53,8 @@ function Menu() {
   const menuItems = {
     Admin: [
       { name: "Dashboard", path: "/dashboard", icon: "📊" },
-      { 
-        name: "Pengaturan", 
+      {
+        name: "Pengaturan",
         icon: "⚙️",
         submenu: [
           { name: "Profile", path: "/profile" },
@@ -60,77 +63,73 @@ function Menu() {
           { name: "Template", path: "/template-surat" },
           { name: "Jabatan", path: "/jabatan" },
           { name: "Surat", path: "/pengaturan-surat" },
-        ]
+        ],
       },
-      { 
-        name: "Surat", 
+      {
+        name: "Surat",
         icon: "📝",
         submenu: [
           { name: "Surat Keluar", path: "/surat-keluar" },
           { name: "Disposisi", path: "/disposisi" },
           { name: "Surat Masuk", path: "/surat-masuk" },
-          { name: "Verifikasi", path: "/verifikasi" }
-        ]
+          { name: "Verifikasi", path: "/verifikasi" },
+        ],
       },
-      { name: "Laporan", path: "/laporan", icon: "📋" }
+      { name: "Laporan", path: "/laporan", icon: "📋" },
     ],
     User: [
       { name: "Dashboard", path: "/dashboard", icon: "📊" },
-      { 
-        name: "Pengaturan", 
+      {
+        name: "Pengaturan",
         icon: "⚙️",
-        submenu: [
-          { name: "Profile", path: "/profile" },
-        ]
+        submenu: [{ name: "Profile", path: "/profile" }],
       },
-      { 
-        name: "Surat", 
+      {
+        name: "Surat",
         icon: "📝",
         submenu: [
           { name: "Surat Keluar", path: "/surat-keluar" },
-          { name: "Disposisi", path: "/disposisi" }
-        ]
-      }
+          { name: "Disposisi", path: "/disposisi" },
+        ],
+      },
     ],
     Approval: [
       { name: "Dashboard", path: "/dashboard", icon: "📊" },
-      { 
-        name: "Pengaturan", 
+      {
+        name: "Pengaturan",
         icon: "⚙️",
         submenu: [
           { name: "Profile", path: "/profile" },
-          { name: "Tanda tangan", path: "/sign" }
-        ]
+          { name: "Tanda tangan", path: "/sign" },
+        ],
       },
-      { 
-        name: "Surat", 
+      {
+        name: "Surat",
         icon: "📝",
         submenu: [
           { name: "Surat Keluar", path: "/surat-keluar" },
           { name: "Disposisi", path: "/disposisi" },
-          { name: "Pengesahan", path: "/pengesahan" }
-        ]
+          { name: "Pengesahan", path: "/pengesahan" },
+        ],
       },
-      { name: "Laporan", path: "/laporan", icon: "📋" }
+      { name: "Laporan", path: "/laporan", icon: "📋" },
     ],
     Deputi: [
       { name: "Dashboard", path: "/dashboard", icon: "📊" },
-      { 
-        name: "Pengaturan", 
+      {
+        name: "Pengaturan",
         icon: "⚙️",
-        submenu: [
-          { name: "Profile", path: "/profile" },
-        ]
+        submenu: [{ name: "Profile", path: "/profile" }],
       },
-      { 
-        name: "Surat", 
+      {
+        name: "Surat",
         icon: "📝",
         submenu: [
           { name: "Surat Keluar", path: "/surat-keluar" },
           { name: "Disposisi", path: "/disposisi" },
-        ]
-      }
-    ]
+        ],
+      },
+    ],
   };
 
   const toggleSubmenu = (menuName) => {
@@ -149,8 +148,12 @@ function Menu() {
             />
             {/* <div className="absolute bottom-2 right-2 w-3 h-3 bg-green-500 rounded-full ring-2 ring-green-900"></div> */}
           </div>
-          <h2 className="text-s font-bold text-white mt-2 text-center">{userData.name}</h2>
-          <p className="text-xs text-green-100 mt-2 text-center">{userData.nik}</p>
+          <h2 className="text-s font-bold text-white mt-2 text-center">
+            {userData.name}
+          </h2>
+          <p className="text-xs text-green-100 mt-2 text-center">
+            {userData.nik}
+          </p>
           {/* <p className="text-xs text-green-400/90 capitalize mt-3 px-3 py-1 rounded-full bg-green-800/50">
             {userData.role}
           </p> */}
@@ -168,7 +171,9 @@ function Menu() {
                     className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-green-700/50 transition-all duration-200 text-sm group"
                   >
                     <div className="flex items-center space-x-2">
-                      <span className="text-small group-hover:scale-110 transition-transform">{item.icon}</span>
+                      <span className="text-small group-hover:scale-110 transition-transform">
+                        {item.icon}
+                      </span>
                       <span className="font-medium">{item.name}</span>
                     </div>
                   </button>
@@ -192,7 +197,9 @@ function Menu() {
                   onClick={() => navigate(item.path)}
                   className="w-full flex items-center space-x-2 p-2 rounded-lg hover:bg-green-700/50 transition-all duration-200 text-sm group"
                 >
-                  <span className="text-small group-hover:scale-110 transition-transform">{item.icon}</span>
+                  <span className="text-small group-hover:scale-110 transition-transform">
+                    {item.icon}
+                  </span>
                   <span className="font-medium">{item.name}</span>
                 </button>
               )}

@@ -3,8 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
 import axios from "axios";
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 function FormTemplate() {
   const navigate = useNavigate();
@@ -13,15 +13,15 @@ function FormTemplate() {
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    kode_kategori: '',
-    perihal: '',
-    deskripsi: '',
-    isi_surat: ''
+    kode_kategori: "",
+    perihal: "",
+    deskripsi: "",
+    isi_surat: "",
   });
 
   useEffect(() => {
     fetchKategori();
-    console.log(id)
+    console.log(id);
     if (id) {
       fetchTemplateData();
     }
@@ -29,58 +29,61 @@ function FormTemplate() {
 
   const fetchKategori = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        navigate('/login');
+        navigate("/login");
         return;
       }
-      const response = await axios.get('http://localhost:3001/kategori', {
+      const response = await axios.get("http://localhost:3001/kategori", {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       setKategori(response.data);
     } catch (error) {
-      console.error('Error fetching kategori:', error);
+      console.error("Error fetching kategori:", error);
     }
   };
 
   const fetchTemplateData = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        navigate('/login');
+        navigate("/login");
         return;
       }
-      
+
       const response = await axios.get(`http://localhost:3001/template/${id}`, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       const templateData = response.data;
       setFormData({
-          kode_kategori: templateData.kode_kategori || templateData.kategori?.kode_kategori || '',
-          perihal: templateData.perihal || '',
-          deskripsi: templateData.deskripsi || '',
-          isi_surat: templateData.isi_surat || ''
-        });
-      
+        kode_kategori:
+          templateData.kode_kategori ||
+          templateData.kategori?.kode_kategori ||
+          "",
+        perihal: templateData.perihal || "",
+        deskripsi: templateData.deskripsi || "",
+        isi_surat: templateData.isi_surat || "",
+      });
+
       setIsEditing(true);
     } catch (error) {
-      console.error('Error fetching template data:', error);
-      alert('Gagal mengambil data template');
+      console.error("Error fetching template data:", error);
+      alert("Gagal mengambil data template");
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        navigate('/login');
+        navigate("/login");
         return;
       }
 
@@ -88,31 +91,31 @@ function FormTemplate() {
         kode_kategori: formData.kode_kategori,
         perihal: formData.perihal,
         deskripsi: formData.deskripsi,
-        isi_surat: formData.isi_surat
+        isi_surat: formData.isi_surat,
       };
 
       if (isEditing) {
         // Update existing template
         await axios.put(`http://localhost:3001/template/${id}`, submitData, {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
-        alert('Template berhasil diperbarui!');
+        alert("Template berhasil diperbarui!");
       } else {
         // Create new template
-        await axios.post('http://localhost:3001/template', submitData, {
+        await axios.post("http://localhost:3001/template", submitData, {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
-        alert('Template berhasil disimpan!');
+        alert("Template berhasil disimpan!");
       }
-      
-      navigate('/template-surat');
+
+      navigate("/template-surat");
     } catch (error) {
-      console.error('Error creating/updating template:', error);
-      alert(error.response?.data?.message || 'Terjadi kesalahan');
+      console.error("Error creating/updating template:", error);
+      alert(error.response?.data?.message || "Terjadi kesalahan");
     } finally {
       setLoading(false);
     }
@@ -120,16 +123,16 @@ function FormTemplate() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleEditorChange = (content) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      isi_surat: content
+      isi_surat: content,
     }));
   };
 
@@ -143,7 +146,7 @@ function FormTemplate() {
           <div className="bg-white shadow-sm rounded-lg p-3 mt-2">
             <div className="mb-3">
               <h2 className="text-lg font-semibold text-gray-800">
-                {isEditing ? 'Edit Template Surat' : 'Buat Template Surat Baru'}
+                {isEditing ? "Edit Template Surat" : "Buat Template Surat Baru"}
               </h2>
             </div>
 
@@ -166,7 +169,10 @@ function FormTemplate() {
                       >
                         <option value="">Pilih Kategori</option>
                         {kategori.map((kat) => (
-                          <option key={kat.kode_kategori} value={kat.kode_kategori}>
+                          <option
+                            key={kat.kode_kategori}
+                            value={kat.kode_kategori}
+                          >
                             {kat.nama_kategori}
                           </option>
                         ))}
@@ -228,7 +234,7 @@ function FormTemplate() {
               <div className="flex justify-end gap-2 pt-2 border-t">
                 <button
                   type="button"
-                  onClick={() => navigate('/template-surat')}
+                  onClick={() => navigate("/template-surat")}
                   className="px-3 py-1 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded"
                 >
                   Kembali
@@ -238,7 +244,7 @@ function FormTemplate() {
                   disabled={loading}
                   className="px-3 py-1 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded disabled:opacity-50"
                 >
-                  {loading ? 'Menyimpan...' : (isEditing ? 'Update' : 'Simpan')}
+                  {loading ? "Menyimpan..." : isEditing ? "Update" : "Simpan"}
                 </button>
               </div>
             </form>
