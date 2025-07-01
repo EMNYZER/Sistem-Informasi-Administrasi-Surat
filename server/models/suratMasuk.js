@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     lampiran: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     status_disposisi: {
       type: DataTypes.ENUM("Belum", "Revisi", "disposisi", "Selesai"),
@@ -47,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     file_surat: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     catatan: {
       type: DataTypes.STRING,

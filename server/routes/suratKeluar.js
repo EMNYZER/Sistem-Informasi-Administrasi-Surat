@@ -186,7 +186,6 @@ router.put('/:id_surat', authenticateToken, async (req, res) => {
       if (surat && !surat.QR_code) {
         const validationUrl = `http://localhost:3000/validation/${id_surat}`;
         
-        // === Tambahan mulai sini ===
         const filename = `${shortid()}.png`;
         const outputPath = path.join(__dirname, '../public/qrcodes', filename);
 
@@ -197,7 +196,6 @@ router.put('/:id_surat', authenticateToken, async (req, res) => {
         });
 
         req.body.QR_code = `http://localhost:3001/qrcodes/${filename}`;
-        // === Tambahan selesai ===
       }
     }
 

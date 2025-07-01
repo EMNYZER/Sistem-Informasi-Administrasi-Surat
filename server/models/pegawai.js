@@ -77,7 +77,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     role: {
-      type: DataTypes.ENUM("Admin", "User", "Approval", "Deputi"),
+      type: DataTypes.ENUM("Admin", "User", "Approval"),
       allowNull: false,
     },
     profile_picture: {
@@ -91,6 +91,12 @@ module.exports = (sequelize, DataTypes) => {
     Pegawai.belongsTo(models.Jabatan, {
       foreignKey: "jabatan_id",
       as: "jabatan",
+    });
+    Pegawai.belongsToMany(models.Disposisi, {
+      through: "DisposisiPegawai",
+      foreignKey: "NIK",
+      otherKey: "id_disposisi",
+      as: "disposisi"
     });
   };
 

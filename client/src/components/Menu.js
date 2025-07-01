@@ -101,7 +101,6 @@ function Menu() {
         icon: "⚙️",
         submenu: [
           { name: "Profile", path: "/profile" },
-          { name: "Tanda tangan", path: "/sign" },
         ],
       },
       {
@@ -109,27 +108,11 @@ function Menu() {
         icon: "📝",
         submenu: [
           { name: "Surat Keluar", path: "/surat-keluar" },
-          { name: "Disposisi", path: "/disposisi" },
+          { name: "Surat Masuk", path: "/surat-masuk" },
           { name: "Pengesahan", path: "/pengesahan" },
         ],
       },
       { name: "Laporan", path: "/laporan", icon: "📋" },
-    ],
-    Deputi: [
-      { name: "Dashboard", path: "/dashboard", icon: "📊" },
-      {
-        name: "Pengaturan",
-        icon: "⚙️",
-        submenu: [{ name: "Profile", path: "/profile" }],
-      },
-      {
-        name: "Surat",
-        icon: "📝",
-        submenu: [
-          { name: "Surat Keluar", path: "/surat-keluar" },
-          { name: "Disposisi", path: "/disposisi" },
-        ],
-      },
     ],
   };
 

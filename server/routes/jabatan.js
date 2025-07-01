@@ -19,8 +19,19 @@ router.get("/", authenticateToken, async (req, res) => {
 // add jabatan
 router.post("/", authenticateToken, async (req, res) => {
   try {
-    const { jabatan_id, nama_jabatan, deskripsi } = req.body;
-    const jabatan = await Jabatan.create(req.body);
+    const { nama_jabatan, level_disposisi, deskripsi } = req.body;
+
+    // Cek jika level_disposisi adalah "tingkat 1"
+    if (level_disposisi === "tingkat 1") {
+      const existing = await Jabatan.findOne({ where: { level_disposisi: "tingkat 1" } });
+      if (existing) {
+        return res.status(400).json({
+          error: "Sudah ada jabatan dengan level disposisi 'tingkat 1'. Hanya boleh satu.",
+        });
+      }
+    }
+
+    const jabatan = await Jabatan.create({ nama_jabatan, level_disposisi, deskripsi });
     res.json(jabatan);
   } catch (error) {
     res.status(500).json({

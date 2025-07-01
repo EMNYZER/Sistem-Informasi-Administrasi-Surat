@@ -13,14 +13,17 @@ function Jabatan() {
   const [selectedJabatan, setSelectedJabatan] = useState(null);
   const [formData, setFormData] = useState({
     nama_jabatan: "",
+    level_disposisi: "tingkat 2",
     deskripsi: "",
   });
   const [editFormData, setEditFormData] = useState({
     jabatan_id: "",
     nama_jabatan: "",
+    level_disposisi: "tingkat 2",
     deskripsi: "",
   });
   const [loading, setLoading] = useState(true);
+  const [formError, setFormError] = useState("");
 
   useEffect(() => {
     fetchJabatan();
@@ -54,6 +57,7 @@ function Jabatan() {
         navigate("/login");
         return;
       }
+      setFormError("");
       await axios.post("http://localhost:3001/jabatan", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -61,12 +65,17 @@ function Jabatan() {
       });
       setShowModal(false);
       fetchJabatan();
-      // Reset form
       setFormData({
         nama_jabatan: "",
+        level_disposisi: "tingkat 2",
         deskripsi: "",
       });
     } catch (error) {
+      if (error.response && error.response.data && error.response.data.error) {
+        setFormError(error.response.data.error);
+      } else {
+        setFormError("Gagal menambah jabatan.");
+      }
       console.error("Error adding jabatan:", error);
     }
   };
@@ -76,6 +85,7 @@ function Jabatan() {
     setEditFormData({
       jabatan_id: jabatan.jabatan_id,
       nama_jabatan: jabatan.nama_jabatan,
+      level_disposisi: jabatan.level_disposisi,
       deskripsi: jabatan.deskripsi || "",
     });
     setShowEditModal(true);
@@ -157,6 +167,9 @@ function Jabatan() {
                       Nama Jabatan
                     </th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Level Disposisi
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Deskripsi
                     </th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -172,6 +185,9 @@ function Jabatan() {
                       </td>
                       <td className="px-4 py-2 text-sm text-gray-900">
                         {item.nama_jabatan}
+                      </td>
+                      <td className="px-4 py-2 text-sm text-gray-900">
+                        {item.level_disposisi}
                       </td>
                       <td className="px-4 py-2 text-sm text-gray-900">
                         {item.deskripsi || "-"}
@@ -204,9 +220,16 @@ function Jabatan() {
       {/* Modal Tambah Jabatan */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-semibold mb-4">Tambah Jabatan</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="bg-gray-200 border-2 border-gray-700 rounded-2xl w-full max-w-md flex flex-col shadow-xl">
+            <h2 className="sticky top-0 z-10 bg-gray-700 text-white p-4 text-center uppercase text-xl font-semibold rounded-t-2xl border-b-2 border-gray-800">
+              Tambah Jabatan
+            </h2>
+            {formError && (
+              <div className="mb-4 p-3 bg-red-100 text-red-700 rounded text-sm">
+                {formError}
+              </div>
+            )}
+            <form onSubmit={handleSubmit} className="space-y-4 p-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Nama Jabatan
@@ -214,7 +237,7 @@ function Jabatan() {
                 <input
                   type="text"
                   required
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                  className="mt-1 block w-full rounded-md border-gray-600 shadow-sm focus:border-green-500 focus:ring-green-500"
                   value={formData.nama_jabatan}
                   onChange={(e) =>
                     setFormData({ ...formData, nama_jabatan: e.target.value })
@@ -223,11 +246,28 @@ function Jabatan() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
+                  Level Disposisi
+                </label>
+                <select
+                  required
+                  className="mt-1 block w-full rounded-md border-gray-600 shadow-sm focus:border-green-500 focus:ring-green-500"
+                  value={formData.level_disposisi}
+                  onChange={(e) =>
+                    setFormData({ ...formData, level_disposisi: e.target.value })
+                  }
+                >
+                  <option value="tingkat 1">Tingkat 1</option>
+                  <option value="tingkat 2">Tingkat 2</option>
+                  <option value="tingkat 3">Tingkat 3</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
                   Deskripsi
                 </label>
                 <textarea
                   rows="3"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                  className="mt-1 block w-full rounded-md border-gray-600 shadow-sm focus:border-green-500 focus:ring-green-500"
                   value={formData.deskripsi}
                   onChange={(e) =>
                     setFormData({ ...formData, deskripsi: e.target.value })
@@ -258,9 +298,11 @@ function Jabatan() {
       {/* Modal Edit Jabatan */}
       {showEditModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-semibold mb-4">Edit Jabatan</h2>
-            <form onSubmit={handleEditSubmit} className="space-y-4">
+          <div className="bg-gray-200 border-2 border-gray-700 rounded-2xl w-full max-w-md flex flex-col shadow-xl">
+            <h2 className="sticky top-0 z-10 bg-gray-700 text-white p-4 text-center uppercase text-xl font-semibold rounded-t-2xl border-b-2 border-gray-800">
+              Edit Jabatan
+            </h2>
+            <form onSubmit={handleEditSubmit} className="space-y-4 p-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Nama Jabatan
@@ -268,7 +310,7 @@ function Jabatan() {
                 <input
                   type="text"
                   required
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                  className="mt-1 block w-full rounded-md border-gray-600 shadow-sm focus:border-green-500 focus:ring-green-500"
                   value={editFormData.nama_jabatan}
                   onChange={(e) =>
                     setEditFormData({
@@ -277,6 +319,23 @@ function Jabatan() {
                     })
                   }
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Level Disposisi
+                </label>
+                <select
+                  required
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                  value={editFormData.level_disposisi}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, level_disposisi: e.target.value })
+                  }
+                >
+                  <option value="tingkat 1">Tingkat 1</option>
+                  <option value="tingkat 2">Tingkat 2</option>
+                  <option value="tingkat 3">Tingkat 3</option>
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">

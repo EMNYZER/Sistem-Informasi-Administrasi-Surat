@@ -92,21 +92,6 @@ router.get("/", authenticateToken, async (req, res) => {
   }
 });
 
-// GET incoming letters by NIK
-router.get("/nik/:nik", authenticateToken, async (req, res) => {
-  try {
-    const { nik } = req.params;
-    const suratMasuk = await SuratMasuk.findAll({
-      where: { NIK: nik },
-      include: [{ model: Pegawai, as: "pegawai", attributes: ["nama", "NIK"] }],
-      order: [["tanggal_terima", "DESC"]],
-    });
-    res.json(suratMasuk);
-  } catch (error) {
-    res.status(500).json({ error: "Gagal mengambil data surat masuk", message: error.message });
-  }
-});
-
 // GET incoming letters by status
 router.get("/status/:status", authenticateToken, async (req, res) => {
   try {
@@ -128,7 +113,7 @@ router.get("/:id_surat", authenticateToken, async (req, res) => {
     const { id_surat } = req.params;
     const suratMasuk = await SuratMasuk.findOne({
       where: { id_surat },
-      include: [{ model: Pegawai, as: "pegawai", attributes: ["nama", "jabatan", "NIK"] }],
+      include: [{ model: Pegawai, as: "pegawai", attributes: ["nama", "NIK"] }],
     });
     if (!suratMasuk) {
       return res.status(404).json({ error: "Surat masuk tidak ditemukan" });
@@ -228,25 +213,6 @@ router.delete("/:id_surat", authenticateToken, async (req, res) => {
     res.json({ message: "Surat masuk berhasil dihapus" });
   } catch (error) {
     res.status(500).json({ error: "Gagal menghapus surat masuk", message: error.message });
-  }
-});
-
-// GET file download (optional, as frontend can construct URL)
-router.get("/:id_surat/file", authenticateToken, async (req, res) => {
-  try {
-    const { id_surat } = req.params;
-    const surat = await SuratMasuk.findByPk(id_surat);
-    if (!surat || !surat.file_surat) {
-      return res.status(404).json({ error: "File tidak ditemukan" });
-    }
-
-    const filePath = path.join(__dirname, "../public", surat.file_surat);
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ error: "File tidak ada di server" });
-    }
-    res.download(filePath);
-  } catch (error) {
-    res.status(500).json({ error: "Gagal mengunduh file", message: error.message });
   }
 });
 

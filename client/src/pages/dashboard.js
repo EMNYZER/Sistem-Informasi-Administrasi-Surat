@@ -27,7 +27,6 @@ function Dashboard() {
         const response = await axios.get(`http://localhost:3001/user/${nik}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log(response.data.profileData);
         setUserProfile({
           role: response.data.profileData.role,
           nama: response.data.profileData.nama,

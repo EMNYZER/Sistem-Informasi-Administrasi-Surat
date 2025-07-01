@@ -15,10 +15,10 @@ import PilihTemplate from "../pages/pilihTemplate";
 import VerifikasiSurat from "../pages/verifikasiSurat";
 import PengesahanSurat from "../pages/pengesahanSurat";
 import Validation from "../pages/validation";
-import TandaTangan from "../pages/tandaTangan";
 import Pages404 from "../pages/pages404";
 import SuratMasuk from "../pages/suratMasuk";
 import FormSuratmasuk from "../pages/formSuratmasuk";
+import Murid from "../pages/murid";
 
 const router = createBrowserRouter([
   {
@@ -98,16 +98,20 @@ const router = createBrowserRouter([
         element: <Validation />,
       },
       {
-        path: "sign",
-        element: <TandaTangan />,
-      },
-      {
         path: "surat-masuk",
         element: <SuratMasuk/>,
       },
       {
         path: "catat-surat",
         element: <FormSuratmasuk/>,
+      },
+      {
+        path: "catat-surat/:id_surat",
+        element: <FormSuratmasuk/>,
+      },
+      {
+        path: "murid",
+        element: <Murid/>,
       },
       {
         path: "*",

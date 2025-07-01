@@ -12,6 +12,8 @@ const login = require("./routes/login");
 app.use("/login", login);
 const user = require("./routes/User");
 app.use("/user", user);
+const murid = require("./routes/murid");
+app.use("/murid", murid);
 const jabatan = require("./routes/jabatan");
 app.use("/jabatan", jabatan);
 const kategori = require("./routes/kategori");
@@ -27,5 +29,19 @@ const PORT = process.env.PORT || 3001;
 db.sequelize.sync().then(() => {
   app.use("/uploads", express.static("public/uploads"));
   app.use("/qrcodes", express.static("public/qrcodes"));
+
+  app.get("/view-pdf/:filename", (req, res) => {
+    const fileName = req.params.filename;
+    const filePath = path.join(__dirname, "public/uploads/surat-masuk", fileName);
+  
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).send("File tidak ditemukan");
+    }
+  
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "inline; filename=" + fileName);
+    res.sendFile(filePath);
+  });
+
   app.listen(PORT, () => console.log(`server running on ${PORT}`));
 });

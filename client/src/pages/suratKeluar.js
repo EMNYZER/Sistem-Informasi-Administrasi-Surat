@@ -134,7 +134,7 @@ function SuratKeluar() {
           <button
             onClick={() => handleEdit(surat)}
             className="text-yellow-600 hover:text-yellow-800"
-            title="Edit"
+            title="Detail"
           >
             <FaEdit />
           </button>
@@ -177,7 +177,7 @@ function SuratKeluar() {
           <button
             onClick={() => handleEdit(surat)}
             className="text-yellow-600 hover:text-yellow-800"
-            title="Edit"
+            title="Detail"
           >
             <FaEdit />
           </button>

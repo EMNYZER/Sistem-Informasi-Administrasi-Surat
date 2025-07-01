@@ -237,8 +237,8 @@ function Pegawai() {
       {/* Unified Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-gray-200 rounded-lg w-full max-w-4xl max-h-[90vh] flex flex-col">
-            <h2 className="sticky top-0 z-10 bg-gray-200 p-4 text-center uppercase text-xl font-semibold border-b border-gray-700">
+          <div className="bg-gray-200 border-2 border-gray-700 rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-xl">
+            <h2 className="sticky top-0 z-10 bg-gray-700 text-white p-4 text-center uppercase text-xl font-semibold rounded-t-2xl border-b-2 border-gray-800">
               {isEditing ? "Edit Pegawai" : "Tambah Pegawai"}
             </h2>
             <div className="overflow-y-auto p-6">
@@ -256,7 +256,7 @@ function Pegawai() {
                       type="text"
                       required
                       disabled={isEditing}
-                      className={`mt-1 block w-full rounded-md border-gray-500 shadow-sm focus:border-green-500 focus:ring-green-500 ${isEditing ? "bg-gray-200 cursor-not-allowed" : "bg-white"}`}
+                      className={`mt-1 block w-full rounded-md border border-gray-600 shadow-sm  ${isEditing ? "bg-gray-200 cursor-not-allowed" : "bg-white"}`}
                       value={currentPegawai.NIK}
                       onChange={handleInputChange}
                     />
@@ -269,7 +269,7 @@ function Pegawai() {
                       name="nama"
                       type="text"
                       required
-                      className="mt-1 block w-full rounded-md border-gray-500 bg-white shadow-sm focus:border-green-500 focus:ring-green-500"
+                      className={`mt-1 block w-full rounded-md border border-gray-600 shadow-sm  bg-white`}
                       value={currentPegawai.nama}
                       onChange={handleInputChange}
                     />
@@ -282,7 +282,7 @@ function Pegawai() {
                       name="tempat_lahir"
                       type="text"
                       required
-                      className="mt-1 block w-full rounded-md border-gray-500 bg-white shadow-sm focus:border-green-500 focus:ring-green-500"
+                      className={`mt-1 block w-full rounded-md border border-gray-600 shadow-sm  bg-white`}
                       value={currentPegawai.tempat_lahir}
                       onChange={handleInputChange}
                     />
@@ -295,7 +295,7 @@ function Pegawai() {
                       name="tanggal_lahir"
                       type="date"
                       required
-                      className="mt-1 block w-full rounded-md border-gray-500 bg-white shadow-sm focus:border-green-500 focus:ring-green-500"
+                      className={`mt-1 block w-full rounded-md border border-gray-600 shadow-sm  bg-white`}
                       value={currentPegawai.tanggal_lahir}
                       onChange={handleInputChange}
                     />
@@ -307,7 +307,7 @@ function Pegawai() {
                     <select
                       name="jenis_kelamin"
                       required
-                      className="mt-1 block w-full rounded-md border-gray-500 bg-white shadow-sm focus:border-green-500 focus:ring-green-500"
+                      className={`mt-1 block w-full rounded-md border border-gray-600 shadow-sm  bg-white`}
                       value={currentPegawai.jenis_kelamin}
                       onChange={handleInputChange}
                     >
@@ -323,7 +323,7 @@ function Pegawai() {
                     <select
                       name="agama"
                       required
-                      className="mt-1 block w-full rounded-md border-gray-500 bg-white shadow-sm focus:border-green-500 focus:ring-green-500"
+                      className={`mt-1 block w-full rounded-md border border-gray-600 shadow-sm  bg-white`}
                       value={currentPegawai.agama}
                       onChange={handleInputChange}
                     >
@@ -344,7 +344,7 @@ function Pegawai() {
                       name="no_HP"
                       type="text"
                       required
-                      className="mt-1 block w-full rounded-md border-gray-500 bg-white shadow-sm focus:border-green-500 focus:ring-green-500"
+                      className={`mt-1 block w-full rounded-md border border-gray-600 shadow-sm  bg-white`}
                       value={currentPegawai.no_HP}
                       onChange={handleInputChange}
                     />
@@ -357,7 +357,7 @@ function Pegawai() {
                       name="email"
                       type="email"
                       required
-                      className="mt-1 block w-full rounded-md border-gray-500 bg-white shadow-sm focus:border-green-500 focus:ring-green-500"
+                      className={`mt-1 block w-full rounded-md border border-gray-600 shadow-sm  bg-white`}
                       value={currentPegawai.email}
                       onChange={handleInputChange}
                     />
@@ -370,7 +370,7 @@ function Pegawai() {
                       name="alamat"
                       required
                       rows="3"
-                      className="mt-1 block w-full rounded-md border-gray-500 bg-white shadow-sm focus:border-green-500 focus:ring-green-500"
+                      className={`mt-1 block w-full rounded-md border border-gray-600 shadow-sm  bg-white`}
                       value={currentPegawai.alamat}
                       onChange={handleInputChange}
                       placeholder="Masukkan alamat lengkap"
@@ -387,7 +387,7 @@ function Pegawai() {
                     <select
                       name="jabatan_id"
                       required
-                      className="mt-1 block w-full rounded-md border-gray-500 bg-white shadow-sm focus:border-green-500 focus:ring-green-500"
+                      className={`mt-1 block w-full rounded-md border border-gray-600 shadow-sm  bg-white`}
                       value={currentPegawai.jabatan_id}
                       onChange={handleInputChange}
                     >
@@ -406,14 +406,13 @@ function Pegawai() {
                     <select
                       name="role"
                       required
-                      className="mt-1 block w-full rounded-md border-gray-500 bg-white shadow-sm focus:border-green-500 focus:ring-green-500"
+                      className={`mt-1 block w-full rounded-md border border-gray-600 shadow-sm  bg-white`}
                       value={currentPegawai.role}
                       onChange={handleInputChange}
                     >
                       <option value="Admin">Admin</option>
                       <option value="User">User</option>
                       <option value="Approval">Approval</option>
-                      <option value="Deputi">Deputi</option>
                     </select>
                   </div>
                   <div className="md:col-span-2">
@@ -423,7 +422,7 @@ function Pegawai() {
                     <select
                       name="status"
                       required
-                      className="mt-1 block w-full rounded-md border-gray-500 bg-white shadow-sm focus:border-green-500 focus:ring-green-500"
+                      className={`mt-1 block w-full rounded-md border border-gray-600 shadow-sm  bg-white`}
                       value={currentPegawai.status}
                       onChange={handleInputChange}
                     >
@@ -438,7 +437,7 @@ function Pegawai() {
                     <input
                       name="No_induk_yayasan"
                       type="text"
-                      className="mt-1 block w-full rounded-md border-gray-500 bg-white shadow-sm focus:border-green-500 focus:ring-green-500"
+                      className={`mt-1 block w-full rounded-md border border-gray-600 shadow-sm  bg-white`}
                       value={currentPegawai.No_induk_yayasan}
                       onChange={handleInputChange}
                     />
@@ -450,7 +449,7 @@ function Pegawai() {
                     <input
                       name="NRG"
                       type="text"
-                      className="mt-1 block w-full rounded-md border-gray-500 bg-white shadow-sm focus:border-green-500 focus:ring-green-500"
+                      className={`mt-1 block w-full rounded-md border border-gray-600 shadow-sm  bg-white`}
                       value={currentPegawai.NRG}
                       onChange={handleInputChange}
                     />
@@ -462,7 +461,7 @@ function Pegawai() {
                     <input
                       name="UKG"
                       type="text"
-                      className="mt-1 block w-full rounded-md border-gray-500 bg-white shadow-sm focus:border-green-500 focus:ring-green-500"
+                      className={`mt-1 block w-full rounded-md border border-gray-600 shadow-sm  bg-white`}
                       value={currentPegawai.UKG}
                       onChange={handleInputChange}
                     />
@@ -474,7 +473,7 @@ function Pegawai() {
                     <input
                       name="NUPTK"
                       type="text"
-                      className="mt-1 block w-full rounded-md border-gray-500 bg-white shadow-sm focus:border-green-500 focus:ring-green-500"
+                      className={`mt-1 block w-full rounded-md border border-gray-600 shadow-sm  bg-white`}
                       value={currentPegawai.NUPTK}
                       onChange={handleInputChange}
                     />

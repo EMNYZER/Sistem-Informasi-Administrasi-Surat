@@ -24,6 +24,10 @@ function FormSuratMasuk() {
     file_surat: null,
   });
   const [selectedFile, setSelectedFile] = useState(null);
+  const [showFileWarning, setShowFileWarning] = useState(false);
+  const [showFileWarningModal, setShowFileWarningModal] = useState(false);
+  const [deferSubmit, setDeferSubmit] = useState(false);
+
 
   useEffect(() => {
     if (id_surat) {
@@ -82,25 +86,34 @@ function FormSuratMasuk() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+  
     const token = localStorage.getItem("token");
     const nik = localStorage.getItem("nik");
     if (!token || !nik) {
       navigate("/login");
       return;
     }
-
+  
+    // Tampilkan modal jika file kosong, dan belum mengonfirmasi lanjut
+    if (!formData.file_surat && !selectedFile && !deferSubmit) {
+      setShowFileWarningModal(true);
+      setLoading(false);
+      return;
+    }
+  
     const data = new FormData();
+    formData.NIK = nik;
+  
     for (const key in formData) {
       data.append(key, formData[key]);
     }
-    data.append("NIK", nik);
+  
     if (selectedFile) {
       data.set("file_surat", selectedFile);
     } else {
       data.delete("file_surat");
     }
-
+  
     try {
       if (isEditing) {
         await axios.put(`http://localhost:3001/suratMasuk/${id_surat}`, data, {
@@ -125,8 +138,10 @@ function FormSuratMasuk() {
       alert("Terjadi kesalahan saat menyimpan surat.");
     } finally {
       setLoading(false);
+      setDeferSubmit(false); // reset untuk next submit
     }
   };
+  
 
   const removeFile = () => {
     setSelectedFile(null);
@@ -241,6 +256,11 @@ function FormSuratMasuk() {
                             </div>
                           )}
                         </div>
+                        {showFileWarning && (
+                          <p className="text-sm text-yellow-600 mt-1">
+                            ⚠ Anda belum mengunggah file scan surat. Surat tetap bisa disimpan, tetapi disarankan untuk melampirkan file.
+                          </p>
+                        )}
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Catatan</label>
@@ -261,6 +281,36 @@ function FormSuratMasuk() {
               </div>
             </div>
           </form>
+          {showFileWarningModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+              <div className="bg-white rounded-lg shadow-lg w-[90%] max-w-md p-6">
+                <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                  File Surat Belum Diunggah
+                </h2>
+                <p className="text-sm text-gray-600 mb-6">
+                  Anda belum mengunggah file scan surat. Apakah Anda ingin tetap menyimpan surat ini tanpa file?
+                </p>
+                <div className="flex justify-end gap-3">
+                  <button
+                    className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded hover:bg-gray-200"
+                    onClick={() => setShowFileWarningModal(false)}
+                  >
+                    Tambahkan File
+                  </button>
+                  <button
+                    className="px-4 py-2 text-sm text-white bg-green-600 rounded hover:bg-green-700"
+                    onClick={() => {
+                      setShowFileWarningModal(false);
+                      setDeferSubmit(true);
+                      handleSubmit(new Event("submit")); // trigger ulang submit
+                    }}
+                  >
+                    Simpan Tanpa File
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </main>
       </div>
     </div>
