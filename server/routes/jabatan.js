@@ -17,7 +17,7 @@ router.get("/", authenticateToken, async (req, res) => {
 });
 
 // add jabatan
-router.post("/", authenticateToken, async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const { nama_jabatan, level_disposisi, deskripsi } = req.body;
 

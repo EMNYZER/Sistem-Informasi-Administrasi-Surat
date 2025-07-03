@@ -9,8 +9,8 @@ module.exports = (sequelize, DataTypes) => {
           type: DataTypes.DATE,
           allowNull: false,
        },
-       sifat: {
-          type: DataTypes.ENUM("Biasa", "Segera", "Sangat Segera"),
+       status_disposisi: {
+          type: DataTypes.ENUM("Menunggu", "Selesai"),
           allowNull: false,
        },
        isi_disposisi:{

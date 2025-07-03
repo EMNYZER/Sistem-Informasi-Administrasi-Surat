@@ -261,10 +261,7 @@ router.delete("/:id_surat", authenticateToken, async (req, res) => {
 });
 
 // Generate nomor surat
-router.post(
-  "/generate-nomor/:id_surat",
-  authenticateToken,
-  async (req, res) => {
+router.post("/generate-nomor/:id_surat", authenticateToken, async (req, res) => {
     try {
       const { id_surat } = req.params;
       const surat = await SuratKeluar.findByPk(id_surat);

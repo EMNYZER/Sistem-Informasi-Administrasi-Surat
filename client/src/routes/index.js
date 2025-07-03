@@ -19,6 +19,9 @@ import Pages404 from "../pages/pages404";
 import SuratMasuk from "../pages/suratMasuk";
 import FormSuratmasuk from "../pages/formSuratmasuk";
 import Murid from "../pages/murid";
+import FormDisposisi from "../pages/formDIsposisi";
+import RiwayatDisposisi from "../pages/riwayatDisposisi";
+import DaftarDisposisi from "../pages/daftarDisposisi";
 
 const router = createBrowserRouter([
   {
@@ -112,6 +115,22 @@ const router = createBrowserRouter([
       {
         path: "murid",
         element: <Murid/>,
+      },
+      {
+        path: "disposisi/:id_surat",
+        element: <FormDisposisi/>,
+      },
+      {
+        path: "disposisi/:id_surat/:id_disposisi",
+        element: <FormDisposisi/>,
+      },
+      {
+        path: "riwayat-disposisi",
+        element: <RiwayatDisposisi/>,
+      },
+      {
+        path: "daftar-disposisi",
+        element: <DaftarDisposisi/>,
       },
       {
         path: "*",

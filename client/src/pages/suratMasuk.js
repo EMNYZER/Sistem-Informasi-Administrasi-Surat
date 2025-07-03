@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
 import axios from "axios";
-import { FaEdit, FaTrash, FaEye, FaFilePdf, FaPlus } from "react-icons/fa";
+import { FaEdit, FaTrash, FaEye, FaFilePdf, FaPlus, FaHistory } from "react-icons/fa";
 
 function SuratMasuk() {
   const navigate = useNavigate();
@@ -80,7 +80,7 @@ function SuratMasuk() {
   const handleViewDocument = (fileUrl) => {
     if (fileUrl) {
       const filename = fileUrl.split("/").pop();
-      const fullUrl = `http://localhost:3001/view-pdf/${filename}`;
+      const fullUrl = `http://localhost:3001/${filename}`;
       window.open(fullUrl, "_blank", "noopener,noreferrer");
     } else {
       alert("File dokumen tidak tersedia.");
@@ -143,6 +143,17 @@ function SuratMasuk() {
     );
   };
   
+  // Tambahkan fungsi badge untuk sifat surat
+  const getSifatBadge = (sifat) => {
+    let color = "bg-gray-200 text-gray-700";
+    if (sifat === "Segera") color = "bg-yellow-200 text-yellow-800";
+    else if (sifat === "Sangat Segera") color = "bg-red-200 text-red-800";
+    else if (sifat === "Rahasia") color = "bg-purple-200 text-purple-800";
+    else if (sifat === "Biasa") color = "bg-green-100 text-green-800";
+    return (
+      <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${color}`}>{sifat}</span>
+    );
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -154,7 +165,7 @@ function SuratMasuk() {
             <h1 className="text-xl font-semibold text-gray-800">
               Data Surat Masuk
             </h1>
-            {role !== "Approval" && (
+            {role === "Admin" && (
               <button
                 onClick={() => navigate("/catat-surat")}
                 className="bg-green-600 text-white px-3 py-1.5 rounded text-sm hover:bg-green-700 transition-colors flex items-center gap-2"
@@ -162,6 +173,15 @@ function SuratMasuk() {
                 <FaPlus /> Tambah Surat
               </button>
             )}
+            {role === "Approval" && (
+              <button
+                onClick={() => navigate("/riwayat-disposisi")}
+                className="bg-blue-600 text-white px-3 py-1.5 rounded text-sm hover:bg-blue-700 transition-colors flex items-center gap-2"
+              >
+                <FaHistory /> Riwayat Disposisi
+              </button>
+            )}
+
           </div>
 
           {loading ? (
@@ -196,7 +216,7 @@ function SuratMasuk() {
                     ? suratMasuk.filter(
                         (item) =>
                           item.status_disposisi === "Belum" ||
-                          item.status_disposisi === "disposisi"
+                          item.status_disposisi === "Disposisi"
                       )
                     : suratMasuk
                   ).map((item) => (
@@ -295,75 +315,92 @@ function SuratMasuk() {
                   </svg>
                 </button>
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Tanggal Terima
-                  </label>
-                  <p className="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded">
-                    {formatDate(selectedSurat.tanggal_terima)}
-                  </p>
+
+              {/* Section 1 & 2 sejajar */}
+              <div className="flex flex-col md:flex-row gap-6 mb-6">
+                {/* Section 1: Informasi Surat */}
+                <div className="flex-1 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                  <h3 className="text-md font-semibold text-gray-700 mb-3">Informasi Surat</h3>
+                  <table className="w-full text-sm">
+                    <tbody>
+                      <tr>
+                        <td className="pr-2 py-1 text-gray-500 whitespace-nowrap">Nomor Surat</td>
+                        <td className="font-medium text-gray-900">: {selectedSurat.nomor_surat}</td>
+                      </tr>
+                      <tr>
+                        <td className="pr-2 py-1 text-gray-500 whitespace-nowrap">Tanggal Surat</td>
+                        <td className="font-medium text-gray-900">: {formatDate(selectedSurat.tanggal_surat)}</td>
+                      </tr>
+                      <tr>
+                        <td className="pr-2 py-1 text-gray-500 whitespace-nowrap">Asal Surat</td>
+                        <td className="font-medium text-gray-900">: {selectedSurat.asal}</td>
+                      </tr>
+                      <tr>
+                        <td className="pr-2 py-1 text-gray-500 whitespace-nowrap">Lampiran</td>
+                        <td className="font-medium text-gray-900">: {selectedSurat.lampiran || '-'}</td>
+                      </tr>
+                      <tr>
+                        <td className="pr-2 py-1 text-gray-500 whitespace-nowrap">Status Disposisi</td>
+                        <td>: {getStatusBadge(selectedSurat.status_disposisi)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Nomor Agenda
-                  </label>
-                  <p className="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded">
-                    {selectedSurat.nomor_agenda}
-                  </p>
+                {/* Section 2: Pendataan Surat */}
+                <div className="flex-1 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                  <h3 className="text-md font-semibold text-gray-700 mb-3">Pendataan Surat</h3>
+                  <table className="w-full text-sm">
+                    <tbody>
+                      <tr>
+                        <td className="pr-2 py-1 text-gray-500 whitespace-nowrap">Nomor Agenda</td>
+                        <td className="font-medium text-gray-900">: {selectedSurat.nomor_agenda}</td>
+                      </tr>
+                      <tr>
+                        <td className="pr-2 py-1 text-gray-500 whitespace-nowrap">Tanggal Terima</td>
+                        <td className="font-medium text-gray-900">: {formatDate(selectedSurat.tanggal_terima)}</td>
+                      </tr>
+                      <tr>
+                        <td className="pr-2 py-1 text-gray-500 whitespace-nowrap">Sifat Surat</td>
+                        <td>: {getSifatBadge(selectedSurat.sifat)}</td>
+                      </tr>
+                      <tr>
+                        <td className="pr-2 py-1 text-gray-500 whitespace-nowrap">Status Surat</td>
+                        <td className="font-medium text-gray-900">: {selectedSurat.status_surat}</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Asal Surat
-                  </label>
-                  <p className="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded">
-                    {selectedSurat.asal}
-                  </p>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Status Disposisi
-                  </label>
-                  <div className="px-3 py-2">
-                    {getStatusBadge(selectedSurat.status_disposisi)}
+              </div>
+
+              {/* Section 3: Perihal, File Surat, Catatan */}
+              <div className="mb-6 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <h3 className="text-md font-semibold text-gray-700 mb-3">Perihal & Dokumen</h3>
+                <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
+                  <div className="flex-[4]">
+                    <div className="text-xs text-gray-500 mb-1">Perihal</div>
+                    <div className="text-sm font-medium text-gray-900 min-h-[32px] py-1">{selectedSurat.perihal}</div>
                   </div>
-                </div>
-                
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Perihal
-                  </label>
-                  <p className="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded">
-                    {selectedSurat.perihal}
-                  </p>
-                </div>
-                
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    File Surat
-                  </label>
-                  <div className="px-3 py-2">
+                  <div className="flex-[1] md:w-44">
+                    <div className="text-xs text-gray-500 mb-1">File Surat</div>
                     {selectedSurat.file_surat ? (
                       <button
                         onClick={() => handleViewDocument(selectedSurat.file_surat)}
-                        className="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-2"
+                        className="flex items-center gap-2 text-blue-600 hover:text-blue-800 text-xs font-medium bg-blue-50 px-3 py-2 rounded shadow-sm border border-blue-200 w-full justify-center"
                       >
-                        <FaFilePdf />
+                        <FaFilePdf className="text-lg" />
                         Lihat Dokumen
                       </button>
                     ) : (
-                      <span className="text-red-500 text-sm">
-                        File Surat Tidak Tersedia
-                      </span>
+                      <span className="text-red-500 text-xs">File Surat Tidak Tersedia</span>
                     )}
                   </div>
                 </div>
+                <div>
+                  <div className="text-xs text-gray-500 mb-1">Catatan</div>
+                  <div className="text-sm text-gray-900 bg-whie border border-gray-400 rounded px-3 py-2 min-h-[28px]">{selectedSurat.catatan || '-'}</div>
+                </div>
               </div>
-              
+
               <div className="mt-6 flex justify-end gap-2">
                 {role === "Approval" && (
                   <button

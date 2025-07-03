@@ -71,7 +71,7 @@ function Menu() {
         icon: "📝",
         submenu: [
           { name: "Surat Keluar", path: "/surat-keluar" },
-          { name: "Disposisi", path: "/disposisi" },
+          { name: "Disposisi", path: "/daftar-disposisi" },
           { name: "Surat Masuk", path: "/surat-masuk" },
           { name: "Verifikasi", path: "/verifikasi" },
         ],
@@ -90,7 +90,7 @@ function Menu() {
         icon: "📝",
         submenu: [
           { name: "Surat Keluar", path: "/surat-keluar" },
-          { name: "Disposisi", path: "/disposisi" },
+          { name: "Disposisi", path: "/daftar-disposisi" },
         ],
       },
     ],

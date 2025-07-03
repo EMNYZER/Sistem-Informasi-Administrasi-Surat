@@ -20,5 +20,12 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
 
+  Jabatan.associate = (models) => {
+    Jabatan.hasMany(models.Pegawai, {
+      foreignKey: "jabatan_id",
+      as: "pegawai",
+    });
+  };
+
   return Jabatan;
 };

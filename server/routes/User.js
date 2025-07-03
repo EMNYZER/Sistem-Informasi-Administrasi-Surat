@@ -140,7 +140,7 @@ router.get("/", authenticateToken, async (req, res) => {
         {
           model: require("../models").Jabatan,
           as: "jabatan",
-          attributes: ["nama_jabatan"],
+          attributes: ["nama_jabatan", "level_disposisi"],
         },
       ],
     });
@@ -276,7 +276,7 @@ router.get("/:NIK", authenticateToken, async (req, res) => {
         {
           model: require("../models").Jabatan,
           as: "jabatan",
-          attributes: ["nama_jabatan"],
+          attributes: ["nama_jabatan", "level_disposisi"],
         },
       ],
     });

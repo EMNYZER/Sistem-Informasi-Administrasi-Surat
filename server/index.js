@@ -24,6 +24,8 @@ const suratMasuk = require("./routes/suratMasuk");
 app.use("/suratMasuk", suratMasuk);
 const template = require("./routes/template");
 app.use("/template", template);
+const disposisi = require("./routes/disposisi");
+app.use("/disposisi", disposisi);
 
 const PORT = process.env.PORT || 3001;
 db.sequelize.sync().then(() => {

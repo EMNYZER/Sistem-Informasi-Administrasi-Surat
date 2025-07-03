@@ -27,6 +27,7 @@ function FormSuratMasuk() {
   const [showFileWarning, setShowFileWarning] = useState(false);
   const [showFileWarningModal, setShowFileWarningModal] = useState(false);
   const [deferSubmit, setDeferSubmit] = useState(false);
+  const [submitAction, setSubmitAction] = useState("");
 
 
   useEffect(() => {
@@ -103,6 +104,12 @@ function FormSuratMasuk() {
   
     const data = new FormData();
     formData.NIK = nik;
+    // Set status_disposisi sesuai aksi
+    if (submitAction === "draft") {
+      formData.status_disposisi = "Draft";
+    } else if (submitAction === "belum") {
+      formData.status_disposisi = "Belum";
+    }
   
     for (const key in formData) {
       data.append(key, formData[key]);
@@ -275,8 +282,21 @@ function FormSuratMasuk() {
                 <button type="button" onClick={() => navigate("/surat-masuk")} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">
                   Batal
                 </button>
-                <button type="submit" disabled={loading} className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50">
-                  {loading ? "Menyimpan..." : isEditing ? "Update Surat" : "Simpan Surat"}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-700 disabled:opacity-50"
+                  onClick={() => setSubmitAction("draft")}
+                >
+                  {loading && submitAction === "draft" ? "Menyimpan..." : "Simpan Surat"}
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50"
+                  onClick={() => setSubmitAction("belum")}
+                >
+                  {loading && submitAction === "belum" ? "Menyimpan..." : "Teruskan"}
                 </button>
               </div>
             </div>

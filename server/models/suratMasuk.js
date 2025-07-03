@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
     },
     status_disposisi: {
-      type: DataTypes.ENUM("Belum", "Revisi", "disposisi", "Selesai"),
+      type: DataTypes.ENUM("Draft","Belum", "Revisi", "Disposisi", "Selesai"),
       allowNull: false,
     },
     status_surat: {

@@ -181,8 +181,7 @@ function Dashboard() {
           {renderCards()}
           <div className="mt-6">
             <p className="text-gray-500 text-sm">
-              Selamat datang {userProfile.nama}, Anda login sebagai{" "}
-              {userProfile.role} - {userProfile.jabatan?.nama_jabatan || "-"}
+              Selamat datang <strong>{userProfile.nama}</strong>, Anda login sebagai <strong>{userProfile.role}</strong> - <strong>{userProfile.jabatan?.nama_jabatan || "-"}</strong>
             </p>
           </div>
           <div className="mt-6">
