@@ -7,16 +7,24 @@ import axios from "axios";
 function DaftarDisposisi() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [userLevel, setUserLevel] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const nik = localStorage.getItem("nik");
+        // Fetch user profile to get jabatan.level_disposisi
+        const userRes = await axios.get(`http://localhost:3001/user/${nik}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        setUserLevel(userRes.data.profileData.jabatan?.level_disposisi || "");
+        // Fetch disposisi data
         const res = await axios.get(`http://localhost:3001/disposisi/nik/${nik}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
-        setData(res.data);
+        // Filter disposisi yang statusnya bukan 'Selesai'
+        setData(res.data.filter(item => item.disposisi.status_disposisi !== "Selesai"));
       } catch (err) {
         setData([]);
       } finally {
@@ -27,7 +35,23 @@ function DaftarDisposisi() {
   }, []);
 
   const handlePreview = (id) => {
-    navigate(`/preview-disposisi/${id}`);
+    window.open(`/view-disposisi/${id}`, '_blank');
+  };
+
+  const handleTandaiSelesai = async (id_disposisi) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(`http://localhost:3001/disposisi/${id_disposisi}`, {
+        status_disposisi: "Selesai",
+      }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      // Refresh data
+      setData(data.filter(item => item.id_disposisi !== id_disposisi));
+      alert("Disposisi ditandai selesai.");
+    } catch (error) {
+      alert("Gagal menandai selesai");
+    }
   };
 
   return (
@@ -64,11 +88,29 @@ function DaftarDisposisi() {
                         <td className="px-4 py-2 text-center">
                           <button
                             onClick={() => handlePreview(item.id_disposisi)}
-                            className="inline-flex items-center px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium rounded shadow"
+                            className="inline-flex items-center px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium rounded shadow mr-2"
                             title="Preview"
                           >
                             Lihat
                           </button>
+                          {userLevel === "tingkat 2" && (
+                            <button
+                              onClick={() => navigate(`/teruskan-disposisi/${item.id_disposisi}`)}
+                              className="inline-flex items-center px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-xs font-medium rounded shadow"
+                              title="Teruskan"
+                            >
+                              Teruskan
+                            </button>
+                          )}
+                          {userLevel === "tingkat 3" && (
+                            <button
+                              onClick={() => handleTandaiSelesai(item.id_disposisi)}
+                              className="inline-flex items-center px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-medium rounded shadow"
+                              title="Tandai Selesai"
+                            >
+                              Tandai Selesai
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))

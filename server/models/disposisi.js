@@ -10,12 +10,16 @@ module.exports = (sequelize, DataTypes) => {
           allowNull: false,
        },
        status_disposisi: {
-          type: DataTypes.ENUM("Menunggu", "Selesai"),
+          type: DataTypes.ENUM("Menunggu", "Diteruskan", "Selesai"),
           allowNull: false,
        },
-       isi_disposisi:{
+       instruksi:{
          type: DataTypes.TEXT,
          allowNull: false,
+       },
+       instruksi_lanjutan:{
+         type: DataTypes.TEXT,
+         allowNull: true,
        },
        jabatan_penerima: {
          type: DataTypes.STRING,

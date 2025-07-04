@@ -21,7 +21,7 @@ router.get("/", authenticateToken, async (req, res) => {
     res.json(disposisi);
   } catch (error) {
     console.error("Error fetching disposisi:", error);
-    res.status(500).json({ message: "Internal server errorh" });
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
@@ -33,14 +33,8 @@ router.get("/:id_disposisi", authenticateToken, async (req, res) => {
         {
           model: SuratMasuk,
           as: "suratMasuk",
-          attributes: ["id_surat", "nomor_surat", "perihal", "tanggal_surat", "asal", "sifat"]
+          attributes: ["id_surat", "nomor_surat","nomor_agenda", "perihal", "tanggal_surat","tanggal_terima","lampiran", "asal", "sifat","status_surat"]
         },
-        {
-          model: Pegawai,
-          as: "penerima",
-          attributes: ["NIK", "nama", "jabatan"],
-          through: { attributes: [] }
-        }
       ]
     });
 
@@ -52,6 +46,37 @@ router.get("/:id_disposisi", authenticateToken, async (req, res) => {
   } catch (error) {
     console.error("Error fetching disposisi:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// GET - pegawai penerima disposisi
+router.get("/pegawai/:id_disposisi", authenticateToken, async (req, res) => {
+  try{
+    const id = req.params.id_disposisi
+    const disposisiPegawaiData = await DisposisiPegawai.findAll({
+      where: { id_disposisi: id },
+      include: [
+        {
+          model: Pegawai,
+          as: "pegawai",
+          include: [
+            {
+              model: Jabatan,
+              as: "jabatan"
+            }
+          ]
+        },
+      ]
+    });
+
+    if (!disposisiPegawaiData) {
+      return res.status(404).json({ message: "penerima tidak ditemukan" });
+    }
+
+    res.json(disposisiPegawaiData);
+  } catch(error){
+    console.error("Error fetching disposisi:", error);
+    res.status(500).json({ message: "Internal server errorh" });
   }
 });
 
@@ -87,7 +112,8 @@ router.post("/", authenticateToken, async (req, res) => {
     const {
       id_surat,
       tanggal_disposisi,
-      isi_disposisi,
+      instruksi,
+      instruksi_lanjutan,
       jabatan_penerima,
       catatan,
       status_disposisi,
@@ -102,7 +128,8 @@ router.post("/", authenticateToken, async (req, res) => {
       id_disposisi: id_disposisi,
       id_surat,
       tanggal_disposisi: tanggal_disposisi || new Date(),
-      isi_disposisi,
+      instruksi,
+      instruksi_lanjutan,
       jabatan_penerima,
       catatan,
       status_disposisi: status_disposisi || "Menunggu"
@@ -142,7 +169,8 @@ router.put("/:id_disposisi", authenticateToken, async (req, res) => {
   try {
     const {
       tanggal_disposisi,
-      isi_disposisi,
+      instruksi,
+      instruksi_lanjutan,
       jabatan_penerima,
       catatan,
       status_disposisi,
@@ -157,16 +185,17 @@ router.put("/:id_disposisi", authenticateToken, async (req, res) => {
     // Update disposisi
     await disposisi.update({
       tanggal_disposisi,
-      isi_disposisi,
+      instruksi,
+      instruksi_lanjutan,
       jabatan_penerima,
       catatan,
       status_disposisi
     });
 
     // Hapus data DisposisiPegawai yang lama
-    await DisposisiPegawai.destroy({
-      where: { id_disposisi: req.params.id_disposisi }
-    });
+    // await DisposisiPegawai.destroy({
+    //   where: { id_disposisi: req.params.id_disposisi }
+    // });
 
     // Buat data DisposisiPegawai yang baru
     if (pegawai_penerima && pegawai_penerima.length > 0) {

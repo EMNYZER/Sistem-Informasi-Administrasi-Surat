@@ -22,6 +22,8 @@ import Murid from "../pages/murid";
 import FormDisposisi from "../pages/formDIsposisi";
 import RiwayatDisposisi from "../pages/riwayatDisposisi";
 import DaftarDisposisi from "../pages/daftarDisposisi";
+import FormLanjutanDisposisi from "../pages/formLanjutanDisposisi";
+import ViewDisposisi from "../pages/viewDisposisi";
 
 const router = createBrowserRouter([
   {
@@ -49,6 +51,21 @@ const router = createBrowserRouter([
         element: <Jabatan />,
       },
       {
+        path: "pengaturan-surat",
+        element: <PengaturanSurat />,
+      },
+      {
+        path: "murid",
+        element: <Murid/>,
+      },
+      {
+        path: "*",
+        element: <Pages404 />,
+      },
+
+
+      // Surat Keluar
+      {
         path: "surat-keluar",
         element: <SuratKeluar />,
       },
@@ -72,10 +89,8 @@ const router = createBrowserRouter([
         path: "preview-surat/:id_surat",
         element: <ViewSuratKeluar />,
       },
-      {
-        path: "pengaturan-surat",
-        element: <PengaturanSurat />,
-      },
+
+      // Template Surat Keluar
       {
         path: "template-surat",
         element: <TemplateSurat />,
@@ -88,6 +103,8 @@ const router = createBrowserRouter([
         path: "daftar-template",
         element: <PilihTemplate />,
       },
+
+      // Verifikasi, Pengesahan, Validation
       {
         path: "verifikasi",
         element: <VerifikasiSurat />,
@@ -100,6 +117,8 @@ const router = createBrowserRouter([
         path: "validation/:id_surat",
         element: <Validation />,
       },
+
+      // Surat Masuk
       {
         path: "surat-masuk",
         element: <SuratMasuk/>,
@@ -112,17 +131,15 @@ const router = createBrowserRouter([
         path: "catat-surat/:id_surat",
         element: <FormSuratmasuk/>,
       },
-      {
-        path: "murid",
-        element: <Murid/>,
-      },
+
+      // Disposisi
       {
         path: "disposisi/:id_surat",
         element: <FormDisposisi/>,
       },
       {
-        path: "disposisi/:id_surat/:id_disposisi",
-        element: <FormDisposisi/>,
+        path: "teruskan-disposisi/:id_disposisi",
+        element: <FormLanjutanDisposisi/>,
       },
       {
         path: "riwayat-disposisi",
@@ -133,8 +150,8 @@ const router = createBrowserRouter([
         element: <DaftarDisposisi/>,
       },
       {
-        path: "*",
-        element: <Pages404 />,
+        path: "view-disposisi/:id_disposisi",
+        element: <ViewDisposisi/>,
       },
     ],
   },
