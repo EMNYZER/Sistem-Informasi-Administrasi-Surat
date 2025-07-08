@@ -18,6 +18,46 @@ router.get("/", authenticateToken, async (req, res) => {
   }
 });
 
+// Cari murid berdasarkan nama/NIS (untuk autocomplete)
+router.get("/search", authenticateToken, async (req, res) => {
+  const q = req.query.q || "";
+  try {
+    const murid = await Murid.findAll({
+      where: {
+        [require('sequelize').Op.or]: [
+          { nama: { [require('sequelize').Op.like]: `%${q}%` } },
+          { NIS: { [require('sequelize').Op.like]: `%${q}%` } }
+        ]
+      },
+      limit: 10
+    });
+    res.json(murid);
+  } catch (error) {
+    res.status(500).json({ error: "Gagal mencari murid" });
+  }
+});
+
+// Ambil data murid berdasarkan NIS
+router.get("/:NIS", authenticateToken, async (req, res) => {
+  try {
+    const murid = await Murid.findOne({ where: { NIS: req.params.NIS } });
+    if (!murid) {
+      return res.status(404).json({
+        status: "error",
+        message: "Data murid tidak ditemukan",
+      });
+    }
+    res.json(murid);
+  } catch (error) {
+    console.error("Error fetching murid by NIS:", error);
+    res.status(500).json({
+      status: "error",
+      message: "Terjadi kesalahan saat mengambil data murid",
+      error: error.message,
+    });
+  }
+});
+
 // Tambah murid
 router.post("/", authenticateToken, async (req, res) => {
   try {
@@ -67,27 +107,6 @@ router.post("/", authenticateToken, async (req, res) => {
     res.status(500).json({
       status: "error",
       message: "Terjadi kesalahan saat menambahkan data murid",
-      error: error.message,
-    });
-  }
-});
-
-// Ambil data murid berdasarkan NIS
-router.get("/:NIS", authenticateToken, async (req, res) => {
-  try {
-    const murid = await Murid.findOne({ where: { NIS: req.params.NIS } });
-    if (!murid) {
-      return res.status(404).json({
-        status: "error",
-        message: "Data murid tidak ditemukan",
-      });
-    }
-    res.json(murid);
-  } catch (error) {
-    console.error("Error fetching murid by NIS:", error);
-    res.status(500).json({
-      status: "error",
-      message: "Terjadi kesalahan saat mengambil data murid",
       error: error.message,
     });
   }

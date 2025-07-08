@@ -26,7 +26,7 @@ function Header() {
     if (window.confirm("Apakah Anda yakin ingin keluar?")) {
       localStorage.removeItem("token");
       localStorage.removeItem("role");
-      navigate("/login");
+      navigate("/");
     }
   };
 

@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const db = require("./models");
+const { startCleanupCron } = require("./cron/cleanupExpiredData");
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -26,6 +27,8 @@ const template = require("./routes/template");
 app.use("/template", template);
 const disposisi = require("./routes/disposisi");
 app.use("/disposisi", disposisi);
+const laporan = require("./routes/laporan");
+app.use("/laporan", laporan);
 
 const PORT = process.env.PORT || 3001;
 db.sequelize.sync().then(() => {
@@ -44,6 +47,9 @@ db.sequelize.sync().then(() => {
     res.setHeader("Content-Disposition", "inline; filename=" + fileName);
     res.sendFile(filePath);
   });
+
+  // Start cron job untuk cleanup expired laporan
+  startCleanupCron();
 
   app.listen(PORT, () => console.log(`server running on ${PORT}`));
 });

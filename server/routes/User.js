@@ -38,11 +38,7 @@ const upload = multer({
 });
 
 //Upload foto profil atau tanda tangan
-router.post(
-  "/upload/:nik/:tipe",
-  authenticateToken,
-  upload.single("image"),
-  async (req, res) => {
+router.post("/upload/:nik/:tipe", authenticateToken, upload.single("image"), async (req, res) => {
     try {
       const { nik, tipe } = req.params;
 
@@ -155,20 +151,130 @@ router.get("/", authenticateToken, async (req, res) => {
   }
 });
 
-// merubah password
-router.post("/change-password", authenticateToken, async (req, res) => {
+// Cari pegawai berdasarkan nama/NIK (untuk autocomplete)
+router.get("/search", authenticateToken, async (req, res) => {
+  const q = req.query.q || "";
   try {
-    // cek pengguna ada atau tidak
-    const user = await Pegawai.findOne({
-      where: { username: req.user.username },
+    const pegawai = await Pegawai.findAll({
+      where: {
+        [require('sequelize').Op.or]: [
+          { nama: { [require('sequelize').Op.like]: `%${q}%` } },
+          { NIK: { [require('sequelize').Op.like]: `%${q}%` } }
+        ]
+      },
+      include: [{
+        model: Jabatan,
+        as: "jabatan",
+        attributes: ["nama_jabatan", "level_disposisi"]
+      }],
+      limit: 10
     });
+    res.json(pegawai);
+  } catch (error) {
+    res.status(500).json({ error: "Gagal mencari pegawai" });
+  }
+});
+
+// mengambil data profile pegawai berdasarkan NIK
+router.get("/:NIK", authenticateToken, async (req, res) => {
+  try {
+    const user = await Pegawai.findOne({ where: { NIK: req.user.NIK } });
     if (!user) {
       return res.status(401).json({
         success: false,
         message: "User tidak ditemukan",
       });
     }
-  } catch (error) {}
+
+    const pegawai = await Pegawai.findOne({
+      where: { NIK: req.params.NIK },
+      include: [
+        {
+          model: require("../models").Jabatan,
+          as: "jabatan",
+          attributes: ["nama_jabatan", "level_disposisi"],
+        },
+      ],
+    });
+
+    const profileData = {
+      NIK: pegawai.NIK,
+      role: pegawai.role,
+      nama: pegawai.nama,
+      jenis_kelamin: pegawai.jenis_kelamin,
+      tempat_lahir: pegawai.tempat_lahir,
+      tanggal_lahir: pegawai.tanggal_lahir,
+      alamat: pegawai.alamat,
+      agama: pegawai.agama,
+      jabatan_id: pegawai.jabatan_id,
+      jabatan: pegawai.jabatan,
+      status: pegawai.status,
+      NRG: pegawai.NRG,
+      UKG: pegawai.UKG,
+      NUPTK: pegawai.NUPTK,
+      no_HP: pegawai.no_HP,
+      email: pegawai.email,
+      tanda_tangan: pegawai.tanda_tangan,
+      profile_picture: pegawai.profile_picture,
+    };
+
+    res.json({
+      success: true,
+      message: "Profile data retrieved successfully",
+      profileData,
+    });
+  } catch (error) {
+    console.error("Error retrieving profile data:", error);
+    res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan saat mengambil data profile",
+      error: error.message,
+    });
+  }
+});
+
+// merubah password
+router.post("/change-password/:nik", authenticateToken, async (req, res) => {
+  try {
+    const { nik } = req.params;
+    const { oldPassword, newPassword } = req.body;
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Password lama dan baru harus diisi",
+      });
+    }
+    const pegawai = await Pegawai.findOne({ where: { NIK: nik } });
+    if (!pegawai) {
+      return res.status(404).json({
+        success: false,
+        message: "User tidak ditemukan",
+      });
+    }
+    // Cek password lama
+    const isMatch = await bcrypt.compare(oldPassword, pegawai.password);
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Password lama salah",
+      });
+    }
+    // Hash password baru
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    pegawai.password = hashedPassword;
+    await pegawai.save();
+    res.json({
+      success: true,
+      message: "Password berhasil diperbarui",
+    });
+  } catch (error) {
+    console.error("Error changing password:", error);
+    res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan saat memperbarui password",
+      error: error.message,
+    });
+  }
 });
 
 // menambahkan pegawai sekaligus menjadi user
@@ -254,64 +360,6 @@ router.post("/", async (req, res) => {
     res.status(500).json({
       status: "error",
       message: "Terjadi kesalahan saat menambahkan data pegawai",
-      error: error.message,
-    });
-  }
-});
-
-// mengambil data profile pegawai berdasarkan NIK
-router.get("/:NIK", authenticateToken, async (req, res) => {
-  try {
-    const user = await Pegawai.findOne({ where: { NIK: req.user.NIK } });
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "User tidak ditemukan",
-      });
-    }
-
-    const pegawai = await Pegawai.findOne({
-      where: { NIK: req.params.NIK },
-      include: [
-        {
-          model: require("../models").Jabatan,
-          as: "jabatan",
-          attributes: ["nama_jabatan", "level_disposisi"],
-        },
-      ],
-    });
-
-    const profileData = {
-      NIK: pegawai.NIK,
-      role: pegawai.role,
-      nama: pegawai.nama,
-      jenis_kelamin: pegawai.jenis_kelamin,
-      tempat_lahir: pegawai.tempat_lahir,
-      tanggal_lahir: pegawai.tanggal_lahir,
-      alamat: pegawai.alamat,
-      agama: pegawai.agama,
-      jabatan_id: pegawai.jabatan_id,
-      jabatan: pegawai.jabatan,
-      status: pegawai.status,
-      NRG: pegawai.NRG,
-      UKG: pegawai.UKG,
-      NUPTK: pegawai.NUPTK,
-      no_HP: pegawai.no_HP,
-      email: pegawai.email,
-      tanda_tangan: pegawai.tanda_tangan,
-      profile_picture: pegawai.profile_picture,
-    };
-
-    res.json({
-      success: true,
-      message: "Profile data retrieved successfully",
-      profileData,
-    });
-  } catch (error) {
-    console.error("Error retrieving profile data:", error);
-    res.status(500).json({
-      success: false,
-      message: "Terjadi kesalahan saat mengambil data profile",
       error: error.message,
     });
   }

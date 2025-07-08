@@ -86,8 +86,8 @@ function FormLanjutanDisposisi() {
       <Menu />
       <div className="flex flex-col flex-1 p-4 lg:ml-48 transition-all duration-200">
         <Header />
-        <div className="bg-white shadow-sm rounded-lg p-5 mt-2 w-full overflow-x-auto">
-          <h1 className="text-xl font-semibold text-gray-800 mb-6 text-center">Form Lanjutan Disposisi</h1>
+        <div className="bg-white shadow-sm rounded-lg p-5 mt-2 w-full max-w-4xl mx-auto overflow-x-auto">
+          <h1 className="text-xl font-semibold text-gray-800 mb-6 text-center">Form Disposisi</h1>
           {/* Section 1 & 2 sejajar: Data Surat Masuk */}
           <div className="flex flex-col md:flex-row gap-6 mb-6">
             {/* Informasi Surat */}
@@ -145,26 +145,27 @@ function FormLanjutanDisposisi() {
             <div className="text-base font-semibold text-gray-900">{surat.perihal}</div>
           </div>
           {/* Section 4: Info Disposisi Sebelumnya */}
-          <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <div className="text-xs text-gray-500 mb-1">Tanggal Disposisi</div>
-              <div className="text-base font-semibold text-gray-900">{new Date(disposisi.tanggal_disposisi).toLocaleDateString("id-ID")}</div>
+          <div className="mb-6 bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <div className="flex flex-col md:flex-row md:items-center md:gap-4 mb-4">
+              <div className="text-md text-gray-500 md:w-1/2">Tanggal Disposisi : <span className="text-base font-semibold text-gray-900">{new Date(disposisi.tanggal_disposisi).toLocaleDateString("id-ID")}</span></div>
+              <div className="text-md text-gray-500 md:w-1/2">Jabatan Penerima : <span className="text-base font-semibold text-gray-900">{disposisi.jabatan_penerima}</span></div>
             </div>
-            <div>
-              <div className="text-xs text-gray-500 mb-1">Jabatan Penerima</div>
-              <div className="text-base font-semibold text-gray-900">{disposisi.jabatan_penerima}</div>
-            </div>
-            <div>
-              <div className="text-xs text-gray-500 mb-1">Instruksi</div>
-              <div className="text-base font-semibold text-gray-900">{disposisi.instruksi}</div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Kolom Kiri: Instruksi */}
+              <div>
+                <div className="text-md text-gray-500 mb-1">Instruksi</div>
+                <div className="text-base font-semibold text-gray-900">{disposisi.instruksi}</div>
+              </div>
+              {/* Kolom Kanan: Form Instruksi Lanjutan */}
+              <div>
+                <label className="text-md text-gray-500 mb-1">Instruksi Lanjut</label>
+                <textarea name="instruksi_lanjutan" value={formData.instruksi_lanjutan} onChange={handleChange} required placeholder="Tulis instruksi lanjutan di sini" className="mt-1 block w-full rounded-md border border-gray-400 shadow-sm "></textarea>
+              </div>
             </div>
           </div>
           {/* Section 5: Form Lanjutan */}
           <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Instruksi Lanjutan</label>
-              <textarea name="instruksi_lanjutan" value={formData.instruksi_lanjutan} onChange={handleChange} required placeholder="Tulis instruksi lanjutan di sini" className="mt-1 block w-full rounded-md border border-gray-400 shadow-sm "></textarea>
-            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Pilih Pegawai Penerima</label>
               <select
@@ -177,7 +178,7 @@ function FormLanjutanDisposisi() {
                 <option value="">--Pilih Pegawai--</option>
                 {pegawaiList.map((p) => (
                   <option key={p.NIK} value={p.NIK}>
-                    {p.nama} - {p.jabatan?.nama_jabatan}
+                    {p.nama}
                   </option>
                 ))}
               </select>

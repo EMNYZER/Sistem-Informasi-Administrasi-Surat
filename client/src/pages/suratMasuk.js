@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
 import axios from "axios";
-import { FaEdit, FaTrash, FaEye, FaFilePdf, FaPlus, FaHistory } from "react-icons/fa";
+import { FaEdit, FaTrash, FaEye, FaFilePdf, FaPlus, FaHistory, FaCheck } from "react-icons/fa";
 
 function SuratMasuk() {
   const navigate = useNavigate();
@@ -97,6 +97,24 @@ function SuratMasuk() {
   const handleTambahDisposisi = (id_surat) => {
     setShowDetailModal(false);
     navigate(`/disposisi/${id_surat}`);
+  };
+
+  const handleTandaiSelesai = async (id_surat) => {
+    if (window.confirm("Apakah Anda yakin ingin menandai surat ini sebagai selesai?")) {
+      try {
+        const token = localStorage.getItem("token");
+        await axios.put(`http://localhost:3001/suratMasuk/${id_surat}/status`, {
+          status_disposisi: "Selesai"
+        }, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        alert("Surat berhasil ditandai sebagai selesai!");
+        fetchSuratMasuk(); // Refresh data
+      } catch (error) {
+        console.error("Error updating surat status:", error);
+        alert("Gagal mengubah status surat.");
+      }
+    }
   };
 
   const formatDate = (dateString) => {
@@ -274,6 +292,15 @@ function SuratMasuk() {
                         >
                           <FaEye />
                         </button>
+                        {role === "Approval" && item.status_disposisi !== "Selesai" && (
+                          <button
+                            onClick={() => handleTandaiSelesai(item.id_surat)}
+                            className="text-green-600 hover:text-green-800"
+                            title="Tandai Selesai"
+                          >
+                            <FaCheck />
+                          </button>
+                        )}
                         {role !== "Approval" && (
                           <button
                             onClick={() => handleDelete(item.id_surat)}

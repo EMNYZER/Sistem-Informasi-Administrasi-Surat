@@ -106,7 +106,7 @@ function FormDisposisi() {
       <Menu />
       <div className="flex flex-col flex-1 p-4 lg:ml-48 transition-all duration-200">
         <Header />
-        <div className="bg-white shadow-sm rounded-lg p-5 mt-2 w-full overflow-x-auto">
+        <div className="bg-white shadow-sm rounded-lg p-5 mt-2 w-full max-w-4xl mx-auto overflow-x-auto">
           <h1 className="text-xl font-semibold text-gray-800 mb-6 text-center">Form Disposisi Surat Masuk</h1>
           {/* Section 1 & 2 sejajar */}
           <div className="flex flex-col md:flex-row gap-6 mb-6">

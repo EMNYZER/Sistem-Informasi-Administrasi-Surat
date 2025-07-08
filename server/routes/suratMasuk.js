@@ -195,6 +195,28 @@ router.put("/:id_surat", authenticateToken, upload.single("file_surat"), async (
   }
 });
 
+// PUT update status surat masuk
+router.put("/:id_surat/status", authenticateToken, async (req, res) => {
+  try {
+    const { id_surat } = req.params;
+    const { status_disposisi } = req.body;
+
+    const surat = await SuratMasuk.findByPk(id_surat);
+    if (!surat) {
+      return res.status(404).json({ error: "Surat masuk tidak ditemukan" });
+    }
+
+    await surat.update({ status_disposisi });
+    const updatedSurat = await SuratMasuk.findByPk(id_surat, {
+      include: [{ model: Pegawai, as: "pegawai" }]
+    });
+
+    res.json(updatedSurat);
+  } catch (error) {
+    res.status(500).json({ error: "Gagal mengupdate status surat masuk", message: error.message });
+  }
+});
+
 // DELETE incoming letter
 router.delete("/:id_surat", authenticateToken, async (req, res) => {
   try {

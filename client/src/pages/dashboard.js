@@ -10,6 +10,15 @@ function Dashboard() {
     nama: "",
     jabatan: "",
   });
+  const [adminStats, setAdminStats] = useState({
+    pengajuanSaya: 0,
+    verifikasiSurat: 0,
+    disposisiSaya: 0,
+    suratKeluar: 0,
+    suratMasuk: 0,
+    pegawai: 0,
+    murid: 0,
+  });
   const [stats, setStats] = useState({
     pengajuan: 0,
     verifikasi: 0,
@@ -17,6 +26,17 @@ function Dashboard() {
     disetujui: 0,
     suratMasuk: 0,
     pengesahan: 0,
+  });
+  const [approvalStats, setApprovalStats] = useState({
+    pengajuanSaya: 0,
+    suratMasuk: 0,
+    disposisi: 0,
+    pengesahanSurat: 0,
+  });
+  const [userStats, setUserStats] = useState({
+    pengajuanSaya: 0,
+    disposisiSaya: 0,
+    suratDisetujui: 0,
   });
 
   useEffect(() => {
@@ -37,6 +57,52 @@ function Dashboard() {
       }
     };
 
+    // Fetch all admin stats in parallel
+    const fetchAdminStats = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const nik = localStorage.getItem("nik");
+        const headers = { Authorization: `Bearer ${token}` };
+        const [
+          pengajuanSayaRes,
+          verifikasiSuratRes,
+          disposisiSayaRes,
+          suratKeluarRes,
+          suratMasukRes,
+          pegawaiRes,
+          muridRes
+        ] = await Promise.all([
+          axios.get(`http://localhost:3001/suratKeluar/nik/${nik}`, { headers }),
+          axios.get(`http://localhost:3001/suratKeluar/status/diajukan`, { headers }),
+          axios.get(`http://localhost:3001/disposisi/nik/${nik}`, { headers }),
+          axios.get(`http://localhost:3001/suratKeluar/status/disetujui`, { headers }),
+          axios.get(`http://localhost:3001/suratMasuk/`, { headers }),
+          axios.get(`http://localhost:3001/user/`, { headers }),
+          axios.get(`http://localhost:3001/murid/`, { headers }),
+        ]);
+        setAdminStats({
+          pengajuanSaya: pengajuanSayaRes.data.length,
+          verifikasiSurat: verifikasiSuratRes.data.length,
+          disposisiSaya: disposisiSayaRes.data.length,
+          suratKeluar: suratKeluarRes.data.length,
+          suratMasuk: suratMasukRes.data.length,
+          pegawai: pegawaiRes.data.length,
+          murid: muridRes.data.length,
+        });
+      } catch (error) {
+        setAdminStats({
+          pengajuanSaya: 0,
+          verifikasiSurat: 0,
+          disposisiSaya: 0,
+          suratKeluar: 0,
+          suratMasuk: 0,
+          pegawai: 0,
+          murid: 0,
+        });
+        console.error("Error fetching admin stats:", error);
+      }
+    };
+
     const fetchStats = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -52,8 +118,77 @@ function Dashboard() {
       }
     };
 
+    // Fetch all approval stats in parallel
+    const fetchApprovalStats = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const nik = localStorage.getItem("nik");
+        const headers = { Authorization: `Bearer ${token}` };
+        const [
+          pengajuanSayaRes,
+          suratMasukBelumRes,
+          suratMasukDisposisiRes,
+          disposisiRes,
+          pengesahanSuratRes
+        ] = await Promise.all([
+          axios.get(`http://localhost:3001/suratKeluar/nik/${nik}`, { headers }),
+          axios.get(`http://localhost:3001/suratMasuk/status/Belum`, { headers }),
+          axios.get(`http://localhost:3001/suratMasuk/status/Disposisi`, { headers }),
+          axios.get(`http://localhost:3001/disposisi/`, { headers }),
+          axios.get(`http://localhost:3001/suratKeluar/status/diproses`, { headers }),
+        ]);
+        setApprovalStats({
+          pengajuanSaya: pengajuanSayaRes.data.length,
+          suratMasuk: suratMasukBelumRes.data.length + suratMasukDisposisiRes.data.length,
+          disposisi: disposisiRes.data.length,
+          pengesahanSurat: pengesahanSuratRes.data.length,
+        });
+      } catch (error) {
+        setApprovalStats({
+          pengajuanSaya: 0,
+          suratMasuk: 0,
+          disposisi: 0,
+          pengesahanSurat: 0,
+        });
+        console.error("Error fetching approval stats:", error);
+      }
+    };
+
+    // Fetch all user stats in parallel
+    const fetchUserStats = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const nik = localStorage.getItem("nik");
+        const headers = { Authorization: `Bearer ${token}` };
+        const [
+          pengajuanSayaRes,
+          disposisiSayaRes
+        ] = await Promise.all([
+          axios.get(`http://localhost:3001/suratKeluar/nik/${nik}`, { headers }),
+          axios.get(`http://localhost:3001/disposisi/nik/${nik}`, { headers }),
+        ]);
+        const pengajuanSaya = pengajuanSayaRes.data.length;
+        const suratDisetujui = pengajuanSayaRes.data.filter(surat => surat.status === "disetujui").length;
+        setUserStats({
+          pengajuanSaya,
+          disposisiSaya: disposisiSayaRes.data.length,
+          suratDisetujui,
+        });
+      } catch (error) {
+        setUserStats({
+          pengajuanSaya: 0,
+          disposisiSaya: 0,
+          suratDisetujui: 0,
+        });
+        console.error("Error fetching user stats:", error);
+      }
+    };
+
     fetchUserProfile();
+    fetchAdminStats();
     fetchStats();
+    fetchApprovalStats();
+    fetchUserStats();
   }, []);
 
   const Card = ({ title, value, icon, color, bgColor }) => (
@@ -76,91 +211,115 @@ function Dashboard() {
     switch (userProfile.role) {
       case "Admin":
         return (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card
-              title="Pengajuan"
-              value={stats.pengajuan}
-              icon="📝"
-              color="border-blue-500"
-              bgColor="bg-blue-100"
-            />
-            <Card
-              title="Verifikasi"
-              value={stats.verifikasi}
-              icon="✓"
-              color="border-yellow-500"
-              bgColor="bg-yellow-100"
-            />
-            <Card
-              title="Disposisi"
-              value={stats.disposisi}
-              icon="↪️"
-              color="border-purple-500"
-              bgColor="bg-purple-100"
-            />
-            <Card
-              title="Disetujui"
-              value={stats.disetujui}
-              icon="✅"
-              color="border-green-500"
-              bgColor="bg-green-100"
-            />
+          <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6 mb-6">
+              <Card
+                title="Surat Keluar"
+                value={adminStats.suratKeluar}
+                icon="📤"
+                color="border-green-500"
+                bgColor="bg-green-100"
+              />
+              <Card
+                title="Surat Masuk"
+                value={adminStats.suratMasuk}
+                icon="📥"
+                color="border-orange-500"
+                bgColor="bg-orange-100"
+              />
+              <Card
+                title="Pegawai"
+                value={adminStats.pegawai}
+                icon="👨‍💼"
+                color="border-cyan-500"
+                bgColor="bg-cyan-100"
+              />
+              <Card
+                title="Murid"
+                value={adminStats.murid}
+                icon="👦"
+                color="border-pink-500"
+                bgColor="bg-pink-100"
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+              <Card
+                title="Pengajuan Saya"
+                value={adminStats.pengajuanSaya}
+                icon="📝"
+                color="border-blue-500"
+                bgColor="bg-blue-100"
+              />
+              <Card
+                title="Verifikasi Surat"
+                value={adminStats.verifikasiSurat}
+                icon="🔎"
+                color="border-yellow-500"
+                bgColor="bg-yellow-100"
+              />
+              <Card
+                title="Disposisi Saya"
+                value={adminStats.disposisiSaya}
+                icon="↪️"
+                color="border-purple-500"
+                bgColor="bg-purple-100"
+              />
+            </div>
           </div>
         );
       case "Approval":
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card
-              title="Pengajuan"
-              value={stats.pengajuan}
+              title="Pengajuan Saya"
+              value={approvalStats.pengajuanSaya}
               icon="📝"
               color="border-blue-500"
               bgColor="bg-blue-100"
             />
             <Card
               title="Surat Masuk"
-              value={stats.suratMasuk}
+              value={approvalStats.suratMasuk}
               icon="📨"
               color="border-orange-500"
               bgColor="bg-orange-200"
             />
             <Card
-              title="Pengesahan"
-              value={stats.pengesahan}
-              icon="✍️"
-              color="border-red-500"
-              bgColor="bg-red-200"
+              title="Disposisi"
+              value={approvalStats.disposisi}
+              icon="↪️"
+              color="border-purple-500"
+              bgColor="bg-purple-200"
             />
             <Card
-              title="Disetujui"
-              value={stats.disetujui}
-              icon="✅"
+              title="Pengesahan Surat"
+              value={approvalStats.pengesahanSurat}
+              icon="✍️"
               color="border-green-500"
               bgColor="bg-green-200"
             />
           </div>
         );
       case "User":
-      case "Deputi":
         return (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card
-              title="Pengajuan"
-              value={stats.pengajuan}
+              title="Pengajuan Saya"
+              value={userStats.pengajuanSaya}
               icon="📝"
               color="border-blue-500"
               bgColor="bg-blue-200"
             />
             <Card
-              title="Disposisi"
-              value={stats.disposisi}
+              title="Disposisi Saya"
+              value={userStats.disposisiSaya}
               icon="↪️"
               color="border-purple-500"
               bgColor="bg-purple-200"
             />
             <Card
-              title="Disetujui"
-              value={stats.disetujui}
+              title="Surat Disetujui"
+              value={userStats.suratDisetujui}
               icon="✅"
               color="border-green-500"
               bgColor="bg-green-200"

@@ -24,6 +24,8 @@ import RiwayatDisposisi from "../pages/riwayatDisposisi";
 import DaftarDisposisi from "../pages/daftarDisposisi";
 import FormLanjutanDisposisi from "../pages/formLanjutanDisposisi";
 import ViewDisposisi from "../pages/viewDisposisi";
+import Laporan from "../pages/laporan";
+import ViewLaporan from "../pages/viewLaporan";
 
 const router = createBrowserRouter([
   {
@@ -62,6 +64,7 @@ const router = createBrowserRouter([
         path: "*",
         element: <Pages404 />,
       },
+      
 
 
       // Surat Keluar
@@ -152,6 +155,16 @@ const router = createBrowserRouter([
       {
         path: "view-disposisi/:id_disposisi",
         element: <ViewDisposisi/>,
+      },
+
+      // Laporan
+      {
+        path: "laporan",
+        element: <Laporan/>
+      },
+      {
+        path: "view-laporan/:id_laporan",
+        element: <ViewLaporan/>
       },
     ],
   },

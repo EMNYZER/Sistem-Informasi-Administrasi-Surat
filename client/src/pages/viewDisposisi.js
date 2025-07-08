@@ -54,18 +54,18 @@ function ViewDisposisi() {
   const penerimaTingkat2 = penerima
     .filter(p => p.pegawai && p.pegawai.jabatan && p.pegawai.jabatan.level_disposisi === 'tingkat 2')
     .map(p => (
-      <div key={p.NIK} className="text-sm font-medium text-gray-900">
-        {p.pegawai.nama} - {p.pegawai.jabatan?.nama_jabatan}
+      <div key={p.NIK} className="text-sm font-medium text-gray-900 px-2">
+       {p.pegawai.nama}<span className="font-normal"> selaku penanggung jawab</span> {p.pegawai.jabatan?.nama_jabatan}
       </div>
     ));
   const penerimaTingkat3 = penerima
     .filter(p => p.pegawai && p.pegawai.jabatan && p.pegawai.jabatan.level_disposisi === 'tingkat 3')
     .map(p => (
-      <div key={p.NIK} className="text-sm font-medium text-gray-900">
-        {p.pegawai.nama} - {p.pegawai.jabatan?.nama_jabatan}
-      </div>
-    ));
-  console.log(penerimaTingkat3)
+     <div key={p.NIK} className="text-sm font-medium text-gray-900">
+       - {p.pegawai.nama}
+     </div>
+   ));
+ 
 
   return (
     <div className="bg-gray-200 min-h-screen py-8">
@@ -130,24 +130,24 @@ function ViewDisposisi() {
           <table className="w-full text-sm border border-black mb-2" style={{ borderCollapse: 'collapse' }}>
             <tbody>
               <tr>
-                <td className="border border-black px-2 py-1" colSpan={2}><span className="inline-block">Pada tanggal</span> : {formatDate(disposisi.tanggal_disposisi)}</td>
+                <td className="border border-black px-2 py-1" colSpan={2}><span className="inline-block">Disposisi Pada Tanggal</span> : {formatDate(disposisi.tanggal_disposisi)}</td>
               </tr>
               <tr>
                 <td className="border border-black py-1 text-center font-semibold" colSpan={1}><span className="inline-block">Disposisi Kepada</span></td>
-                <td className="border border-black px-2 py-1 text-center font-semibold" colSpan={1}><span className="inline-block">Instruksi</span></td>
+                <td className="border border-black py-1 text-center font-semibold" colSpan={1}><span className="inline-block">Instruksi Kepala</span></td>
               </tr>
               <tr>
                 <td className="border border-black py-4 text-center" rowSpan={3} ><span className=""></span>{disposisi.jabatan_penerima || "-"}</td>
                 <td className="border border-black px-2 py-4" colSpan={1}><span className="inline-block"></span>{disposisi.instruksi || "-"}</td>
               </tr>
               <tr>
-                <td className="border border-black px-2 py-1 text-center font-semibold" colSpan={1}><span className="inline-block">Instruksi lanjut</span></td>
+                <td className="border border-black py-1 text-center font-semibold" colSpan={1}><span className="inline-block">Instruksi Lanjut</span></td>
               </tr>
               <tr>
                 <td className="border border-black px-2 py-4" colSpan={1}><span className="inline-block"></span>{disposisi.instruksi_lanjutan || "-"}</td>
               </tr>
               <tr>
-                <td className="border border-black px-2 py-1" colSpan={2}><span className="inline-block">Disposisi kepada</span> : {penerimaTingkat2.length > 0 ? penerimaTingkat2 : "-"}</td>
+                <td className="border border-black px-2 py-1" colSpan={2}><span className="inline-block">Disposisi Kepada</span> : {penerimaTingkat2.length > 0 ? penerimaTingkat2 : "-"}</td>
               </tr>
               <tr>
                 <td className="border border-black px-2 py-1" colSpan={2}><span className="inline-block">Diteruskan Kepada</span> : {penerimaTingkat3.length > 0 ? penerimaTingkat3 : "-"}</td>
@@ -155,11 +155,11 @@ function ViewDisposisi() {
             </tbody>
           </table>
           {/* Catatan */}
-          <div className="mt-4 text-xs">
-            <div className="font-semibold">Catatan kepala</div>
-            <div className="mb-1">{disposisi.catatan || '-'}</div>
-            <div className="font-semibold">Instruksi Lanjutan</div>
-            <div className="mb-1">{disposisi.instruksi_lanjutan || '-'}</div>
+          <div className="mt-2 text-xs">
+            <div className="font-semibold px-2">Catatan Kepala :</div>
+            <div className="mb-1 px-4">{disposisi.catatan || '-'}</div>
+            <div className="font-semibold px-2">Catatan Admin :</div>
+            <div className="mb-1 px-4">{surat.catatan || '-'}</div>
           </div>
           {/* Tanda Tangan */}
           {/* <div className="flex justify-end mt-12">

@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
 import axios from "axios";
+import { FaAngleDoubleRight, FaCheck, FaFile } from "react-icons/fa";
+
 
 function DaftarDisposisi() {
   const [data, setData] = useState([]);
@@ -91,26 +93,28 @@ function DaftarDisposisi() {
                             className="inline-flex items-center px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium rounded shadow mr-2"
                             title="Preview"
                           >
-                            Lihat
+                            <FaFile/>
                           </button>
                           {userLevel === "tingkat 2" && (
-                            <button
-                              onClick={() => navigate(`/teruskan-disposisi/${item.id_disposisi}`)}
-                              className="inline-flex items-center px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-xs font-medium rounded shadow"
-                              title="Teruskan"
-                            >
-                              Teruskan
-                            </button>
+                            <>
+                              <button
+                                onClick={() => navigate(`/teruskan-disposisi/${item.id_disposisi}`)}
+                                className="inline-flex items-center px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-xs font-medium rounded shadow mr-2"
+                                title="Teruskan"
+                              >
+                                <FaAngleDoubleRight/>
+                              </button>
+                              <button
+                                onClick={() => handleTandaiSelesai(item.id_disposisi)}
+                                className="inline-flex items-center px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded shadow"
+                                title="Tandai Selesai"
+                              >
+                                <FaCheck/>
+                              </button>
+                            </>
                           )}
-                          {userLevel === "tingkat 3" && (
-                            <button
-                              onClick={() => handleTandaiSelesai(item.id_disposisi)}
-                              className="inline-flex items-center px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-medium rounded shadow"
-                              title="Tandai Selesai"
-                            >
-                              Tandai Selesai
-                            </button>
-                          )}
+                          {/* {userLevel === "tingkat 3" && (
+                          )} */}
                         </td>
                       </tr>
                     ))
