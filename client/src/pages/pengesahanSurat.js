@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
@@ -15,11 +15,8 @@ function PengesahanSurat() {
 
   const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
-  useEffect(() => {
-    fetchSuratKeluar();
-  }, []);
-
-  const fetchSuratKeluar = async () => {
+  const fetchSuratKeluar = useCallback(async () => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -41,7 +38,11 @@ function PengesahanSurat() {
       console.error("Error fetching surat keluar:", error);
       setLoading(false);
     }
-  };
+  },[navigate]);
+
+  useEffect(() => {
+    fetchSuratKeluar();
+  }, [fetchSuratKeluar]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import logo from "../assets/logo.png";
@@ -11,11 +11,8 @@ function ViewLaporan() {
 
   const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
-  useEffect(() => {
-    fetchLaporanData();
-  }, [id_laporan]);
-
-  const fetchLaporanData = async () => {
+  const fetchLaporanData = useCallback(async () => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
@@ -74,7 +71,11 @@ function ViewLaporan() {
     } finally {
       setLoading(false);
     }
-  };
+  },[id_laporan]);
+  
+  useEffect(() => {
+    fetchLaporanData();
+  }, [id_laporan, fetchLaporanData]);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('id-ID', {

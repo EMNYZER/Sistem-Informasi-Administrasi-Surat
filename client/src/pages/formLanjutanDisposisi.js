@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
@@ -17,12 +17,8 @@ function FormLanjutanDisposisi() {
 
   const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
-  useEffect(() => {
-    fetchDisposisi();
-    fetchPegawaiTingkat3();
-  }, []);
-
-  const fetchDisposisi = async () => {
+  const fetchDisposisi = useCallback(async () => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get(`${BACKEND_API_URL}/disposisi/${id_disposisi}`, {
@@ -34,9 +30,10 @@ function FormLanjutanDisposisi() {
       setLoading(false);
       alert("Gagal mengambil data disposisi");
     }
-  };
+  },[id_disposisi]);
 
-  const fetchPegawaiTingkat3 = async () => {
+  const fetchPegawaiTingkat3 = useCallback(async () => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get(`${BACKEND_API_URL}/user`, {
@@ -48,7 +45,12 @@ function FormLanjutanDisposisi() {
     } catch (error) {
       alert("Gagal mengambil data pegawai");
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchDisposisi();
+    fetchPegawaiTingkat3();
+  }, [fetchDisposisi, fetchPegawaiTingkat3]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

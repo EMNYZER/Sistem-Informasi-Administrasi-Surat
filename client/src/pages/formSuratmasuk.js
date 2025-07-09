@@ -1,5 +1,5 @@
 // formSuratmasuk.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
@@ -24,21 +24,14 @@ function FormSuratMasuk() {
     file_surat: null,
   });
   const [selectedFile, setSelectedFile] = useState(null);
-  const [showFileWarning, setShowFileWarning] = useState(false);
   const [showFileWarningModal, setShowFileWarningModal] = useState(false);
   const [deferSubmit, setDeferSubmit] = useState(false);
   const [submitAction, setSubmitAction] = useState("");
 
   const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
-  useEffect(() => {
-    if (id_surat) {
-      setIsEditing(true);
-      fetchSuratData();
-    }
-  }, [id_surat]);
-
-  const fetchSuratData = async () => {
+  const fetchSuratData = useCallback(async () => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
@@ -70,7 +63,14 @@ function FormSuratMasuk() {
     } finally {
       setLoading(false);
     }
-  };
+  },[id_surat]);
+
+  useEffect(() => {
+    if (id_surat) {
+      setIsEditing(true);
+      fetchSuratData();
+    }
+  }, [id_surat, fetchSuratData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -272,11 +272,6 @@ function FormSuratMasuk() {
                             </div>
                           )}
                         </div>
-                        {showFileWarning && (
-                          <p className="text-sm text-yellow-600 mt-1">
-                            ⚠ Anda belum mengunggah file scan surat. Surat tetap bisa disimpan, tetapi disarankan untuk melampirkan file.
-                          </p>
-                        )}
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Catatan</label>

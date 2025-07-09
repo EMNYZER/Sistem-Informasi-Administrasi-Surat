@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
@@ -32,16 +32,8 @@ function FormSuratKeluar() {
 
   const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
-  useEffect(() => {
-    fetchKategori();
-    if (id_surat) {
-      fetchSuratData();
-    } else if (id_template) {
-      fetchTemplateData();
-    }
-  }, [id_surat, id_template]);
-
-  const fetchKategori = async () => {
+  const fetchKategori = useCallback(async () => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -57,9 +49,10 @@ function FormSuratKeluar() {
     } catch (error) {
       console.error("Error fetching kategori:", error);
     }
-  };
+  },[navigate]);
 
-  const fetchSuratData = async () => {
+  const fetchSuratData = useCallback(async () => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -106,9 +99,10 @@ function FormSuratKeluar() {
       console.error("Error fetching surat data:", error);
       alert("Gagal mengambil data surat");
     }
-  };
+  },[navigate, id_surat]);
 
-  const fetchTemplateData = async () => {
+  const fetchTemplateData = useCallback(async () => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -138,7 +132,16 @@ function FormSuratKeluar() {
       console.error("Error fetching template data:", error);
       alert("Gagal mengambil data template");
     }
-  };
+  },[navigate, id_template]);
+
+  useEffect(() => {
+    fetchKategori();
+    if (id_surat) {
+      fetchSuratData();
+    } else if (id_template) {
+      fetchTemplateData();
+    }
+  }, [id_surat, id_template, fetchKategori, fetchSuratData, fetchTemplateData]);
 
   const uploadLampiranPDF = async (id) => {
     if (!lampiranFile) return;

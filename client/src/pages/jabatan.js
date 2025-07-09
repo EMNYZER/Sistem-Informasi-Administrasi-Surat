@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback} from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
@@ -27,12 +27,8 @@ function Jabatan() {
 
   const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
-
-  useEffect(() => {
-    fetchJabatan();
-  }, []);
-
-  const fetchJabatan = async () => {
+  const fetchJabatan = useCallback(async () => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -50,7 +46,11 @@ function Jabatan() {
       console.error("Error fetching jabatan:", error);
       setLoading(false);
     }
-  };
+  },[navigate]);
+
+  useEffect(() => {
+    fetchJabatan();
+  }, [fetchJabatan]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

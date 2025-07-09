@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback} from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
@@ -10,13 +10,8 @@ function PilihTemplate() {
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
-
-  useEffect(() => {
-    fetchTemplates();
-  }, []);
-
-  const fetchTemplates = async () => {
+  const fetchTemplates = useCallback(async () => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -34,7 +29,11 @@ function PilihTemplate() {
       console.error("Error fetching templates:", error);
       setLoading(false);
     }
-  };
+  },[navigate]);
+
+  useEffect(() => {
+    fetchTemplates();
+  }, [fetchTemplates]);
 
   // Group templates by category name
   const groupedTemplates = templates.reduce((acc, template) => {

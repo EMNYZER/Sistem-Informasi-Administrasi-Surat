@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
@@ -21,15 +21,8 @@ function FormTemplate() {
 
   const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
-  useEffect(() => {
-    fetchKategori();
-    console.log(id);
-    if (id) {
-      fetchTemplateData();
-    }
-  }, [id]);
-
-  const fetchKategori = async () => {
+  const fetchKategori = useCallback(async () => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -45,9 +38,10 @@ function FormTemplate() {
     } catch (error) {
       console.error("Error fetching kategori:", error);
     }
-  };
+  },[navigate]);
 
-  const fetchTemplateData = async () => {
+  const fetchTemplateData = useCallback(async () => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -76,7 +70,15 @@ function FormTemplate() {
       console.error("Error fetching template data:", error);
       alert("Gagal mengambil data template");
     }
-  };
+  }, [id, navigate]);
+
+  useEffect(() => {
+    fetchKategori();
+    console.log(id);
+    if (id) {
+      fetchTemplateData();
+    }
+  }, [id, fetchKategori, fetchTemplateData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

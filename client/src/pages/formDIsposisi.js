@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
@@ -17,7 +17,8 @@ function FormDisposisi() {
     catatan: "",
   });
 
-  const fetchSurat = async () => {
+  
+  const fetchSurat = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get(`http://localhost:3001/suratMasuk/${id_surat}`, {
@@ -29,9 +30,9 @@ function FormDisposisi() {
       setLoading(false);
       alert("Gagal mengambil data surat");
     }
-  };
+  }, [id_surat]);
 
-  const fetchPegawaiTingkat2 = async () => {
+  const fetchPegawaiTingkat2 = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get("http://localhost:3001/user", {
@@ -43,12 +44,14 @@ function FormDisposisi() {
     } catch (error) {
       alert("Gagal mengambil data pegawai");
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchSurat();
     fetchPegawaiTingkat2();
-  }, []);
+  }, [fetchSurat, fetchPegawaiTingkat2]);
+
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;

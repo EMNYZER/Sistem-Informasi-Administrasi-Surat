@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import Menu from "../components/Menu";
 import Header from "../components/Header";
@@ -18,7 +18,8 @@ function Laporan() {
   const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
   // Fetch user profile untuk mendapatkan role
-  const fetchUserProfile = async () => {
+  const fetchUserProfile = useCallback(async () => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     try {
       const token = localStorage.getItem("token");
       const nik = localStorage.getItem("nik");
@@ -31,10 +32,11 @@ function Laporan() {
     } catch (error) {
       console.error("Error fetching user profile:", error);
     }
-  };
+  },[]);
 
   // Fetch data laporan
-  const fetchLaporans = async () => {
+  const fetchLaporans = useCallback(async () => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
@@ -47,12 +49,12 @@ function Laporan() {
     } finally {
       setLoading(false);
     }
-  };
+  },[]);
 
   useEffect(() => {
     fetchUserProfile();
     fetchLaporans();
-  }, []);
+  }, [fetchLaporans, fetchUserProfile]);
 
   // Handle form input changes
   const handleInputChange = (e) => {

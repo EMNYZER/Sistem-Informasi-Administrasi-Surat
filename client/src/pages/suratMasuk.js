@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
@@ -33,11 +33,8 @@ function SuratMasuk() {
     fetchUserRole();
   }, []);
 
-  useEffect(() => {
-    fetchSuratMasuk();
-  }, []);
-
-  const fetchSuratMasuk = async () => {
+  const fetchSuratMasuk = useCallback(async () => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -58,7 +55,11 @@ function SuratMasuk() {
       }
       setLoading(false);
     }
-  };
+  }, [navigate]);
+
+  useEffect(() => {
+    fetchSuratMasuk();
+  }, [fetchSuratMasuk]);
 
   const handleDelete = async (id_surat) => {
     if (window.confirm("Apakah Anda yakin ingin menghapus surat masuk ini?")) {

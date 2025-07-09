@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
@@ -25,11 +25,8 @@ function PengaturanSurat() {
 
   const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
-  useEffect(() => {
-    fetchKategori();
-  }, []);
-
-  const fetchKategori = async () => {
+  const fetchKategori = useCallback(async () => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -47,7 +44,11 @@ function PengaturanSurat() {
       console.error("Error fetching kategori surat:", error);
       setLoading(false);
     }
-  };
+  },[navigate]);
+
+  useEffect(() => {
+    fetchKategori();
+  }, [fetchKategori]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

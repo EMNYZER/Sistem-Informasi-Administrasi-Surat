@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
@@ -40,11 +40,8 @@ function Murid() {
 
   const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
-  useEffect(() => {
-    fetchMurid();
-  }, []);
-
-  const fetchMurid = async () => {
+  const fetchMurid = useCallback(async () => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -62,7 +59,11 @@ function Murid() {
       console.error("Error fetching murid:", error);
       setLoading(false);
     }
-  };
+  },[navigate]);
+
+  useEffect(() => {
+    fetchMurid();
+  }, [fetchMurid]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

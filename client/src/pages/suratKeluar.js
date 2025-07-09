@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
@@ -12,11 +12,8 @@ function SuratKeluar() {
 
   const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
-  useEffect(() => {
-    fetchSuratKeluar();
-  }, []);
-
-  const fetchSuratKeluar = async () => {
+  const fetchSuratKeluar = useCallback(async () => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     try {
       const nik = localStorage.getItem("nik");
       const token = localStorage.getItem("token");
@@ -38,7 +35,11 @@ function SuratKeluar() {
       console.error("Error fetching surat keluar:", error);
       setLoading(false);
     }
-  };
+  },[navigate]);
+
+  useEffect(() => {
+    fetchSuratKeluar();
+  }, [fetchSuratKeluar]);
 
   const handleDelete = async (id_surat) => {
     if (window.confirm("Apakah Anda yakin ingin menghapus surat keluar ini?")) {

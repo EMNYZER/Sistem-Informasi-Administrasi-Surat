@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Menu from "../components/Menu";
 import Header from "../components/Header";
 import axios from "axios";
@@ -39,13 +39,8 @@ function Pegawai() {
 
   const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
-  useEffect(() => {
-    fetchPegawai();
-    fetchJabatan();
-  }, []);
-
-
-  const fetchPegawai = async () => {
+  const fetchPegawai = useCallback(async () => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -63,9 +58,10 @@ function Pegawai() {
       console.error("Error fetching pegawai:", error);
       setLoading(false);
     }
-  };
+  },[navigate]);
 
-  const fetchJabatan = async () => {
+  const fetchJabatan = useCallback(async () => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -81,7 +77,12 @@ function Pegawai() {
     } catch (error) {
       console.error("Error fetching jabatan:", error);
     }
-  };
+  },[navigate]);
+
+  useEffect(() => {
+    fetchPegawai();
+    fetchJabatan();
+  }, [fetchJabatan, fetchPegawai]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
