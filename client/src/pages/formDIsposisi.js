@@ -17,11 +17,13 @@ function FormDisposisi() {
     catatan: "",
   });
 
+  const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
   
   const fetchSurat = useCallback(async () => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(`http://localhost:3001/suratMasuk/${id_surat}`, {
+      const res = await axios.get(`${BACKEND_API_URL}/suratMasuk/${id_surat}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSurat(res.data);
@@ -33,9 +35,10 @@ function FormDisposisi() {
   }, [id_surat]);
 
   const fetchPegawaiTingkat2 = useCallback(async () => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:3001/user", {
+      const res = await axios.get(`${BACKEND_API_URL}/user`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       // Filter pegawai yang jabatan.level_disposisi === 'tingkat 2'
@@ -74,7 +77,7 @@ function FormDisposisi() {
     };
     try {
       const token = localStorage.getItem("token");
-      await axios.post("http://localhost:3001/disposisi", payload, {
+      await axios.post(`${BACKEND_API_URL}/disposisi`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("Disposisi berhasil dibuat!");

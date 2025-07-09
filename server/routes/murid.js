@@ -23,7 +23,7 @@ router.get("/", authenticateToken, async (req, res) => {
 });
 
 // Cari murid berdasarkan nama/NIS (untuk autocomplete)
-router.get("/search", authenticateToken, async (req, res) => {
+router.get("/search/cari", authenticateToken, async (req, res) => {
   const q = req.query.q || "";
   try {
     const murid = await Murid.findAll({

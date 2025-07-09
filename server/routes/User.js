@@ -168,7 +168,7 @@ router.get("/", authenticateToken, async (req, res) => {
 });
 
 // Cari pegawai berdasarkan nama/NIK (untuk autocomplete)
-router.get("/search", authenticateToken, async (req, res) => {
+router.get("/search/cari", authenticateToken, async (req, res) => {
   const q = req.query.q || "";
   try {
     const pegawai = await Pegawai.findAll({

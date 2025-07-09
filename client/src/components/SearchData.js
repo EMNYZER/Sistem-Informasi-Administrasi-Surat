@@ -94,8 +94,8 @@ const SearchData = () => {
       const token = localStorage.getItem("token");
       const endpoint =
         searchType === "pegawai"
-          ? `${BACKEND_API_URL}/user/search?q=${term}`
-          : `${BACKEND_API_URL}/murid/search?q=${term}`;
+          ? `${BACKEND_API_URL}/user/search/cari?q=${term}`
+          : `${BACKEND_API_URL}/murid/search/cari?q=${term}`;
       const response = await axios.get(endpoint, {
         headers: {
           Authorization: `Bearer ${token}`,
