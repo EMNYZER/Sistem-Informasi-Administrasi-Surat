@@ -5,7 +5,7 @@ const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
 const { Pegawai, Jabatan } = require("../models");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const XLSX = require("xlsx");
 
 // === Setup Multer ===

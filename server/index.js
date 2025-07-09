@@ -32,6 +32,10 @@ app.use("/disposisi", disposisi);
 const laporan = require("./routes/laporan");
 app.use("/laporan", laporan);
 
+db.sequelize.authenticate()
+  .then(() => console.log('✅ Connected to TiDB Cloud successfully'))
+  .catch(err => console.error('❌ Connection error:', err));
+
 const PORT = process.env.PORT || 3001;
 db.sequelize.sync().then(() => {
   app.use("/uploads", express.static("public/uploads"));
