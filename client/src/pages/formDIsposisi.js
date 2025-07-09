@@ -17,11 +17,6 @@ function FormDisposisi() {
     catatan: "",
   });
 
-  useEffect(() => {
-    fetchSurat();
-    fetchPegawaiTingkat2();
-  }, []);
-
   const fetchSurat = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -49,6 +44,11 @@ function FormDisposisi() {
       alert("Gagal mengambil data pegawai");
     }
   };
+
+  useEffect(() => {
+    fetchSurat();
+    fetchPegawaiTingkat2();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

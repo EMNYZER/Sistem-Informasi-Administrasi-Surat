@@ -8,33 +8,13 @@ import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 function TemplateSurat() {
   const navigate = useNavigate();
   const [templates, setTemplates] = useState([]);
-  const [kategori, setKategori] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
   useEffect(() => {
-    fetchKategori();
     fetchTemplates();
   }, []);
-
-  const fetchKategori = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
-      const response = await axios.get(`${BACKEND_API_URL}/kategori`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setKategori(response.data);
-    } catch (error) {
-      console.error("Error fetching kategori:", error);
-    }
-  };
 
   const fetchTemplates = async () => {
     try {
