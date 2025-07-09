@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const db = require("./models");
 const { startCleanupCron } = require("./cron/cleanupExpiredData");
+const path = require("path");
+const fs = require("fs");
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -34,6 +36,7 @@ const PORT = process.env.PORT || 3001;
 db.sequelize.sync().then(() => {
   app.use("/uploads", express.static("public/uploads"));
   app.use("/qrcodes", express.static("public/qrcodes"));
+  app.use("/public", express.static("public"));
 
   app.get("/view-pdf/:filename", (req, res) => {
     const fileName = req.params.filename;

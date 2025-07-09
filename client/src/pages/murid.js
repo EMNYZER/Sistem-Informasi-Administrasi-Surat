@@ -4,7 +4,7 @@ import Header from "../components/Header";
 import Menu from "../components/Menu";
 import axios from "axios";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
-import { FaFileImport } from "react-icons/fa";
+import { FaFileImport, FaDownload } from "react-icons/fa";
 
 const initialFormState = {
   NIS: "",
@@ -109,6 +109,16 @@ function Murid() {
       alert("Gagal import: " + (err.response?.data?.message || err.message));
     }
     setImportLoading(false);
+  };
+
+  const handleDownloadTemplate = () => {
+    const link = document.createElement('a');
+    link.href = `${BACKEND_API_URL}/public/template_import_murid_pegawai_final.xlsx`;
+    link.download = 'template_import_murid.xlsx';
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleDelete = async (nis) => {
@@ -421,32 +431,54 @@ function Murid() {
             <h2 className="bg-gray-700 text-white p-4 text-center uppercase text-xl font-semibold rounded-t-2xl border-b-2 border-gray-800">
               Import Data Murid
             </h2>
-            <form onSubmit={handleImportSubmit} className="p-6 flex flex-col gap-4">
-              <input
-                type="file"
-                accept=".xlsx,.xls"
-                onChange={handleImportFileChange}
-                required
-                className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-              />
-              <div className="flex justify-end gap-2 mt-4">
+            <div className="p-6 flex flex-col gap-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                <h3 className="text-sm font-semibold text-blue-800 mb-2">Panduan Import Data:</h3>
+                <ol className="text-xs text-blue-700 space-y-1">
+                  <li>1. Download template Excel terlebih dahulu</li>
+                  <li>2. Buatkan file Excel tersendiri untuk sheet "Murid"</li>
+                  <li>3. Isi data Murid sesuai format yang ada di template</li>
+                  <li>4. Simpan file dan upload kembali</li>
+                  <li>5. Pastikan format file adalah .xlsx atau .xls</li>
+                </ol>
+              </div>
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm text-gray-700">Download template Excel:</span>
                 <button
                   type="button"
-                  onClick={handleCloseImportModal}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
-                  disabled={importLoading}
+                  onClick={handleDownloadTemplate}
+                  className="bg-green-600 text-white px-3 py-1.5 rounded text-sm hover:bg-green-700 transition-colors flex items-center gap-2"
                 >
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
-                  disabled={importLoading}
-                >
-                  {importLoading ? "Mengupload..." : "Import"}
+                  <FaDownload /> Download Template
                 </button>
               </div>
-            </form>
+              <form onSubmit={handleImportSubmit} className="flex flex-col gap-4">
+                <input
+                  type="file"
+                  accept=".xlsx,.xls"
+                  onChange={handleImportFileChange}
+                  required
+                  className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
+                <div className="flex justify-end gap-2 mt-4">
+                  <button
+                    type="button"
+                    onClick={handleCloseImportModal}
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+                    disabled={importLoading}
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+                    disabled={importLoading}
+                  >
+                    {importLoading ? "Mengupload..." : "Import"}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}
