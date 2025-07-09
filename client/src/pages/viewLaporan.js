@@ -9,8 +9,6 @@ function ViewLaporan() {
   const [dataSurat, setDataSurat] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
-
   const fetchLaporanData = useCallback(async () => {
     const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     try {
