@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "root",
+    "password": null,
+    "database": "dev_db_sias",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "database_test",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "2pFUDyGrPvVEBxC.root",
+    "password": "7DfQxg0Sg89DtxQ2",
+    "database": "test",
+    "host": "gateway01.ap-southeast-1.prod.aws.tidbcloud.com",
+    "dialect": "mysql"
+  }
+}

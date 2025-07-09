@@ -5,18 +5,20 @@ const { Laporan, Murid, SuratKeluar, SuratMasuk } = require('../models');
 const cleanupExpiredLaporan = async () => {
   try {
     const currentDate = new Date();
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(currentDate.getFullYear() - 1);
     
-    // Hapus laporan yang sudah melewati Expired_Date
+    // Hapus laporan yang sudah lebih tua dari 1 tahun berdasarkan createdAt
     const deletedCount = await Laporan.destroy({
       where: {
-        Expired_Date: {
-          [require('sequelize').Op.lt]: currentDate
+        createdAt: {
+          [require('sequelize').Op.lt]: oneYearAgo
         }
       }
     });
 
     if (deletedCount > 0) {
-      console.log(`[${new Date().toISOString()}] Berhasil menghapus ${deletedCount} laporan yang sudah expired`);
+      console.log(`[${new Date().toISOString()}] Berhasil menghapus ${deletedCount} laporan yang sudah lebih tua dari 1 tahun`);
     } else {
       console.log(`[${new Date().toISOString()}] Tidak ada laporan yang perlu dihapus`);
     }

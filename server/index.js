@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
 const db = require("./models");
@@ -58,5 +59,9 @@ db.sequelize.sync().then(() => {
   // Start cron job untuk cleanup expired laporan
   startCleanupCron();
 
-  app.listen(PORT, () => console.log(`server running on ${PORT}`));
+  app.listen(PORT, () => {
+    const url = `http://localhost:${PORT}`;
+    console.log(`server running on ${PORT}`);
+    console.log(`Access the app at: ${url}`);
+  });
 });
