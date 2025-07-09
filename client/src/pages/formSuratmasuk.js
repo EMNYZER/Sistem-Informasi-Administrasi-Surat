@@ -29,6 +29,7 @@ function FormSuratMasuk() {
   const [deferSubmit, setDeferSubmit] = useState(false);
   const [submitAction, setSubmitAction] = useState("");
 
+  const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
   useEffect(() => {
     if (id_surat) {
@@ -42,7 +43,7 @@ function FormSuratMasuk() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        `http://localhost:3001/suratMasuk/${id_surat}`,
+        `${BACKEND_API_URL}/suratMasuk/${id_surat}`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
       const data = response.data;
@@ -123,7 +124,7 @@ function FormSuratMasuk() {
   
     try {
       if (isEditing) {
-        await axios.put(`http://localhost:3001/suratMasuk/${id_surat}`, data, {
+        await axios.put(`${BACKEND_API_URL}/suratMasuk/${id_surat}`, data, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
@@ -131,7 +132,7 @@ function FormSuratMasuk() {
         });
         alert("Surat masuk berhasil diperbarui!");
       } else {
-        await axios.post("http://localhost:3001/suratMasuk", data, {
+        await axios.post(`${BACKEND_API_URL}/suratMasuk`, data, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
@@ -267,7 +268,7 @@ function FormSuratMasuk() {
                             </div>
                           ) : formData.file_surat && isEditing && (
                             <div className="text-sm text-gray-600">
-                              File sebelumnya: <a href={`http://localhost:3001/${formData.file_surat}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Lihat Dokumen</a>
+                              File sebelumnya: <a href={`${BACKEND_API_URL}/${formData.file_surat}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Lihat Dokumen</a>
                             </div>
                           )}
                         </div>

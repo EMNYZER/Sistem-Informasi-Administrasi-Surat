@@ -9,7 +9,6 @@ function FormDisposisi() {
   const { id_surat } = useParams();
   const [loading, setLoading] = useState(true);
   const [surat, setSurat] = useState(null);
-  const [jabatanList, setJabatanList] = useState([]);
   const [pegawaiList, setPegawaiList] = useState([]);
   const [formData, setFormData] = useState({
     tanggal_disposisi: new Date().toISOString().split("T")[0],
@@ -17,11 +16,9 @@ function FormDisposisi() {
     jabatan_penerima: "",
     catatan: "",
   });
-  const [catatanAdmin, setCatatanAdmin] = useState("");
 
   useEffect(() => {
     fetchSurat();
-    fetchJabatan();
     fetchPegawaiTingkat2();
   }, []);
 
@@ -32,23 +29,10 @@ function FormDisposisi() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSurat(res.data);
-      setCatatanAdmin(res.data.catatan || "");
       setLoading(false);
     } catch (error) {
       setLoading(false);
       alert("Gagal mengambil data surat");
-    }
-  };
-
-  const fetchJabatan = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:3001/jabatan", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setJabatanList(res.data);
-    } catch (error) {
-      alert("Gagal mengambil data jabatan");
     }
   };
 

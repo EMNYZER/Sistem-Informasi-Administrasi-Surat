@@ -10,6 +10,8 @@ function SuratKeluar() {
   const [suratKeluar, setSuratKeluar] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
+
   useEffect(() => {
     fetchSuratKeluar();
   }, []);
@@ -23,7 +25,7 @@ function SuratKeluar() {
         return;
       }
       const response = await axios.get(
-        `http://localhost:3001/suratKeluar/nik/${nik}`,
+        `${BACKEND_API_URL}/suratKeluar/nik/${nik}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -46,7 +48,7 @@ function SuratKeluar() {
           navigate("/login");
           return;
         }
-        await axios.delete(`http://localhost:3001/suratKeluar/${id_surat}`, {
+        await axios.delete(`${BACKEND_API_URL}/suratKeluar/${id_surat}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

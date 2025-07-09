@@ -13,13 +13,16 @@ function SuratMasuk() {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedSurat, setSelectedSurat] = useState(null);
 
+  const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
+
   useEffect(() => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     const fetchUserRole = async () => {
       try {
         const token = localStorage.getItem("token");
         const nik = localStorage.getItem("nik");
         if (!token || !nik) return;
-        const response = await axios.get(`http://localhost:3001/user/${nik}`, {
+        const response = await axios.get(`${BACKEND_API_URL}/user/${nik}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setRole(response.data.profileData.role);
@@ -41,7 +44,7 @@ function SuratMasuk() {
         navigate("/login");
         return;
       }
-      const response = await axios.get("http://localhost:3001/suratMasuk", {
+      const response = await axios.get(`${BACKEND_API_URL}/suratMasuk`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -61,7 +64,7 @@ function SuratMasuk() {
     if (window.confirm("Apakah Anda yakin ingin menghapus surat masuk ini?")) {
       try {
         const token = localStorage.getItem("token");
-        await axios.delete(`http://localhost:3001/suratMasuk/${id_surat}`, {
+        await axios.delete(`${BACKEND_API_URL}/suratMasuk/${id_surat}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         fetchSuratMasuk(); // Refresh data after delete
@@ -80,7 +83,7 @@ function SuratMasuk() {
   const handleViewDocument = (fileUrl) => {
     if (fileUrl) {
       const filename = fileUrl.split("/").pop();
-      const fullUrl = `http://localhost:3001/${filename}`;
+      const fullUrl = `${BACKEND_API_URL}/${filename}`;
       window.open(fullUrl, "_blank", "noopener,noreferrer");
     } else {
       alert("File dokumen tidak tersedia.");
@@ -103,7 +106,7 @@ function SuratMasuk() {
     if (window.confirm("Apakah Anda yakin ingin menandai surat ini sebagai selesai?")) {
       try {
         const token = localStorage.getItem("token");
-        await axios.put(`http://localhost:3001/suratMasuk/${id_surat}/status`, {
+        await axios.put(`${BACKEND_API_URL}/suratMasuk/${id_surat}/status`, {
           status_disposisi: "Selesai"
         }, {
           headers: { Authorization: `Bearer ${token}` },

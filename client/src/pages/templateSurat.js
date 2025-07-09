@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
 import axios from "axios";
@@ -10,6 +10,8 @@ function TemplateSurat() {
   const [templates, setTemplates] = useState([]);
   const [kategori, setKategori] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
   useEffect(() => {
     fetchKategori();
@@ -23,7 +25,7 @@ function TemplateSurat() {
         navigate("/login");
         return;
       }
-      const response = await axios.get("http://localhost:3001/kategori", {
+      const response = await axios.get(`${BACKEND_API_URL}/kategori`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -42,7 +44,7 @@ function TemplateSurat() {
         return;
       }
 
-      const response = await axios.get(`http://localhost:3001/template`, {
+      const response = await axios.get(`${BACKEND_API_URL}/template`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -65,7 +67,7 @@ function TemplateSurat() {
     if (window.confirm("Apakah Anda yakin ingin menghapus template ini?")) {
       try {
         const token = localStorage.getItem("token");
-        await axios.delete(`http://localhost:3001/template/${template.id}`, {
+        await axios.delete(`${BACKEND_API_URL}/template/${template.id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -79,10 +81,10 @@ function TemplateSurat() {
     }
   };
 
-  const getKategoriName = (kodeKategori) => {
-    const kat = kategori.find((k) => k.kode_kategori === kodeKategori);
-    return kat ? kat.nama_kategori : "Kategori Tidak Diketahui";
-  };
+  // const getKategoriName = (kodeKategori) => {
+  //   const kat = kategori.find((k) => k.kode_kategori === kodeKategori);
+  //   return kat ? kat.nama_kategori : "Kategori Tidak Diketahui";
+  // };
 
   // Group templates by category
   const groupedTemplates = templates.reduce((acc, template) => {

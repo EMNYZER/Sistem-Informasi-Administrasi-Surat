@@ -9,10 +9,12 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
+  const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
+
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:3001/login", {
+      const response = await axios.post(`${BACKEND_API_URL}/login`, {
         NIK,
         password,
       });

@@ -12,17 +12,20 @@ function DaftarDisposisi() {
   const [userLevel, setUserLevel] = useState("");
   const navigate = useNavigate();
 
+  const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
+
   useEffect(() => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     const fetchData = async () => {
       try {
         const nik = localStorage.getItem("nik");
         // Fetch user profile to get jabatan.level_disposisi
-        const userRes = await axios.get(`http://localhost:3001/user/${nik}`, {
+        const userRes = await axios.get(`${BACKEND_API_URL}/user/${nik}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         setUserLevel(userRes.data.profileData.jabatan?.level_disposisi || "");
         // Fetch disposisi data
-        const res = await axios.get(`http://localhost:3001/disposisi/nik/${nik}`, {
+        const res = await axios.get(`${BACKEND_API_URL}/disposisi/nik/${nik}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         // Filter disposisi yang statusnya bukan 'Selesai'
@@ -43,7 +46,7 @@ function DaftarDisposisi() {
   const handleTandaiSelesai = async (id_disposisi) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`http://localhost:3001/disposisi/${id_disposisi}`, {
+      await axios.put(`${BACKEND_API_URL}/disposisi/${id_disposisi}`, {
         status_disposisi: "Selesai",
       }, {
         headers: { Authorization: `Bearer ${token}` },

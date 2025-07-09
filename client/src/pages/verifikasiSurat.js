@@ -13,6 +13,8 @@ function VerifikasiSurat() {
   const [selectedSurat, setSelectedSurat] = useState(null);
   const [catatan, setCatatan] = useState("");
 
+  const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
+
   useEffect(() => {
     fetchSuratKeluar();
   }, []);
@@ -25,7 +27,7 @@ function VerifikasiSurat() {
         return;
       }
       const response = await axios.get(
-        "http://localhost:3001/suratKeluar/status/diajukan",
+        `${BACKEND_API_URL}/suratKeluar/status/diajukan`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -71,7 +73,7 @@ function VerifikasiSurat() {
       if (status === "diproses") {
         try {
           await axios.post(
-            `http://localhost:3001/suratKeluar/generate-nomor/${selectedSurat.id_surat}`,
+            `${BACKEND_API_URL}/suratKeluar/generate-nomor/${selectedSurat.id_surat}`,
             {},
             {
               headers: { Authorization: `Bearer ${token}` },
@@ -84,7 +86,7 @@ function VerifikasiSurat() {
       }
 
       await axios.put(
-        `http://localhost:3001/suratKeluar/${selectedSurat.id_surat}`,
+        `${BACKEND_API_URL}/suratKeluar/${selectedSurat.id_surat}`,
         {
           status,
           catatan,

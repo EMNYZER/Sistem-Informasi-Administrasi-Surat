@@ -19,14 +19,6 @@ function Dashboard() {
     pegawai: 0,
     murid: 0,
   });
-  const [stats, setStats] = useState({
-    pengajuan: 0,
-    verifikasi: 0,
-    disposisi: 0,
-    disetujui: 0,
-    suratMasuk: 0,
-    pengesahan: 0,
-  });
   const [approvalStats, setApprovalStats] = useState({
     pengajuanSaya: 0,
     suratMasuk: 0,
@@ -40,11 +32,12 @@ function Dashboard() {
   });
 
   useEffect(() => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     const fetchUserProfile = async () => {
       try {
         const token = localStorage.getItem("token");
         const nik = localStorage.getItem("nik");
-        const response = await axios.get(`http://localhost:3001/user/${nik}`, {
+        const response = await axios.get(`${BACKEND_API_URL}/user/${nik}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUserProfile({
@@ -72,13 +65,13 @@ function Dashboard() {
           pegawaiRes,
           muridRes
         ] = await Promise.all([
-          axios.get(`http://localhost:3001/suratKeluar/nik/${nik}`, { headers }),
-          axios.get(`http://localhost:3001/suratKeluar/status/diajukan`, { headers }),
-          axios.get(`http://localhost:3001/disposisi/nik/${nik}`, { headers }),
-          axios.get(`http://localhost:3001/suratKeluar/status/disetujui`, { headers }),
-          axios.get(`http://localhost:3001/suratMasuk/`, { headers }),
-          axios.get(`http://localhost:3001/user/`, { headers }),
-          axios.get(`http://localhost:3001/murid/`, { headers }),
+          axios.get(`${BACKEND_API_URL}/suratKeluar/nik/${nik}`, { headers }),
+          axios.get(`${BACKEND_API_URL}/suratKeluar/status/diajukan`, { headers }),
+          axios.get(`${BACKEND_API_URL}/disposisi/nik/${nik}`, { headers }),
+          axios.get(`${BACKEND_API_URL}/suratKeluar/status/disetujui`, { headers }),
+          axios.get(`${BACKEND_API_URL}/suratMasuk/`, { headers }),
+          axios.get(`${BACKEND_API_URL}/user/`, { headers }),
+          axios.get(`${BACKEND_API_URL}/murid/`, { headers }),
         ]);
         setAdminStats({
           pengajuanSaya: pengajuanSayaRes.data.length,
@@ -103,21 +96,6 @@ function Dashboard() {
       }
     };
 
-    const fetchStats = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(
-          `http://localhost:3001/dashboard/stats`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
-        setStats(response.data);
-      } catch (error) {
-        console.error("Error fetching stats:", error);
-      }
-    };
-
     // Fetch all approval stats in parallel
     const fetchApprovalStats = async () => {
       try {
@@ -131,11 +109,11 @@ function Dashboard() {
           disposisiRes,
           pengesahanSuratRes
         ] = await Promise.all([
-          axios.get(`http://localhost:3001/suratKeluar/nik/${nik}`, { headers }),
-          axios.get(`http://localhost:3001/suratMasuk/status/Belum`, { headers }),
-          axios.get(`http://localhost:3001/suratMasuk/status/Disposisi`, { headers }),
-          axios.get(`http://localhost:3001/disposisi/`, { headers }),
-          axios.get(`http://localhost:3001/suratKeluar/status/diproses`, { headers }),
+          axios.get(`${BACKEND_API_URL}/suratKeluar/nik/${nik}`, { headers }),
+          axios.get(`${BACKEND_API_URL}/suratMasuk/status/Belum`, { headers }),
+          axios.get(`${BACKEND_API_URL}/suratMasuk/status/Disposisi`, { headers }),
+          axios.get(`${BACKEND_API_URL}/disposisi/`, { headers }),
+          axios.get(`${BACKEND_API_URL}/suratKeluar/status/diproses`, { headers }),
         ]);
         setApprovalStats({
           pengajuanSaya: pengajuanSayaRes.data.length,
@@ -164,8 +142,8 @@ function Dashboard() {
           pengajuanSayaRes,
           disposisiSayaRes
         ] = await Promise.all([
-          axios.get(`http://localhost:3001/suratKeluar/nik/${nik}`, { headers }),
-          axios.get(`http://localhost:3001/disposisi/nik/${nik}`, { headers }),
+          axios.get(`${BACKEND_API_URL}/suratKeluar/nik/${nik}`, { headers }),
+          axios.get(`${BACKEND_API_URL}/disposisi/nik/${nik}`, { headers }),
         ]);
         const pengajuanSaya = pengajuanSayaRes.data.length;
         const suratDisetujui = pengajuanSayaRes.data.filter(surat => surat.status === "disetujui").length;
@@ -186,7 +164,6 @@ function Dashboard() {
 
     fetchUserProfile();
     fetchAdminStats();
-    fetchStats();
     fetchApprovalStats();
     fetchUserStats();
   }, []);

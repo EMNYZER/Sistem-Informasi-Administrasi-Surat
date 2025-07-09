@@ -10,17 +10,19 @@ function Validation() {
   const [kepalaSekolah, setKepalaSekolah] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  
   useEffect(() => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     const fetchData = async () => {
       try {
         // Ambil data surat keluar
         const suratRes = await axios.get(
-          `http://localhost:3001/suratKeluar/valid/${id_surat}`,
+          `${BACKEND_API_URL}/suratKeluar/valid/${id_surat}`,
         );
         setSurat(suratRes.data);
         // Ambil data kepala sekolah
         const kepalaRes = await axios.get(
-          "http://localhost:3001/user/kepala-sekolah",
+          `${BACKEND_API_URL}/user/kepala-sekolah`,
         );
         setKepalaSekolah(kepalaRes.data.kepalaSekolah);
       } catch (error) {

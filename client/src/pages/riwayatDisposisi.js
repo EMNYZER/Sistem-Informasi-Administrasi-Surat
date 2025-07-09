@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
 import axios from "axios";
@@ -7,12 +6,13 @@ import axios from "axios";
 const RiwayatDisposisi = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
+  
   useEffect(() => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     const fetchData = async () => {
       try {
-        const res = await axios.get("http://localhost:3001/disposisi", {
+        const res = await axios.get(`${BACKEND_API_URL}/disposisi`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         setData(res.data);

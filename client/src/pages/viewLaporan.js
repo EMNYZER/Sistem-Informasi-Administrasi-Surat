@@ -9,6 +9,8 @@ function ViewLaporan() {
   const [dataSurat, setDataSurat] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
+
   useEffect(() => {
     fetchLaporanData();
   }, [id_laporan]);
@@ -19,7 +21,7 @@ function ViewLaporan() {
       const token = localStorage.getItem("token");
       
       // Fetch detail laporan
-      const laporanResponse = await axios.get(`http://localhost:3001/laporan/${id_laporan}`, {
+      const laporanResponse = await axios.get(`${BACKEND_API_URL}/laporan/${id_laporan}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setLaporan(laporanResponse.data.data);
@@ -42,7 +44,7 @@ function ViewLaporan() {
           endpoint = 'suratMasuk';
       }
 
-      const suratResponse = await axios.get(`http://localhost:3001/${endpoint}`, {
+      const suratResponse = await axios.get(`${BACKEND_API_URL}/${endpoint}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

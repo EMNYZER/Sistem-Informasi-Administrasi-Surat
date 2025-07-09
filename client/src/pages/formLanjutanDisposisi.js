@@ -15,6 +15,8 @@ function FormLanjutanDisposisi() {
     pegawai_penerima: "",
   });
 
+  const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
+
   useEffect(() => {
     fetchDisposisi();
     fetchPegawaiTingkat3();
@@ -23,7 +25,7 @@ function FormLanjutanDisposisi() {
   const fetchDisposisi = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(`http://localhost:3001/disposisi/${id_disposisi}`, {
+      const res = await axios.get(`${BACKEND_API_URL}/disposisi/${id_disposisi}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setDisposisi(res.data);
@@ -37,7 +39,7 @@ function FormLanjutanDisposisi() {
   const fetchPegawaiTingkat3 = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:3001/user", {
+      const res = await axios.get(`${BACKEND_API_URL}/user`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       // Filter pegawai yang jabatan.level_disposisi === 'tingkat 3'
@@ -61,7 +63,7 @@ function FormLanjutanDisposisi() {
     }
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`http://localhost:3001/disposisi/${id_disposisi}`, {
+      await axios.put(`${BACKEND_API_URL}/disposisi/${id_disposisi}`, {
           id: id_disposisi,
         instruksi_lanjutan: formData.instruksi_lanjutan,
         pegawai_penerima: [formData.pegawai_penerima],

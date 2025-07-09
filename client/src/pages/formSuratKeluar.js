@@ -30,6 +30,8 @@ function FormSuratKeluar() {
   });
   const [isReadOnly, setIsReadOnly] = useState(false);
 
+  const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
+
   useEffect(() => {
     fetchKategori();
     if (id_surat) {
@@ -46,7 +48,7 @@ function FormSuratKeluar() {
         navigate("/login");
         return;
       }
-      const response = await axios.get("http://localhost:3001/kategori", {
+      const response = await axios.get(`${BACKEND_API_URL}/kategori`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -66,7 +68,7 @@ function FormSuratKeluar() {
       }
 
       const response = await axios.get(
-        `http://localhost:3001/suratKeluar/${id_surat}`,
+        `${BACKEND_API_URL}/suratKeluar/${id_surat}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -114,7 +116,7 @@ function FormSuratKeluar() {
         return;
       }
       const response = await axios.get(
-        `http://localhost:3001/template/${id_template}`,
+        `${BACKEND_API_URL}/template/${id_template}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -146,7 +148,7 @@ function FormSuratKeluar() {
 
     const token = localStorage.getItem("token");
     await axios.post(
-      `http://localhost:3001/suratKeluar/upload-lampiran/${id}`,
+      `${BACKEND_API_URL}/suratKeluar/upload-lampiran/${id}`,
       formDataPDF,
       {
         headers: {
@@ -184,7 +186,7 @@ function FormSuratKeluar() {
         }
         // Update existing surat
         await axios.put(
-          `http://localhost:3001/suratKeluar/${id_surat}`,
+          `${BACKEND_API_URL}/suratKeluar/${id_surat}`,
           submitData,
           {
             headers: {
@@ -202,10 +204,7 @@ function FormSuratKeluar() {
         navigate("/surat-keluar");
       } else {
         // Create new surat
-        const createRes = await axios.post(
-          "http://localhost:3001/suratKeluar",
-          submitData,
-          {
+        const createRes = await axios.post(`${BACKEND_API_URL}/suratKeluar`, submitData, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -273,13 +272,13 @@ function FormSuratKeluar() {
     }));
   };
 
-  const formatFileSize = (bytes) => {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-  };
+  // const formatFileSize = (bytes) => {
+  //   if (bytes === 0) return "0 Bytes";
+  //   const k = 1024;
+  //   const sizes = ["Bytes", "KB", "MB", "GB"];
+  //   const i = Math.floor(Math.log(bytes) / Math.log(k));
+  //   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  // };
 
   return (
     <div className="flex min-h-screen bg-gray-50">

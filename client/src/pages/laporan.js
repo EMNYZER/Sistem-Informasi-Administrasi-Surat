@@ -7,11 +7,6 @@ function Laporan() {
   const [laporans, setLaporans] = useState([]);
   const [selectedJenis, setSelectedJenis] = useState('all');
   const [isAdmin, setIsAdmin] = useState(false);
-  const [userProfile, setUserProfile] = useState({
-    role: "",
-    nama: "",
-    jabatan: "",
-  });
   const [formData, setFormData] = useState({
     mulai_tanggal: '',
     sampai_tanggal: '',
@@ -20,20 +15,17 @@ function Laporan() {
   });
   const [loading, setLoading] = useState(false);
 
+  const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
+
   // Fetch user profile untuk mendapatkan role
   const fetchUserProfile = async () => {
     try {
       const token = localStorage.getItem("token");
       const nik = localStorage.getItem("nik");
-      const response = await axios.get(`http://localhost:3001/user/${nik}`, {
+      const response = await axios.get(`${BACKEND_API_URL}/user/${nik}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const userData = response.data.profileData;
-      setUserProfile({
-        role: userData.role,
-        nama: userData.nama,
-        jabatan: userData.jabatan,
-      });
       // Set admin status berdasarkan role
       setIsAdmin(userData.role === "Admin");
     } catch (error) {
@@ -46,7 +38,7 @@ function Laporan() {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      const response = await axios.get('http://localhost:3001/laporan', {
+      const response = await axios.get(`${BACKEND_API_URL}/laporan`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setLaporans(response.data.data);
@@ -77,7 +69,7 @@ function Laporan() {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      await axios.post('http://localhost:3001/laporan', formData, {
+      await axios.post(`${BACKEND_API_URL}/laporan`, formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert('Laporan berhasil dibuat!');
@@ -121,7 +113,7 @@ function Laporan() {
       try {
         setLoading(true);
         const token = localStorage.getItem("token");
-        await axios.delete(`http://localhost:3001/laporan/${id_laporan}`, {
+        await axios.delete(`${BACKEND_API_URL}/laporan/${id_laporan}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         alert('Laporan berhasil dihapus!');

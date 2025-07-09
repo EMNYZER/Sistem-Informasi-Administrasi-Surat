@@ -14,7 +14,9 @@ function Menu() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
 
+  
   useEffect(() => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     const fetchUserData = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -29,7 +31,7 @@ function Menu() {
           return;
         }
 
-        const response = await axios.get(`http://localhost:3001/user/${nik}`, {
+        const response = await axios.get(`${BACKEND_API_URL}/user/${nik}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

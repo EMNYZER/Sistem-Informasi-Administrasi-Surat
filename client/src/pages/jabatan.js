@@ -25,6 +25,9 @@ function Jabatan() {
   const [loading, setLoading] = useState(true);
   const [formError, setFormError] = useState("");
 
+  const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
+
+
   useEffect(() => {
     fetchJabatan();
   }, []);
@@ -36,7 +39,7 @@ function Jabatan() {
         navigate("/login");
         return;
       }
-      const response = await axios.get("http://localhost:3001/jabatan", {
+      const response = await axios.get(`${BACKEND_API_URL}/jabatan`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -58,7 +61,7 @@ function Jabatan() {
         return;
       }
       setFormError("");
-      await axios.post("http://localhost:3001/jabatan", formData, {
+      await axios.post(`${BACKEND_API_URL}/jabatan`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -100,7 +103,7 @@ function Jabatan() {
         return;
       }
       await axios.put(
-        `http://localhost:3001/jabatan/${selectedJabatan.jabatan_id}`,
+        `${BACKEND_API_URL}/jabatan/${selectedJabatan.jabatan_id}`,
         editFormData,
         {
           headers: {
@@ -123,7 +126,7 @@ function Jabatan() {
           navigate("/login");
           return;
         }
-        await axios.delete(`http://localhost:3001/jabatan/${id}`, {
+        await axios.delete(`${BACKEND_API_URL}/jabatan/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

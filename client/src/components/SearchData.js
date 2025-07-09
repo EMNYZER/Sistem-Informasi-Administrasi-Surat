@@ -42,14 +42,17 @@ const SearchData = () => {
   const [userRole, setUserRole] = useState("");
   const [userProfile, setUserProfile] = useState(null);
 
+  const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
+
   // Fetch user profile & role on mount
   useEffect(() => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     const fetchUserProfile = async () => {
       const token = localStorage.getItem("token");
       const nik = localStorage.getItem("nik");
       if (!nik) return;
       try {
-        const response = await axios.get(`http://localhost:3001/user/${nik}`, {
+        const response = await axios.get(`${BACKEND_API_URL}/user/${nik}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -91,8 +94,8 @@ const SearchData = () => {
       const token = localStorage.getItem("token");
       const endpoint =
         searchType === "pegawai"
-          ? `http://localhost:3001/user/search?q=${term}`
-          : `http://localhost:3001/murid/search?q=${term}`;
+          ? `${BACKEND_API_URL}/user/search?q=${term}`
+          : `${BACKEND_API_URL}/murid/search?q=${term}`;
       const response = await axios.get(endpoint, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -201,8 +204,8 @@ const SearchData = () => {
                   onClick={() => handleSelect(item)}
                 >
                   {searchType === "pegawai"
-                    ? `${item.nama} (${item.NIK})`
-                    : `${item.nama} (${item.nis})`}
+                    ? `${item.nama}`
+                    : `${item.nama}`}
                 </div>
               ))}
             </div>
@@ -216,9 +219,9 @@ const SearchData = () => {
           <div className="flex justify-between items-center mb-2">
             <div className="font-semibold text-green-700">
               {searchType === "pegawai"
-                ? "Detail Pegawai"
+                ? "Data Pegawai"
                 : searchType === "murid"
-                ? "Detail Murid"
+                ? "Data Murid"
                 : "Data Diri"}
             </div>
             <button
@@ -228,36 +231,98 @@ const SearchData = () => {
               Kembali ke pencarian
             </button>
           </div>
-          <div className="max-w-xl">
-          {searchType === "pegawai" ? (
-            <>
-              <DetailRow label="Nama" value={selectedData.nama} />
-              <DetailRow label="NIK" value={selectedData.NIK} />
-              <DetailRow label="Jabatan" value={selectedData.jabatan?.nama_jabatan} />
-              <DetailRow label="Email" value={selectedData.email} />
-              <DetailRow label="Alamat" value={selectedData.alamat} />
-              <DetailRow label="Tanggal Lahir" value={formatDate(selectedData.tanggal_lahir)} />
-            </>
-          ) : searchType === "murid" ? (
-            <>
-              <DetailRow label="Nama" value={selectedData.nama} />
-              <DetailRow label="NIS" value={selectedData.nis} />
-              <DetailRow label="Kelas" value={selectedData.kelas} />
-              <DetailRow label="Alamat" value={selectedData.alamat} />
-              <DetailRow label="Tempat, Tanggal Lahir" value={`${selectedData.tempat_lahir}, ${formatDate(selectedData.tanggal_lahir)}`} />
-              <DetailRow label="Nama Orang Tua" value={selectedData.nama_ortu} />
-            </>
-          ) : (
-            // Data Diri (user pribadi)
-            <>
-              <DetailRow label="Nama" value={userProfile?.nama} />
-              <DetailRow label="NIK" value={userProfile?.NIK} />
-              <DetailRow label="Jabatan" value={userProfile?.jabatan?.nama_jabatan} />
-              <DetailRow label="Email" value={userProfile?.email} />
-              <DetailRow label="Alamat" value={userProfile?.alamat} />
-              <DetailRow label="Tanggal Lahir" value={formatDate(userProfile?.tanggal_lahir)} />
-            </>
-          )}
+          <div className="max-w-7xl grid grid-cols-1 md:grid-cols-2 gap-4 h-full min-h-[350px]">
+            {searchType === "pegawai" ? (
+              <>
+                {/* Left: Data Pribadi Pegawai */}
+                <div className="p-4 bg-white rounded shadow-sm border border-gray-200 h-full flex flex-col">
+                  <div className="font-semibold text-gray-700 mb-2 border-b pb-1">Data Pribadi Pegawai</div>
+                  <DetailRow label="NIK" value={selectedData.NIK} />
+                  <DetailRow label="Nama" value={selectedData.nama} />
+                  <DetailRow label="Jenis Kelamin" value={selectedData.jenis_kelamin} />
+                  <DetailRow label="Tempat Lahir" value={selectedData.tempat_lahir} />
+                  <DetailRow label="Tanggal Lahir" value={formatDate(selectedData.tanggal_lahir)} />
+                  <DetailRow label="Alamat" value={selectedData.alamat} />
+                  <DetailRow label="Agama" value={selectedData.agama} />
+                  <DetailRow label="No HP" value={selectedData.no_HP} />
+                  <DetailRow label="Email" value={selectedData.email} />
+                </div>
+                {/* Right: Kepegawaian */}
+                <div className="p-4 bg-white rounded shadow-sm border border-gray-200 h-full flex flex-col">
+                  <div className="font-semibold text-gray-700 mb-2 border-b pb-1">Kepegawaian</div>
+                  <DetailRow label="Jabatan" value={selectedData.jabatan?.nama_jabatan} />
+                  <DetailRow label="Status" value={selectedData.status} />
+                  <DetailRow label="Role" value={selectedData.role} />
+                  <DetailRow label="NRG" value={selectedData.NRG} />
+                  <DetailRow label="UKG" value={selectedData.UKG} />
+                  <DetailRow label="NUPTK" value={selectedData.NUPTK} />
+                  <DetailRow label="No. Induk Yayasan" value={selectedData.No_induk_yayasan} />
+                </div>
+              </>
+            ) : searchType === "murid" ? (
+              <>
+                {/* Left: Data Pribadi Murid */}
+                <div className="p-4 bg-white rounded shadow-sm border border-gray-200 h-full flex flex-col">
+                  <div className="font-semibold text-gray-700 mb-2 border-b pb-1">Data Pribadi Murid</div>
+                  <DetailRow label="NIS" value={selectedData.NIS} />
+                  <DetailRow label="NISN" value={selectedData.NISN} />
+                  <DetailRow label="NIK" value={selectedData.NIK} />
+                  <DetailRow label="Nama" value={selectedData.nama} />
+                  <DetailRow label="Jenis Kelamin" value={selectedData.jenis_kelamin} />
+                  <DetailRow label="Tempat Lahir" value={selectedData.tempat_lahir} />
+                  <DetailRow label="Tanggal Lahir" value={formatDate(selectedData.tanggal_lahir)} />
+                  <DetailRow label="Alamat" value={selectedData.alamat} />
+                  <DetailRow label="Rombel" value={selectedData.rombel} />
+                </div>
+                {/* Right: Pendataan & Orang Tua */}
+                <div className="flex flex-col gap-4 h-full">
+                  <div className="p-4 bg-white rounded shadow-sm border border-gray-200 h-fit mb-4 flex-1">
+                    <div className="font-semibold text-gray-700 mb-2 border-b pb-1">Pendataan Murid</div>
+                    <DetailRow label="Tahun Ajaran" value={selectedData.tahun_ajaran} />
+                    <DetailRow label="Status Siswa" value={selectedData.status_siswa} />
+                    <DetailRow label="Status Registrasi" value={selectedData.status_registrasi} />
+                  </div>
+                  <div className="p-4 bg-white rounded shadow-sm border border-gray-200 h-fit flex-1">
+                    <div className="font-semibold text-gray-700 mb-2 border-b pb-1">Data Orang Tua</div>
+                    <DetailRow label="Nama Ayah" value={selectedData.nama_ayah} />
+                    <DetailRow label="Nama Ibu" value={selectedData.nama_ibu} />
+                    <DetailRow label="Pekerjaan Ayah" value={selectedData.pekerjaan_ayah} />
+                    <DetailRow label="Pekerjaan Ibu" value={selectedData.pekerjaan_ibu} />
+                    <DetailRow label="No HP Ayah" value={selectedData.no_hp_ayah} />
+                    <DetailRow label="No HP Ibu" value={selectedData.no_hp_ibu} />
+                  </div>
+                </div>
+              </>
+            ) : (
+              // Data Diri (user pribadi)
+              <>
+                {/* Grid for Data Diri, same as pegawai */}
+                  {/* Left: Data Pribadi */}
+                  <div className="p-4 bg-white rounded shadow-sm border border-gray-200 h-full flex flex-col">
+                    <div className="font-semibold text-gray-700 mb-2 border-b pb-1">Data Pribadi</div>
+                    <DetailRow label="NIK" value={userProfile?.NIK} />
+                    <DetailRow label="Nama" value={userProfile?.nama} />
+                    <DetailRow label="Jenis Kelamin" value={userProfile?.jenis_kelamin} />
+                    <DetailRow label="Tempat Lahir" value={userProfile?.tempat_lahir} />
+                    <DetailRow label="Tanggal Lahir" value={formatDate(userProfile?.tanggal_lahir)} />
+                    <DetailRow label="Alamat" value={userProfile?.alamat} />
+                    <DetailRow label="Agama" value={userProfile?.agama} />
+                    <DetailRow label="No HP" value={userProfile?.no_HP} />
+                    <DetailRow label="Email" value={userProfile?.email} />
+                  </div>
+                  {/* Right: Kepegawaian */}
+                  <div className="p-4 bg-white rounded shadow-sm border border-gray-200 h-full flex flex-col">
+                    <div className="font-semibold text-gray-700 mb-2 border-b pb-1">Kepegawaian</div>
+                    <DetailRow label="Jabatan" value={userProfile?.jabatan?.nama_jabatan} />
+                    <DetailRow label="Status" value={userProfile?.status} />
+                    <DetailRow label="Role" value={userProfile?.role} />
+                    <DetailRow label="NRG" value={userProfile?.NRG} />
+                    <DetailRow label="UKG" value={userProfile?.UKG} />
+                    <DetailRow label="NUPTK" value={userProfile?.NUPTK} />
+                    <DetailRow label="No. Induk Yayasan" value={userProfile?.No_induk_yayasan} />
+                  </div>
+              </>
+            )}
           </div>
         </div>
       )}

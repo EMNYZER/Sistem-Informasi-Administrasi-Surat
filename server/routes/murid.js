@@ -1,7 +1,11 @@
 const express = require("express");
 const router = express.Router();
+const multer = require("multer");
+const XLSX = require("xlsx");
+const upload = multer({ dest: "uploads/" });
 const { authenticateToken } = require("../middleware/auth");
 const { Murid } = require("../models");
+
 
 // Ambil semua data murid
 router.get("/", authenticateToken, async (req, res) => {
@@ -109,6 +113,47 @@ router.post("/", authenticateToken, async (req, res) => {
       message: "Terjadi kesalahan saat menambahkan data murid",
       error: error.message,
     });
+  }
+});
+
+// Import Data Murid by xlsx
+router.post("/import", authenticateToken, upload.single("file"), async (req, res) => {
+  try {
+    const file = req.file;
+    if (!file) return res.status(400).json({ message: "File tidak ditemukan" });
+
+    const workbook = XLSX.readFile(file.path);
+    const sheetName = workbook.SheetNames[0];
+    const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+    // Validasi & mapping data sesuai model Murid
+    const muridData = data.map(row => ({
+      NIS: row.NIS,
+      NISN: row.NISN,
+      NIK: row.NIK,
+      nama: row.nama,
+      jenis_kelamin: row.jenis_kelamin,
+      tempat_lahir: row.tempat_lahir,
+      tanggal_lahir: row.tanggal_lahir,
+      alamat: row.alamat,
+      rombel: row.rombel,
+      tahun_ajaran: row.tahun_ajaran,
+      status_siswa: row.status_siswa,
+      status_registrasi: row.status_registrasi,
+      nama_ayah: row.nama_ayah,
+      nama_ibu: row.nama_ibu,
+      pekerjaan_ayah: row.pekerjaan_ayah,
+      pekerjaan_ibu: row.pekerjaan_ibu,
+      no_hp_ayah: row.no_hp_ayah,
+      no_hp_ibu: row.no_hp_ibu,
+    }));
+
+    // Bulk insert
+    await Murid.bulkCreate(muridData, { ignoreDuplicates: true });
+
+    res.json({ message: "Import data murid berhasil" });
+  } catch (err) {
+    res.status(500).json({ message: "Gagal import", error: err.message });
   }
 });
 

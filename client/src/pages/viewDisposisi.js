@@ -8,9 +8,11 @@ function ViewDisposisi() {
   const navigate = useNavigate();
   const [disposisi, setDisposisi] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [penerima, setPenerima] = useState(null)
+  const [penerima, setPenerima] = useState(null);
 
+  
   useEffect(() => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     const fetchDisposisi = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -18,10 +20,10 @@ function ViewDisposisi() {
           navigate("/login");
           return;
         }
-        const response = await axios.get(`http://localhost:3001/disposisi/${id_disposisi}`, {
+        const response = await axios.get(`${BACKEND_API_URL}/disposisi/${id_disposisi}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        const resPenerima = await axios.get(`http://localhost:3001/disposisi/pegawai/${id_disposisi}`, {
+        const resPenerima = await axios.get(`${BACKEND_API_URL}/disposisi/pegawai/${id_disposisi}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setPenerima(resPenerima.data)

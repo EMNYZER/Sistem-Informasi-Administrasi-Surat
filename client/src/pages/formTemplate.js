@@ -19,6 +19,8 @@ function FormTemplate() {
     isi_surat: "",
   });
 
+  const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
+
   useEffect(() => {
     fetchKategori();
     console.log(id);
@@ -34,7 +36,7 @@ function FormTemplate() {
         navigate("/login");
         return;
       }
-      const response = await axios.get("http://localhost:3001/kategori", {
+      const response = await axios.get(`${BACKEND_API_URL}/kategori`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -53,7 +55,7 @@ function FormTemplate() {
         return;
       }
 
-      const response = await axios.get(`http://localhost:3001/template/${id}`, {
+      const response = await axios.get(`${BACKEND_API_URL}/template/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -96,7 +98,7 @@ function FormTemplate() {
 
       if (isEditing) {
         // Update existing template
-        await axios.put(`http://localhost:3001/template/${id}`, submitData, {
+        await axios.put(`${BACKEND_API_URL}/template/${id}`, submitData, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -104,7 +106,7 @@ function FormTemplate() {
         alert("Template berhasil diperbarui!");
       } else {
         // Create new template
-        await axios.post("http://localhost:3001/template", submitData, {
+        await axios.post(`${BACKEND_API_URL}/template`, submitData, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

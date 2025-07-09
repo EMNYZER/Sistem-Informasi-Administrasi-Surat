@@ -13,6 +13,8 @@ function PengesahanSurat() {
   const [selectedSurat, setSelectedSurat] = useState(null);
   const [catatan, setCatatan] = useState("");
 
+  const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
+
   useEffect(() => {
     fetchSuratKeluar();
   }, []);
@@ -26,7 +28,7 @@ function PengesahanSurat() {
       }
       // Ambil surat dengan status 'diproses' (siap disahkan)
       const response = await axios.get(
-        "http://localhost:3001/suratKeluar/status/diproses",
+        `${BACKEND_API_URL}/suratKeluar/status/diproses`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -69,7 +71,7 @@ function PengesahanSurat() {
         return;
       }
       await axios.put(
-        `http://localhost:3001/suratKeluar/${selectedSurat.id_surat}`,
+        `${BACKEND_API_URL}/suratKeluar/${selectedSurat.id_surat}`,
         {
           status,
           catatan,

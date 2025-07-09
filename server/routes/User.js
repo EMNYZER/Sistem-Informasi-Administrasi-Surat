@@ -6,6 +6,7 @@ const fs = require("fs");
 const path = require("path");
 const { Pegawai, Jabatan } = require("../models");
 const bcrypt = require("bcrypt");
+const XLSX = require("xlsx");
 
 // === Setup Multer ===
 const storage = multer.diskStorage({
@@ -28,11 +29,26 @@ const upload = multer({
     fileSize: 2 * 1024 * 1024, // 2MB
   },
   fileFilter: (req, file, cb) => {
-    const allowedTypes = ["image/png", "image/jpg", "image/jpeg"];
-    if (allowedTypes.includes(file.mimetype)) {
-      cb(null, true);
+    // Allow Excel files for import, images for upload
+    const allowedImageTypes = ["image/png", "image/jpg", "image/jpeg"];
+    const allowedExcelTypes = [
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/vnd.ms-excel"
+    ];
+    // If the route is /user/import, allow Excel
+    if (req.originalUrl.includes("/user/import")) {
+      if (allowedExcelTypes.includes(file.mimetype)) {
+        cb(null, true);
+      } else {
+        cb(new Error("Hanya file Excel (.xlsx/.xls) yang diizinkan untuk import!"));
+      }
     } else {
-      cb(new Error("Hanya file PNG, JPG, atau JPEG yang diizinkan!"));
+      // Default: only allow images
+      if (allowedImageTypes.includes(file.mimetype)) {
+        cb(null, true);
+      } else {
+        cb(new Error("Hanya file PNG, JPG, atau JPEG yang diizinkan!"));
+      }
     }
   },
 });
@@ -362,6 +378,46 @@ router.post("/", async (req, res) => {
       message: "Terjadi kesalahan saat menambahkan data pegawai",
       error: error.message,
     });
+  }
+});
+
+// Import Data Pegawai by xlsx
+router.post("/import", authenticateToken, upload.single("file"), async (req, res) => {
+  try {
+    const file = req.file;
+    if (!file) return res.status(400).json({ message: "File tidak ditemukan" });
+
+    const workbook = XLSX.readFile(file.path);
+    const sheetName = workbook.SheetNames[0];
+    const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+    // Hash password for each row (NIK as default password)
+    const pegawaiData = await Promise.all(data.map(async row => ({
+      NIK: row.NIK,
+      nama: row.nama,
+      jenis_kelamin: row.jenis_kelamin,
+      tempat_lahir: row.tempat_lahir,
+      tanggal_lahir: row.tanggal_lahir,
+      alamat: row.alamat,
+      agama: row.agama,
+      jabatan_id: row.jabatan_id,
+      status: row.status || "Aktif",
+      NRG: row.NRG,
+      UKG: row.UKG,
+      NUPTK: row.NUPTK,
+      No_induk_yayasan: row.No_induk_yayasan,
+      no_HP: row.no_HP,
+      email: row.email,
+      role: row.role || "User",
+      password: row.NIK ? await bcrypt.hash(row.NIK.toString(), 10) : undefined,
+    })));
+
+    // Bulk insert, ignore duplicates by NIK or email
+    await Pegawai.bulkCreate(pegawaiData, { ignoreDuplicates: true });
+
+    res.json({ message: "Import data pegawai berhasil" });
+  } catch (err) {
+    res.status(500).json({ message: "Gagal import", error: err.message });
   }
 });
 

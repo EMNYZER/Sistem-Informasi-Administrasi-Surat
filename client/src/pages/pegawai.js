@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import Menu from "../components/Menu";
 import Header from "../components/Header";
 import axios from "axios";
-import { FaEdit, FaTrash, FaEye, FaPlus } from "react-icons/fa";
+import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import { FaFileImport } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const initialFormState = {
@@ -32,11 +33,17 @@ function Pegawai() {
   const [currentPegawai, setCurrentPegawai] = useState(initialFormState);
   const [jabatan, setJabatan] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importFile, setImportFile] = useState(null);
+  const [importLoading, setImportLoading] = useState(false);
+
+  const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
   useEffect(() => {
     fetchPegawai();
     fetchJabatan();
   }, []);
+
 
   const fetchPegawai = async () => {
     try {
@@ -45,7 +52,7 @@ function Pegawai() {
         navigate("/login");
         return;
       }
-      const response = await axios.get("http://localhost:3001/user", {
+      const response = await axios.get(`${BACKEND_API_URL}/user`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -65,7 +72,7 @@ function Pegawai() {
         navigate("/login");
         return;
       }
-      const response = await axios.get("http://localhost:3001/jabatan", {
+      const response = await axios.get(`${BACKEND_API_URL}/jabatan`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -87,6 +94,49 @@ function Pegawai() {
     setShowModal(true);
   };
 
+  const handleOpenImportModal = () => {
+    setShowImportModal(true);
+    setImportFile(null);
+  };
+
+  const handleCloseImportModal = () => {
+    setShowImportModal(false);
+    setImportFile(null);
+  };
+
+  const handleImportFileChange = (e) => {
+    setImportFile(e.target.files[0]);
+  };
+
+  const handleImportSubmit = async (e) => {
+    e.preventDefault();
+    if (!importFile) return;
+    setImportLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+      const formData = new FormData();
+      formData.append("file", importFile);
+      await axios.post(`${BACKEND_API_URL}/user/import`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      setShowImportModal(false);
+      fetchPegawai();
+      alert("Import data pegawai berhasil");
+    } catch (error) {
+      alert(error.response?.data?.message || "Gagal import data pegawai");
+      console.log(error.message)
+    } finally {
+      setImportLoading(false);
+    }
+  };
+
   const handleCloseModal = () => {
     setShowModal(false);
   };
@@ -99,7 +149,7 @@ function Pegawai() {
           navigate("/login");
           return;
         }
-        await axios.delete(`http://localhost:3001/user/${nik}`, {
+        await axios.delete(`${BACKEND_API_URL}/user/${nik}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -133,7 +183,7 @@ function Pegawai() {
       }
       if (isEditing) {
         await axios.put(
-          `http://localhost:3001/user/${currentPegawai.NIK}`,
+          `${BACKEND_API_URL}/user/${currentPegawai.NIK}`,
           currentPegawai,
           {
             headers: {
@@ -142,7 +192,7 @@ function Pegawai() {
           },
         );
       } else {
-        await axios.post("http://localhost:3001/user", currentPegawai);
+        await axios.post(`${BACKEND_API_URL}/user`, currentPegawai);
       }
       setShowModal(false);
       fetchPegawai();
@@ -162,12 +212,20 @@ function Pegawai() {
             <h1 className="text-xl font-semibold text-gray-800">
               Data Pegawai
             </h1>
-            <button
-              onClick={handleOpenAddModal}
-              className="bg-green-600 text-white px-3 py-1.5 rounded text-sm hover:bg-green-700 transition-colors flex items-center gap-2"
-            >
-              <FaPlus /> Tambah Pegawai
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={handleOpenImportModal}
+                className="bg-blue-600 text-white px-3 py-1.5 rounded text-sm hover:bg-blue-700 transition-colors flex items-center gap-2"
+              >
+                <FaFileImport /> Import Data
+              </button>
+              <button
+                onClick={handleOpenAddModal}
+                className="bg-green-600 text-white px-3 py-1.5 rounded text-sm hover:bg-green-700 transition-colors flex items-center gap-2"
+              >
+                <FaPlus /> Tambah Pegawai
+              </button>
+            </div>
           </div>
 
           {loading ? (
@@ -496,6 +554,43 @@ function Pegawai() {
                 </div>
               </form>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Import Modal */}
+      {showImportModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-gray-200 border-2 border-gray-700 rounded-2xl w-full max-w-md flex flex-col shadow-xl">
+            <h2 className="bg-gray-700 text-white p-4 text-center uppercase text-xl font-semibold rounded-t-2xl border-b-2 border-gray-800">
+              Import Data Pegawai
+            </h2>
+            <form onSubmit={handleImportSubmit} className="p-6 flex flex-col gap-4">
+              <input
+                type="file"
+                accept=".xlsx,.xls"
+                onChange={handleImportFileChange}
+                required
+                className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+              <div className="flex justify-end gap-2 mt-4">
+                <button
+                  type="button"
+                  onClick={handleCloseImportModal}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+                  disabled={importLoading}
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+                  disabled={importLoading}
+                >
+                  {importLoading ? "Mengimpor..." : "Import"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

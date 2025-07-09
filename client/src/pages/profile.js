@@ -29,7 +29,10 @@ function Profile() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
+
   useEffect(() => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     const fetchProfileData = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -38,7 +41,7 @@ function Profile() {
           return;
         }
         const nik = localStorage.getItem("nik");
-        const response = await axios.get(`http://localhost:3001/user/${nik}`, {
+        const response = await axios.get(`${BACKEND_API_URL}/user/${nik}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -57,7 +60,7 @@ function Profile() {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get(
-          "http://localhost:3001/user/kepala-sekolah",
+          `${BACKEND_API_URL}/user/kepala-sekolah`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -72,11 +75,12 @@ function Profile() {
   }, [navigate]);
 
   useEffect(() => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     const fetchTtd = async () => {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get(
-          "http://localhost:3001/user/kepala-sekolah",
+          `${BACKEND_API_URL}/user/kepala-sekolah`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -112,7 +116,7 @@ function Profile() {
       const nik = localStorage.getItem("nik");
 
       const response = await axios.post(
-        `http://localhost:3001/user/change-password/${nik}`,
+        `${BACKEND_API_URL}/user/change-password/${nik}`,
         {
           oldPassword: passwordData.oldPassword,
           newPassword: passwordData.newPassword,
@@ -185,7 +189,7 @@ function Profile() {
         formData.append("image", ttdFile);
         const nik = localStorage.getItem("nik");
         await axios.post(
-          `http://localhost:3001/user/upload/${nik}/tanda-tangan`,
+          `${BACKEND_API_URL}/user/upload/${nik}/tanda-tangan`,
           formData,
           {
             headers: {
@@ -205,7 +209,7 @@ function Profile() {
         const nik = localStorage.getItem("nik");
 
         await axios.post(
-          `http://localhost:3001/user/upload/${nik}/foto`,
+          `${BACKEND_API_URL}/user/upload/${nik}/foto`,
           formData,
           {
             headers: {
@@ -221,7 +225,7 @@ function Profile() {
       // Update profile
       const nik = localStorage.getItem("nik");
       const response = await axios.put(
-        `http://localhost:3001/user/${nik}`,
+        `${BACKEND_API_URL}/user/${nik}`,
         profileData,
         {
           headers: {

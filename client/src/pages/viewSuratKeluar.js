@@ -10,7 +10,9 @@ function ViewSuratKeluar() {
   const [loading, setLoading] = useState(true);
   const [kepalaSekolah, setKepalaSekolah] = useState(null);
 
+  
   useEffect(() => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     const fetchSurat = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -19,7 +21,7 @@ function ViewSuratKeluar() {
           return;
         }
         const response = await axios.get(
-          `http://localhost:3001/suratKeluar/${id_surat}`,
+          `${BACKEND_API_URL}/suratKeluar/${id_surat}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -38,12 +40,13 @@ function ViewSuratKeluar() {
   }, [id_surat, navigate]);
 
   useEffect(() => {
+    const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
     const fetchKepalaSekolah = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) return;
         const response = await axios.get(
-          "http://localhost:3001/user/kepala-sekolah",
+          `${BACKEND_API_URL}/user/kepala-sekolah`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },

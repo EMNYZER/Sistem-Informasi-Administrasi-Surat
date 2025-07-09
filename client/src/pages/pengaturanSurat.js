@@ -23,6 +23,8 @@ function PengaturanSurat() {
   });
   const [loading, setLoading] = useState(true);
 
+  const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
+
   useEffect(() => {
     fetchKategori();
   }, []);
@@ -34,7 +36,7 @@ function PengaturanSurat() {
         navigate("/login");
         return;
       }
-      const response = await axios.get("http://localhost:3001/kategori", {
+      const response = await axios.get(`${BACKEND_API_URL}/kategori`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -55,7 +57,7 @@ function PengaturanSurat() {
         navigate("/login");
         return;
       }
-      await axios.post("http://localhost:3001/kategori", formData, {
+      await axios.post(`${BACKEND_API_URL}/kategori`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -92,7 +94,7 @@ function PengaturanSurat() {
         return;
       }
       await axios.put(
-        `http://localhost:3001/kategori/${selectedKategori.kode_kategori}`,
+        `${BACKEND_API_URL}/kategori/${selectedKategori.kode_kategori}`,
         editFormData,
         {
           headers: {
@@ -117,7 +119,7 @@ function PengaturanSurat() {
           navigate("/login");
           return;
         }
-        await axios.delete(`http://localhost:3001/kategori/${kode}`, {
+        await axios.delete(`${BACKEND_API_URL}/kategori/${kode}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
