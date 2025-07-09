@@ -11,6 +11,8 @@ function Login() {
 
   const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
+  console.log("url backend:",BACKEND_API_URL)
+
   const handleLogin = async (e) => {
     e.preventDefault();
     try {

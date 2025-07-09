@@ -29,7 +29,7 @@ import ViewLaporan from "../pages/viewLaporan";
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "",
     element: <App />,
     children: [
       {
