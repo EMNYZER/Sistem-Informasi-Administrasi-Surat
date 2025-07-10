@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import profile_pic from "../assets/profile.jpg";
+import { MdDashboard, MdSettings, MdMail } from "react-icons/md";
+import { FaFile, FaUser } from "react-icons/fa6";
+
 
 function Menu() {
   const [userData, setUserData] = useState({
@@ -55,10 +58,10 @@ function Menu() {
 
   const menuItems = {
     Admin: [
-      { name: "Dashboard", path: "/dashboard", icon: "📊" },
+      { name: "Dashboard", path: "/dashboard", icon: <MdDashboard/> },
       {
         name: "Pengaturan",
-        icon: "⚙️",
+        icon: <MdSettings/>,
         submenu: [
           { name: "Profile", path: "/profile" },
           { name: "Data Pegawai", path: "/pegawai" },
@@ -70,7 +73,7 @@ function Menu() {
       },
       {
         name: "Surat",
-        icon: "📝",
+        icon: <MdMail/>,
         submenu: [
           { name: "Surat Keluar", path: "/surat-keluar" },
           { name: "Surat Masuk", path: "/surat-masuk" },
@@ -78,18 +81,18 @@ function Menu() {
           { name: "Verifikasi Surat", path: "/verifikasi" },
         ],
       },
-      { name: "Laporan", path: "/laporan", icon: "📋" },
+      { name: "Laporan", path: "/laporan", icon: <FaFile/> },
     ],
     User: [
-      { name: "Dashboard", path: "/dashboard", icon: "📊" },
+      { name: "Dashboard", path: "/dashboard", icon: <MdDashboard/> },
       {
-        name: "Pengaturan",
-        icon: "⚙️",
-        submenu: [{ name: "Profile", path: "/profile" }],
+        name: "Profile",
+        path: "/profile",
+        icon: <FaUser/>
       },
       {
         name: "Surat",
-        icon: "📝",
+        icon: <MdMail/>,
         submenu: [
           { name: "Surat Keluar", path: "/surat-keluar" },
           { name: "Disposisi Saya", path: "/daftar-disposisi" },
@@ -97,24 +100,22 @@ function Menu() {
       },
     ],
     Approval: [
-      { name: "Dashboard", path: "/dashboard", icon: "📊" },
+      { name: "Dashboard", path: "/dashboard", icon: <MdDashboard/> },
       {
-        name: "Pengaturan",
-        icon: "⚙️",
-        submenu: [
-          { name: "Profile", path: "/profile" },
-        ],
+        name: "Profile",
+        path: "/profile",
+        icon: <FaUser/>
       },
       {
         name: "Surat",
-        icon: "📝",
+        icon: <MdMail/>,
         submenu: [
           { name: "Buat Surat Keluar", path: "/surat-keluar" },
           { name: "Surat Masuk", path: "/surat-masuk" },
           { name: "Pengesahan Surat", path: "/pengesahan" },
         ],
       },
-      { name: "Laporan", path: "/laporan", icon: "📋" },
+      { name: "Laporan", path: "/laporan", icon: <FaFile/> },
     ],
   };
 

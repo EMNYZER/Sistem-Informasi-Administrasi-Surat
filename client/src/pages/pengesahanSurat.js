@@ -11,7 +11,6 @@ function PengesahanSurat() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [selectedSurat, setSelectedSurat] = useState(null);
-  const [catatan, setCatatan] = useState("");
 
   const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
@@ -60,7 +59,6 @@ function PengesahanSurat() {
 
   const handleDetail = (surat) => {
     setSelectedSurat(surat);
-    setCatatan("");
     setShowModal(true);
   };
 
@@ -75,7 +73,6 @@ function PengesahanSurat() {
         `${BACKEND_API_URL}/suratKeluar/${selectedSurat.id_surat}`,
         {
           status,
-          catatan,
         },
         {
           headers: {
@@ -261,18 +258,6 @@ function PengesahanSurat() {
                       </div>
                     </div>
                   )}
-                  <div className="col-span-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Catatan
-                    </label>
-                    <textarea
-                      value={catatan}
-                      onChange={(e) => setCatatan(e.target.value)}
-                      className="mt-1 block w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
-                      rows="3"
-                      placeholder="Tambahkan catatan untuk surat ini..."
-                    />
-                  </div>
                 </div>
               </div>
               <div className="mt-6 flex justify-end gap-2">
