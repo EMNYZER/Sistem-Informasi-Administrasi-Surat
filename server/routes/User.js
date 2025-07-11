@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const router = express.Router();
 const { authenticateToken } = require("../middleware/auth");
@@ -7,6 +8,9 @@ const path = require("path");
 const { Pegawai, Jabatan } = require("../models");
 const bcrypt = require("bcryptjs");
 const XLSX = require("xlsx");
+
+const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
+
 
 // === Setup Multer ===
 const storage = multer.diskStorage({
@@ -85,7 +89,7 @@ router.post("/upload/:nik/:tipe", authenticateToken, upload.single("image"), asy
       }
 
       // Simpan URL baru
-      const fileUrl = `http://localhost:3001/uploads/${tipe}/${req.file.filename}`;
+      const fileUrl = `${BACKEND_API_URL}/uploads/${tipe}/${req.file.filename}`;
       if (tipe === "foto") {
         pegawai.profile_picture = fileUrl;
       } else {

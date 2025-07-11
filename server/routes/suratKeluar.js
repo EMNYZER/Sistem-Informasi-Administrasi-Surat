@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const shortid = require("shortid");
 const multer = require("multer");
@@ -7,6 +8,9 @@ const router = express.Router();
 const QRCode = require("qrcode");
 const { authenticateToken } = require("../middleware/auth");
 const { SuratKeluar, KategoriSuratKeluar, Pegawai } = require("../models");
+
+const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
+
 
 const lampiranStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -41,7 +45,7 @@ router.post(
   async (req, res) => {
     try {
       const id = req.params.id_surat;
-      const fileUrl = `http://localhost:3001/uploads/lampiran/${req.file.filename}`;
+      const fileUrl = `${BACKEND_API_URL}/uploads/lampiran/${req.file.filename}`;
 
       const surat = await SuratKeluar.findByPk(id);
       if (!surat)
@@ -195,7 +199,7 @@ router.put('/:id_surat', authenticateToken, async (req, res) => {
           width: 200
         });
 
-        req.body.QR_code = `http://localhost:3001/qrcodes/${filename}`;
+        req.body.QR_code = `${BACKEND_API_URL}/qrcodes/${filename}`;
       }
     }
 
