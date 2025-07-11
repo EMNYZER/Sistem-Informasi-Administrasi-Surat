@@ -188,7 +188,7 @@ router.put('/:id_surat', authenticateToken, async (req, res) => {
     if (status === 'disetujui') {
       const surat = await SuratKeluar.findByPk(id_surat);
       if (surat && !surat.QR_code) {
-        const validationUrl = `http://localhost:3000/validation/${id_surat}`;
+        const validationUrl = `${BACKEND_API_URL}/validation/${id_surat}`;
         
         const filename = `${shortid()}.png`;
         const outputPath = path.join(__dirname, '../public/qrcodes', filename);
