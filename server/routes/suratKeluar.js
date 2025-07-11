@@ -10,7 +10,7 @@ const { authenticateToken } = require("../middleware/auth");
 const { SuratKeluar, KategoriSuratKeluar, Pegawai } = require("../models");
 
 const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
-
+const FRONTEND_API_URL = process.env.REACT_APP_FRONTEND_API_URL;
 
 const lampiranStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -188,7 +188,7 @@ router.put('/:id_surat', authenticateToken, async (req, res) => {
     if (status === 'disetujui') {
       const surat = await SuratKeluar.findByPk(id_surat);
       if (surat && !surat.QR_code) {
-        const validationUrl = `${BACKEND_API_URL}/validation/${id_surat}`;
+        const validationUrl = `${FRONTEND_API_URL}/validation/${id_surat}`;
         
         const filename = `${shortid()}.png`;
         const outputPath = path.join(__dirname, '../public/qrcodes', filename);
