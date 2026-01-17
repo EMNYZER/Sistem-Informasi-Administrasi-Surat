@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
 import Menu from "../components/Menu";
 import axios from "axios";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
@@ -22,6 +21,7 @@ function PengaturanSurat() {
     deskripsi: "",
   });
   const [loading, setLoading] = useState(true);
+  const [expandedKategori, setExpandedKategori] = useState(null);
 
   const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
@@ -135,10 +135,23 @@ function PengaturanSurat() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Menu />
-      <div className="flex flex-col flex-1 p-4 lg:ml-48 transition-all duration-200">
-        <Header />
-        <div className="bg-white shadow-sm rounded-lg p-5 mt-2">
-          <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col flex-1 p-2 md:p-4 lg:ml-48 transition-all duration-200">
+        <div className="bg-white shadow-sm rounded-lg p-3 md:p-5 mt-2">
+          {/* Mobile Header */}
+          <div className="md:hidden mb-4">
+            <h1 className="text-lg font-semibold text-gray-800 mb-3">
+              Kategori Surat
+            </h1>
+            <button
+              onClick={() => setShowModal(true)}
+              className="w-full bg-green-600 text-white px-3 py-2 rounded text-sm active:bg-green-700 transition-colors flex items-center justify-center gap-2"
+            >
+              <FaPlus /> Tambah Kategori
+            </button>
+          </div>
+
+          {/* Desktop Header */}
+          <div className="hidden md:flex justify-between items-center mb-4">
             <h1 className="text-xl font-semibold text-gray-800">
               Kategori Surat
             </h1>
@@ -151,71 +164,137 @@ function PengaturanSurat() {
           </div>
 
           {loading ? (
-            <div className="text-center py-4">Loading...</div>
+            <div className="text-center py-4 text-sm md:text-base">Loading...</div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Kode
-                    </th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Kategori
-                    </th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Deskripsi
-                    </th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Aksi
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {kategori.map((item) => (
-                    <tr key={item.kategori_id}>
-                      <td className="px-4 py-2 text-sm text-gray-900">
-                        {item.kode_kategori}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-gray-900">
-                        {item.nama_kategori}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-gray-900">
-                        {item.deskripsi || "-"}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-gray-900">
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleEdit(item)}
-                            className="text-yellow-600 hover:text-yellow-800"
-                          >
-                            <FaEdit />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(item.kode_kategori)}
-                            className="text-red-600 hover:text-red-800"
-                          >
-                            <FaTrash />
-                          </button>
+            <>
+              {/* Mobile Card Layout */}
+              <div className="md:hidden space-y-2">
+                {kategori.map((item) => (
+                  <div key={item.kategori_id} className="bg-gray-50 border border-gray-200 rounded-lg overflow-hidden">
+                    <div 
+                      className="flex justify-between items-center p-3 cursor-pointer"
+                      onClick={() => setExpandedKategori(expandedKategori === item.kategori_id ? null : item.kategori_id)}
+                    >
+                      <h3 className="text-sm font-semibold text-gray-900 flex-1">{item.nama_kategori}</h3>
+                      <div className="flex gap-2 items-center">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit(item);
+                          }}
+                          className="text-yellow-600 active:text-yellow-800 p-1"
+                          title="Edit"
+                        >
+                          <FaEdit size={16} />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(item.kode_kategori);
+                          }}
+                          className="text-red-600 active:text-red-800 p-1"
+                          title="Hapus"
+                        >
+                          <FaTrash size={16} />
+                        </button>
+                        <svg
+                          className={`w-4 h-4 text-gray-500 transition-transform ${expandedKategori === item.kategori_id ? 'rotate-180' : ''}`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+                    {expandedKategori === item.kategori_id && (
+                      <div className="px-3 pb-3 pt-2 bg-white border-t border-gray-200 space-y-2 transition-all duration-200">
+                        <div className="flex items-center text-xs text-gray-700">
+                          <span className="font-medium w-20">Kode:</span>
+                          <span>{item.kode_kategori}</span>
                         </div>
-                      </td>
+                        {item.deskripsi && (
+                          <div className="text-xs text-gray-700">
+                            <span className="font-medium">Deskripsi: </span>
+                            <span>{item.deskripsi}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+                {kategori.length === 0 && (
+                  <div className="text-center py-8 text-gray-500 text-sm">
+                    Tidak ada data kategori
+                  </div>
+                )}
+              </div>
+
+              {/* Desktop Table Layout */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Kode
+                      </th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Kategori
+                      </th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Deskripsi
+                      </th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Aksi
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {kategori.map((item) => (
+                      <tr key={item.kategori_id}>
+                        <td className="px-4 py-2 text-sm text-gray-900">
+                          {item.kode_kategori}
+                        </td>
+                        <td className="px-4 py-2 text-sm text-gray-900">
+                          {item.nama_kategori}
+                        </td>
+                        <td className="px-4 py-2 text-sm text-gray-900">
+                          {item.deskripsi || "-"}
+                        </td>
+                        <td className="px-4 py-2 text-sm text-gray-900">
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleEdit(item)}
+                              className="text-yellow-600 hover:text-yellow-800"
+                            >
+                              <FaEdit />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(item.kode_kategori)}
+                              className="text-red-600 hover:text-red-800"
+                            >
+                              <FaTrash />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
       </div>
 
       {/* Modal Tambah Kategori */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-semibold mb-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 md:p-4 z-50">
+          <div className="bg-white rounded-lg p-4 md:p-6 w-full max-w-md max-h-[95vh] md:max-h-auto overflow-y-auto">
+            <h2 className="text-lg md:text-xl font-semibold mb-4">
               Tambah Kategori Surat
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Kode
@@ -260,17 +339,17 @@ function PengaturanSurat() {
                   placeholder="Masukkan deskripsi kategori (opsional)"
                 />
               </div>
-              <div className="mt-6 flex justify-end gap-2">
+              <div className="mt-4 md:mt-6 flex flex-col md:flex-row justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+                  className="w-full md:w-auto px-4 py-2 text-xs md:text-sm font-medium text-gray-700 bg-gray-100 active:bg-gray-200 md:hover:bg-gray-200 rounded-md"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md"
+                  className="w-full md:w-auto px-4 py-2 text-xs md:text-sm font-medium text-white bg-green-600 active:bg-green-700 md:hover:bg-green-700 rounded-md"
                 >
                   Simpan
                 </button>
@@ -282,10 +361,10 @@ function PengaturanSurat() {
 
       {/* Modal Edit Kategori */}
       {showEditModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-semibold mb-4">Edit Kategori Surat</h2>
-            <form onSubmit={handleEditSubmit} className="space-y-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 md:p-4 z-50">
+          <div className="bg-white rounded-lg p-4 md:p-6 w-full max-w-md max-h-[95vh] md:max-h-auto overflow-y-auto">
+            <h2 className="text-lg md:text-xl font-semibold mb-4">Edit Kategori Surat</h2>
+            <form onSubmit={handleEditSubmit} className="space-y-3 md:space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Kode
@@ -339,17 +418,17 @@ function PengaturanSurat() {
                   placeholder="Masukkan deskripsi kategori (opsional)"
                 />
               </div>
-              <div className="mt-6 flex justify-end gap-2">
+              <div className="mt-4 md:mt-6 flex flex-col md:flex-row justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+                  className="w-full md:w-auto px-4 py-2 text-xs md:text-sm font-medium text-gray-700 bg-gray-100 active:bg-gray-200 md:hover:bg-gray-200 rounded-md"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md"
+                  className="w-full md:w-auto px-4 py-2 text-xs md:text-sm font-medium text-white bg-green-600 active:bg-green-700 md:hover:bg-green-700 rounded-md"
                 >
                   Simpan Perubahan
                 </button>

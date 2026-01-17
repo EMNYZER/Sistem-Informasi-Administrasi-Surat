@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import Menu from "../components/Menu";
-import Header from "../components/Header";
 
 function Laporan() {
   const [laporans, setLaporans] = useState([]);
@@ -133,7 +132,6 @@ function Laporan() {
     <div className="flex min-h-screen bg-gray-100">
       <Menu />
       <div className="flex flex-col flex-1 p-4 lg:ml-48 transition-all duration-200">
-        <Header />
         <div className="">
           {/* Component 1: Form Admin */}
           {isAdmin && (

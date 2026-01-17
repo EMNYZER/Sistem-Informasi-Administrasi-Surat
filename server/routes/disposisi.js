@@ -15,7 +15,7 @@ router.get("/", authenticateToken, async (req, res) => {
           attributes: ["id_surat", "nomor_surat", "perihal", "tanggal_surat", "asal"]
         },
       ],
-      order: [["createdAt", "DESC"]]
+      order: [["tanggal_disposisi", "DESC"]]
     });
 
     res.json(disposisi);

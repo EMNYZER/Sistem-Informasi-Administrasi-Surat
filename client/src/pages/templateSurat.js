@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
 import Menu from "../components/Menu";
 import axios from "axios";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
@@ -83,10 +82,20 @@ function TemplateSurat() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Menu />
-      <div className="flex flex-col flex-1 p-4 lg:ml-48 transition-all duration-200">
-        <Header />
-        <div className="bg-white shadow-sm rounded-lg p-5 mt-2 h-[calc(100vh-100px)] overflow-hidden">
-          <div className="flex justify-end items-center mb-6">
+      <div className="flex flex-col flex-1 p-2 md:p-4 lg:ml-48 transition-all duration-200">
+        <div className="bg-white shadow-sm rounded-lg p-3 md:p-5 mt-2 h-[calc(100vh-100px)] overflow-hidden">
+          {/* Mobile Header */}
+          <div className="md:hidden mb-4">
+            <button
+              onClick={() => navigate("/template-form")}
+              className="w-full bg-green-600 text-white px-4 py-2 rounded-lg text-sm active:bg-green-700 transition-colors flex items-center justify-center gap-2 shadow-sm"
+            >
+              <FaPlus /> Tambah Template
+            </button>
+          </div>
+
+          {/* Desktop Header */}
+          <div className="hidden md:flex justify-end items-center mb-6">
             <button
               onClick={() => navigate("/template-form")}
               className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 transition-colors flex items-center gap-2 shadow-sm"
@@ -134,7 +143,7 @@ function TemplateSurat() {
                         <h2 className="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-200 pb-2">
                           {kategoriName}
                         </h2>
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                           {templatesInKategori.map((template) => (
                             <div
                               key={template.id}

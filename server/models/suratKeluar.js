@@ -1,5 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
   const SuratKeluar = sequelize.define("SuratKeluar", {
+    
     id_surat: {
       type: DataTypes.STRING,
       primaryKey: true,
@@ -71,7 +72,7 @@ module.exports = (sequelize, DataTypes) => {
     QR_code: {
       type: DataTypes.STRING,
       allowNull: true,
-    },
+},
   });
   SuratKeluar.associate = (models) => {
     SuratKeluar.belongsTo(models.KategoriSuratKeluar, {

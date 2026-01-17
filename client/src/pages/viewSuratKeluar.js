@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import logo from "../assets/logo.png";
+// import logo from "../assets/logo.png";
+import kopSurat from "../assets/KOP_surat.jpg";
 
 function ViewSuratKeluar() {
   const { id_surat } = useParams();
@@ -95,7 +96,7 @@ function ViewSuratKeluar() {
       >
         {/* KOP Surat */}
         <div className="text-center border-b-2 border-black pb-2 mb-6">
-          <div className="flex justify-center items-center gap-4 ">
+         {/* <div className="flex justify-center items-center gap-4 ">
             <img src={logo} alt="Logo" className="h-24 w-auto" />
             <div>
               <h1 className="text-xl font-bold">SEKOLAH DASAR ISLAM TERPADU</h1>
@@ -108,7 +109,8 @@ function ViewSuratKeluar() {
                 anaksholehs989@gmail.com
               </p>
             </div>
-          </div>
+          </div> */}
+          <img src={kopSurat} alt="KOP Surat" className="w-full max-h-40 object-contain mx-auto" />
         </div>
 
         {/* Nomor Surat & Tanggal */}
@@ -123,11 +125,6 @@ function ViewSuratKeluar() {
                   {formatDate(surat.tanggal_surat)}
                 </td>
               </tr>
-              {/* <tr>
-                <td>Sifat</td>
-                <td>:</td>
-                <td>{surat.sifat}</td>
-              </tr> */}
               <tr>
                 <td>Lampiran</td>
                 <td>:</td>
@@ -144,12 +141,14 @@ function ViewSuratKeluar() {
 
         {/* Tujuan Surat */}
         <div className="mb-6">
-          {surat.kepada && (
+          {surat.kepada ? (
             <>
               <p className="mb-1">Yth.</p>
               <p className="mb-1">{surat.kepada}</p>
               <p>di Tempat</p>
             </>
+          ) : (
+            <div style={{ minHeight: "48px" }}></div>
           )}
         </div>
 
@@ -199,7 +198,13 @@ function ViewSuratKeluar() {
               <p className="font-bold underline">
                 {kepalaSekolah ? kepalaSekolah.nama : "Nama Kepala Sekolah"}
               </p>
-              <p>NIK. {kepalaSekolah ? kepalaSekolah.NIK : "123456789"}</p>
+              <p>
+                {kepalaSekolah
+                  ? kepalaSekolah.No_induk_yayasan
+                    ? `GTY: ${kepalaSekolah.No_induk_yayasan}`
+                    : `NIK. ${kepalaSekolah.NIK}`
+                  : "NIK. 123456789"}
+              </p>
             </div>
           </div>
         </div>

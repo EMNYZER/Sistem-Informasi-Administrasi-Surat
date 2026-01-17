@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback} from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
 import Menu from "../components/Menu";
 import axios from "axios";
 import { FaPlus } from "react-icons/fa";
@@ -49,7 +48,6 @@ function PilihTemplate() {
     <div className="flex min-h-screen bg-gray-50">
       <Menu />
       <div className="flex flex-col flex-1 p-4 lg:ml-48 transition-all duration-200">
-        <Header />
         <div className="bg-white shadow-sm rounded-lg p-5 mt-2 h-[calc(100vh-100px)] overflow-hidden">
           <div className="flex justify-end mb-4 gap-2">
             <button

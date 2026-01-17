@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Menu from "../components/Menu";
-import Header from "../components/Header";
 import { Outlet } from "react-router-dom";
 import axios from "axios";
 
@@ -312,7 +311,6 @@ function Dashboard() {
     <div className="flex min-h-screen bg-gray-100">
       <Menu />
       <div className="flex flex-col flex-1 p-4 lg:ml-48 transition-all duration-200">
-        <Header />
         <div className="bg-white shadow-md rounded-lg p-6 mt-2">
           {renderCards()}
           <div className="mt-6">

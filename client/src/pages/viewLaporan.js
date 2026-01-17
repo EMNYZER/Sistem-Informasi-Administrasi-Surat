@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import logo from "../assets/logo.png";
+// import logo from "../assets/logo.png";
+import kopSurat from "../assets/KOP_surat.jpg";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 function ViewLaporan() {
   const { id_laporan } = useParams();
@@ -127,6 +130,24 @@ function ViewLaporan() {
     }
   };
 
+  const handleExportExcel = () => {
+    // Siapkan data untuk Excel
+    const headers = getTableHeaders();
+    const rows = dataSurat.map((item, idx) => getTableData(item, idx));
+    const wsData = [headers, ...rows];
+
+    // Buat worksheet dan workbook
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Laporan");
+
+    // Export ke file
+    const cleanJudul = (laporan?.Judul || "Laporan").replace(/[^a-zA-Z0-9-_ ]/g, "").replace(/ +/g, "_");
+    const fileName = `${cleanJudul}.xlsx`;
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    saveAs(new Blob([excelBuffer], { type: "application/octet-stream" }), fileName);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -150,11 +171,26 @@ function ViewLaporan() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
+      {/* Header Button Container */}
+      <div className="flex justify-center gap-4 mb-6">
+        <button
+          onClick={() => window.print()}
+          className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition-colors"
+        >
+          Cetak Laporan
+        </button>
+        <button
+          onClick={handleExportExcel}
+          className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
+        >
+          Export Excel
+        </button>
+      </div>
       {/* A4 Paper Container */}
-      <div className="max-w-[210mm] mx-auto bg-white shadow-lg p-8" style={{ minHeight: '297mm' }}>
+      <div className=" print-area max-w-[210mm] mx-auto bg-white shadow-lg p-8" style={{ minHeight: '297mm' }}>
         {/* KOP */}
         <div className="text-center border-b-2 border-black pb-2 mb-4 ">
-          <div className="flex justify-center items-center gap-4 ">
+         {/* <div className="flex justify-center items-center gap-4 ">
             <img src={logo} alt="Logo" className="h-24 w-auto" />
             <div>
               <h1 className="text-xl font-bold">SEKOLAH DASAR ISLAM TERPADU</h1>
@@ -167,7 +203,8 @@ function ViewLaporan() {
                 anaksholehs989@gmail.com
               </p>
             </div>
-          </div>
+          </div> */}
+          <img src={kopSurat} alt="KOP Surat" className="w-full max-h-40 object-contain mx-auto" />
         </div>
 
         {/* Header Laporan */}
@@ -225,27 +262,19 @@ function ViewLaporan() {
           <div className="mt-8 text-sm">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p><strong>Total Data:</strong> {dataSurat.length} {laporan.jenis_laporan}</p>
+                <p><strong>Jumlah Surat:</strong> {dataSurat.length} {laporan.jenis_laporan}</p>
               </div>
-              <div className="text-right">
+              {/* <div className="text-right">
                 <p>Mataram, {formatDate(new Date())}</p>
                 <p className="mt-8">Yang bertanda tangan,</p>
                 <p className="mt-12">Administrator</p>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Print Button */}
-      <div className="max-w-[210mm] mx-auto mt-4 text-center">
-        <button
-          onClick={() => window.print()}
-          className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition-colors"
-        >
-          Cetak Laporan
-        </button>
-      </div>
+      
     </div>
   );
 }

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
 import Menu from "../components/Menu";
 import axios from "axios";
-import { FaAngleDoubleRight, FaCheck, FaFile } from "react-icons/fa";
+import { FaAngleDoubleRight, FaCheck, FaEye } from "react-icons/fa";
 
 
 function DaftarDisposisi() {
@@ -29,7 +28,7 @@ function DaftarDisposisi() {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         // Filter disposisi yang statusnya bukan 'Selesai'
-        setData(res.data.filter(item => item.disposisi.status_disposisi !== "Selesai"));
+        setData(res.data);
       } catch (err) {
         setData([]);
       } finally {
@@ -59,11 +58,19 @@ function DaftarDisposisi() {
     }
   };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("id-ID", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Menu />
       <div className="flex flex-col flex-1 p-4 lg:ml-48 transition-all duration-200">
-        <Header />
         <div className="bg-white shadow-sm rounded-lg p-5 mt-2">
           <h1 className="text-xl font-semibold text-gray-800 mb-4">Daftar Disposisi Saya</h1>
           {loading ? (
@@ -87,35 +94,37 @@ function DaftarDisposisi() {
                   ) : (
                     data.map((item) => (
                       <tr key={item.id_disposisi}>
-                        <td className="px-4 py-2 whitespace-nowrap">{new Date(item.disposisi.tanggal_disposisi).toLocaleDateString()}</td>
+                        <td className="px-4 py-2 whitespace-nowrap">{formatDate(item.disposisi.tanggal_disposisi)}</td>
                         <td className="px-4 py-2 whitespace-nowrap">{item.disposisi.suratMasuk?.nomor_surat || '-'}</td>
                         <td className="px-4 py-2 whitespace-nowrap">{item.disposisi.suratMasuk?.perihal || '-'}</td>
                         <td className="px-4 py-2 text-center">
-                          <button
-                            onClick={() => handlePreview(item.id_disposisi)}
-                            className="inline-flex items-center px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium rounded shadow mr-2"
-                            title="Preview"
-                          >
-                            <FaFile/>
-                          </button>
-                          {userLevel === "tingkat 2" && (
-                            <>
-                              <button
-                                onClick={() => navigate(`/teruskan-disposisi/${item.id_disposisi}`)}
-                                className="inline-flex items-center px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-xs font-medium rounded shadow mr-2"
-                                title="Teruskan"
-                              >
-                                <FaAngleDoubleRight/>
-                              </button>
-                              <button
-                                onClick={() => handleTandaiSelesai(item.id_disposisi)}
-                                className="inline-flex items-center px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded shadow"
-                                title="Tandai Selesai"
-                              >
-                                <FaCheck/>
-                              </button>
-                            </>
-                          )}
+                          <div className="flex items-center justify-center gap-2">
+                            <button
+                              onClick={() => handlePreview(item.id_disposisi)}
+                              className="text-blue-600 hover:text-blue-800"
+                              title="Preview"
+                            >
+                              <FaEye />
+                            </button>
+                            {userLevel === "tingkat 2" && (
+                              <>
+                                <button
+                                  onClick={() => navigate(`/teruskan-disposisi/${item.id_disposisi}`)}
+                                  className="text-yellow-600 hover:text-yellow-800"
+                                  title="Teruskan"
+                                >
+                                  <FaAngleDoubleRight/>
+                                </button>
+                                <button
+                                  onClick={() => handleTandaiSelesai(item.id_disposisi)}
+                                  className="text-green-600 hover:text-green-800"
+                                  title="Tandai Selesai"
+                                >
+                                  <FaCheck/>
+                                </button>
+                              </>
+                            )}
+                          </div>
                           {/* {userLevel === "tingkat 3" && (
                           )} */}
                         </td>

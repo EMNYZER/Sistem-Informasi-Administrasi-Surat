@@ -125,7 +125,7 @@ router.get("/kepala-sekolah", async (req, res) => {
           attributes: [],
         },
       ],
-      attributes: ["nama", "NIK", "tanda_tangan"],
+      attributes: ["nama", "NIK", "tanda_tangan", "No_induk_yayasan"],
     });
     if (!kepala) {
       return res.status(404).json({
@@ -297,6 +297,19 @@ router.post("/change-password/:nik", authenticateToken, async (req, res) => {
   }
 });
 
+// Helper function to validate if field is empty or only whitespace
+const validateRequiredField = (value, fieldName) => {
+  // Handle string fields
+  if (typeof value === 'string' && (!value || value.trim() === '')) {
+    return `Please fill up this field`;
+  }
+  // Handle non-string fields (like numbers, dates, etc.)
+  if (value === null || value === undefined || value === '') {
+    return `Please fill up this field`;
+  }
+  return null;
+};
+
 // menambahkan pegawai sekaligus menjadi user
 router.post("/", async (req, res) => {
   try {
@@ -319,16 +332,53 @@ router.post("/", async (req, res) => {
       role,
     } = req.body;
 
-    // Validasi data yang diperlukan
-    if (!NIK || !nama || !email || !role) {
+    // Validasi field required - check for empty or whitespace only
+    const validationErrors = {};
+    
+    const requiredFields = {
+      NIK: 'NIK',
+      nama: 'Nama',
+      tempat_lahir: 'Tempat Lahir',
+      tanggal_lahir: 'Tanggal Lahir',
+      jenis_kelamin: 'Jenis Kelamin',
+      agama: 'Agama',
+      no_HP: 'No. HP',
+      email: 'Email',
+      alamat: 'Alamat',
+      jabatan_id: 'Jabatan',
+      role: 'Role',
+      status: 'Status'
+    };
+
+    Object.keys(requiredFields).forEach((field) => {
+      const error = validateRequiredField(req.body[field], requiredFields[field]);
+      if (error) {
+        validationErrors[field] = error;
+      }
+    });
+
+    // Validate email format
+    if (email && email.trim() !== '') {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email.trim())) {
+        validationErrors.email = 'Format email tidak valid';
+      }
+    }
+
+    if (Object.keys(validationErrors).length > 0) {
       return res.status(400).json({
         status: "error",
-        message: "Data tidak lengkap. NIK, nama, email, dan role harus diisi",
+        message: "Validasi gagal",
+        errors: validationErrors,
       });
     }
 
+    // Trim all string values before processing
+    const trimmedEmail = email ? email.trim() : email;
+    const trimmedNIK = NIK ? NIK.trim() : NIK;
+
     // Cek apakah email sudah terdaftar
-    const existingUser = await Pegawai.findOne({ where: { email } });
+    const existingUser = await Pegawai.findOne({ where: { email: trimmedEmail } });
     if (existingUser) {
       return res.status(400).json({
         status: "error",
@@ -337,7 +387,7 @@ router.post("/", async (req, res) => {
     }
 
     // Cek apakah NIK sudah terdaftar
-    const existingNIK = await Pegawai.findOne({ where: { NIK } });
+    const existingNIK = await Pegawai.findOne({ where: { NIK: trimmedNIK } });
     if (existingNIK) {
       return res.status(400).json({
         status: "error",
@@ -346,27 +396,27 @@ router.post("/", async (req, res) => {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(NIK, 10);
+    const hashedPassword = await bcrypt.hash(trimmedNIK, 10);
 
-    // Buat data pegawai baru
+    // Buat data pegawai baru dengan trimmed values
     const newPegawai = await Pegawai.create({
-      NIK,
-      nama,
-      jenis_kelamin,
-      tempat_lahir,
+      NIK: trimmedNIK,
+      nama: nama ? nama.trim() : nama,
+      jenis_kelamin: jenis_kelamin ? jenis_kelamin.trim() : jenis_kelamin,
+      tempat_lahir: tempat_lahir ? tempat_lahir.trim() : tempat_lahir,
       tanggal_lahir,
-      alamat,
-      agama,
+      alamat: alamat ? alamat.trim() : alamat,
+      agama: agama ? agama.trim() : agama,
       jabatan_id,
-      status: status || "Aktif",
-      NRG,
-      UKG,
-      NUPTK,
-      No_induk_yayasan,
-      no_HP,
-      email,
+      status: status ? status.trim() : (status || "Aktif"),
+      NRG: NRG ? NRG.trim() : NRG,
+      UKG: UKG ? UKG.trim() : UKG,
+      NUPTK: NUPTK ? NUPTK.trim() : NUPTK,
+      No_induk_yayasan: No_induk_yayasan ? No_induk_yayasan.trim() : No_induk_yayasan,
+      no_HP: no_HP ? no_HP.trim() : no_HP,
+      email: trimmedEmail,
       password: hashedPassword,
-      role,
+      role: role ? role.trim() : role,
     });
 
     // Kirim response sukses
@@ -387,41 +437,170 @@ router.post("/", async (req, res) => {
 
 // Import Data Pegawai by xlsx
 router.post("/import", authenticateToken, upload.single("file"), async (req, res) => {
+  let filePath = null;
   try {
     const file = req.file;
     if (!file) return res.status(400).json({ message: "File tidak ditemukan" });
 
-    const workbook = XLSX.readFile(file.path);
-    const sheetName = workbook.SheetNames[0];
-    const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+    filePath = file.path;
+    const workbook = XLSX.readFile(filePath);
+    
+    // Validasi sheet name - harus ada sheet
+    if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
+      return res.status(400).json({ 
+        message: "File Excel tidak valid. Pastikan file memiliki sheet yang valid." 
+      });
+    }
 
-    // Hash password for each row (NIK as default password)
-    const pegawaiData = await Promise.all(data.map(async row => ({
-      NIK: row.NIK,
-      nama: row.nama,
-      jenis_kelamin: row.jenis_kelamin,
-      tempat_lahir: row.tempat_lahir,
-      tanggal_lahir: row.tanggal_lahir,
-      alamat: row.alamat,
-      agama: row.agama,
-      jabatan_id: row.jabatan_id,
-      status: row.status || "Aktif",
-      NRG: row.NRG,
-      UKG: row.UKG,
-      NUPTK: row.NUPTK,
-      No_induk_yayasan: row.No_induk_yayasan,
-      no_HP: row.no_HP,
-      email: row.email,
-      role: row.role || "User",
-      password: row.NIK ? await bcrypt.hash(row.NIK.toString(), 10) : undefined,
-    })));
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    
+    // Validasi header kolom yang diharapkan
+    const expectedHeaders = [
+      'NIK', 'nama', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 
+      'alamat', 'agama', 'jabatan_id', 'status', 'NRG', 'UKG', 'NUPTK', 
+      'No_induk_yayasan', 'no_HP', 'email', 'role'
+    ];
+    
+    // Ambil header dari baris pertama
+    const headerRow = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: null })[0];
+    if (!headerRow || headerRow.length === 0) {
+      return res.status(400).json({ 
+        message: "File Excel tidak memiliki header. Pastikan file sesuai dengan template yang disediakan." 
+      });
+    }
+
+    // Normalize header (convert to lowercase and trim)
+    const actualHeaders = headerRow.map(h => h ? String(h).trim().toLowerCase() : '');
+    const normalizedExpectedHeaders = expectedHeaders.map(h => h.toLowerCase());
+
+    // Cek apakah semua header yang diharapkan ada
+    const missingHeaders = normalizedExpectedHeaders.filter(expected => 
+      !actualHeaders.includes(expected)
+    );
+
+    if (missingHeaders.length > 0) {
+      return res.status(400).json({ 
+        message: `Template tidak sesuai. Pastikan file sesuai dengan template yang disediakan.`,
+        missingHeaders: missingHeaders
+      });
+    }
+
+    // Convert to JSON dengan header yang benar
+    const data = XLSX.utils.sheet_to_json(worksheet);
+
+    if (!data || data.length === 0) {
+      return res.status(400).json({ 
+        message: "File Excel tidak memiliki data. Pastikan ada data selain header." 
+      });
+    }
+
+    // Validasi data per baris
+    const validationErrors = [];
+    const pegawaiData = [];
+
+    for (let i = 0; i < data.length; i++) {
+      const row = data[i];
+      const rowNumber = i + 2; // +2 karena baris 1 adalah header dan index dimulai dari 0
+      const rowErrors = [];
+
+      // Validasi field required
+      const requiredFields = {
+        'NIK': 'NIK',
+        'nama': 'Nama',
+        'jenis_kelamin': 'Jenis Kelamin',
+        'tempat_lahir': 'Tempat Lahir',
+        'tanggal_lahir': 'Tanggal Lahir',
+        'agama': 'Agama',
+        'no_HP': 'No. HP',
+        'email': 'Email',
+        'alamat': 'Alamat',
+        'jabatan_id': 'Jabatan ID'
+      };
+
+      Object.keys(requiredFields).forEach(field => {
+        const value = row[field];
+        if (!value || (typeof value === 'string' && value.trim() === '')) {
+          rowErrors.push(`${requiredFields[field]} harus diisi`);
+        }
+      });
+
+      // Validasi format email
+      if (row.email && row.email.trim() !== '') {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(String(row.email).trim())) {
+          rowErrors.push('Format email tidak valid');
+        }
+      }
+
+      if (rowErrors.length > 0) {
+        validationErrors.push({
+          row: rowNumber,
+          errors: rowErrors
+        });
+      } else {
+        // Hash password for each row (NIK as default password)
+        pegawaiData.push({
+          NIK: String(row.NIK).trim(),
+          nama: String(row.nama).trim(),
+          jenis_kelamin: String(row.jenis_kelamin).trim(),
+          tempat_lahir: String(row.tempat_lahir).trim(),
+          tanggal_lahir: row.tanggal_lahir,
+          alamat: row.alamat ? String(row.alamat).trim() : null,
+          agama: String(row.agama).trim(),
+          jabatan_id: row.jabatan_id ? parseInt(row.jabatan_id) : null,
+          status: row.status ? String(row.status).trim() : "Aktif",
+          NRG: row.NRG ? String(row.NRG).trim() : null,
+          UKG: row.UKG ? String(row.UKG).trim() : null,
+          NUPTK: row.NUPTK ? String(row.NUPTK).trim() : null,
+          No_induk_yayasan: row.No_induk_yayasan ? String(row.No_induk_yayasan).trim() : null,
+          no_HP: String(row.no_HP).trim(),
+          email: String(row.email).trim(),
+          role: row.role ? String(row.role).trim() : "User",
+          password: row.NIK ? await bcrypt.hash(String(row.NIK).trim(), 10) : undefined,
+        });
+      }
+    }
+
+    if (validationErrors.length > 0) {
+      return res.status(400).json({ 
+        message: "Validasi data gagal. Silakan periksa data di file Excel.",
+        errors: validationErrors,
+        totalErrors: validationErrors.length
+      });
+    }
+
+    if (pegawaiData.length === 0) {
+      return res.status(400).json({ 
+        message: "Tidak ada data yang valid untuk diimport." 
+      });
+    }
 
     // Bulk insert, ignore duplicates by NIK or email
     await Pegawai.bulkCreate(pegawaiData, { ignoreDuplicates: true });
 
-    res.json({ message: "Import data pegawai berhasil" });
+    // Cleanup file setelah selesai
+    if (filePath && fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
+    res.json({ 
+      message: `Import data pegawai berhasil. ${pegawaiData.length} data berhasil diimport.`,
+      imported: pegawaiData.length
+    });
   } catch (err) {
-    res.status(500).json({ message: "Gagal import", error: err.message });
+    // Cleanup file jika terjadi error
+    if (filePath && fs.existsSync(filePath)) {
+      try {
+        fs.unlinkSync(filePath);
+      } catch (cleanupErr) {
+        console.error("Error cleaning up file:", cleanupErr);
+      }
+    }
+    res.status(500).json({ 
+      message: "Gagal import", 
+      error: err.message 
+    });
   }
 });
 
@@ -439,23 +618,63 @@ router.put("/:NIK", authenticateToken, async (req, res) => {
       });
     }
 
-    // Update data pegawai
+    // Validasi field required - check for empty or whitespace only
+    const validationErrors = {};
+    
+    const requiredFields = {
+      nama: 'Nama',
+      tempat_lahir: 'Tempat Lahir',
+      tanggal_lahir: 'Tanggal Lahir',
+      jenis_kelamin: 'Jenis Kelamin',
+      agama: 'Agama',
+      no_HP: 'No. HP',
+      email: 'Email',
+      alamat: 'Alamat',
+      jabatan_id: 'Jabatan',
+      role: 'Role',
+      status: 'Status'
+    };
+
+    Object.keys(requiredFields).forEach((field) => {
+      const error = validateRequiredField(req.body[field], requiredFields[field]);
+      if (error) {
+        validationErrors[field] = error;
+      }
+    });
+
+    // Validate email format
+    if (req.body.email && req.body.email.trim() !== '') {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(req.body.email.trim())) {
+        validationErrors.email = 'Format email tidak valid';
+      }
+    }
+
+    if (Object.keys(validationErrors).length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Gagal Memperbarui Profile",
+        errors: validationErrors,
+      });
+    }
+
+    // Trim all string values before updating
     const updatedData = {
-      nama: req.body.nama,
-      jenis_kelamin: req.body.jenis_kelamin,
-      tempat_lahir: req.body.tempat_lahir,
+      nama: req.body.nama ? req.body.nama.trim() : req.body.nama,
+      jenis_kelamin: req.body.jenis_kelamin ? req.body.jenis_kelamin.trim() : req.body.jenis_kelamin,
+      tempat_lahir: req.body.tempat_lahir ? req.body.tempat_lahir.trim() : req.body.tempat_lahir,
       tanggal_lahir: req.body.tanggal_lahir,
-      alamat: req.body.alamat,
-      agama: req.body.agama,
+      alamat: req.body.alamat ? req.body.alamat.trim() : req.body.alamat,
+      agama: req.body.agama ? req.body.agama.trim() : req.body.agama,
       jabatan_id: req.body.jabatan_id,
-      status: req.body.status,
-      NRG: req.body.NRG,
-      UKG: req.body.UKG,
-      NUPTK: req.body.NUPTK,
-      No_induk_yayasan: req.body.No_induk_yayasan,
-      no_HP: req.body.no_HP,
-      email: req.body.email,
-      role: req.body.role,
+      status: req.body.status ? req.body.status.trim() : req.body.status,
+      NRG: req.body.NRG ? req.body.NRG.trim() : req.body.NRG,
+      UKG: req.body.UKG ? req.body.UKG.trim() : req.body.UKG,
+      NUPTK: req.body.NUPTK ? req.body.NUPTK.trim() : req.body.NUPTK,
+      No_induk_yayasan: req.body.No_induk_yayasan ? req.body.No_induk_yayasan.trim() : req.body.No_induk_yayasan,
+      no_HP: req.body.no_HP ? req.body.no_HP.trim() : req.body.no_HP,
+      email: req.body.email ? req.body.email.trim() : req.body.email,
+      role: req.body.role ? req.body.role.trim() : req.body.role,
     };
 
     await pegawai.update(updatedData);

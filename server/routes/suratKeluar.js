@@ -24,7 +24,6 @@ const lampiranStorage = multer.diskStorage({
     cb(null, uniqueName);
   },
 });
-
 const uploadLampiran = multer({
   storage: lampiranStorage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
@@ -36,13 +35,8 @@ const uploadLampiran = multer({
     }
   },
 });
-
 // upload lampiran by id
-router.post(
-  "/upload-lampiran/:id_surat",
-  authenticateToken,
-  uploadLampiran.single("file"),
-  async (req, res) => {
+router.post("/upload-lampiran/:id_surat", authenticateToken, uploadLampiran.single("file"),async (req, res) => {
     try {
       const id = req.params.id_surat;
       const fileUrl = `${BACKEND_API_URL}/uploads/lampiran/${req.file.filename}`;
@@ -63,7 +57,6 @@ router.post(
     }
   },
 );
-
 // Get all surat keluar
 router.get("/", authenticateToken, async (req, res) => {
   try {
@@ -72,7 +65,7 @@ router.get("/", authenticateToken, async (req, res) => {
         { model: KategoriSuratKeluar, as: "kategori" },
         { model: Pegawai, as: "pegawai" },
       ],
-      order: [["id_surat", "DESC"]],
+      order: [["tanggal_surat", "DESC"]],
     });
     res.json(surat);
   } catch (error) {
@@ -82,7 +75,6 @@ router.get("/", authenticateToken, async (req, res) => {
     });
   }
 });
-
 // Get all surat keluar by NIK
 router.get("/nik/:nik", authenticateToken, async (req, res) => {
   try {
@@ -93,7 +85,7 @@ router.get("/nik/:nik", authenticateToken, async (req, res) => {
         { model: KategoriSuratKeluar, as: "kategori" },
         { model: Pegawai, as: "pegawai" },
       ],
-      order: [["id_surat", "DESC"]],
+      order: [["tanggal_surat", "DESC"]],
     });
     res.json(surat);
   } catch (error) {
@@ -103,7 +95,6 @@ router.get("/nik/:nik", authenticateToken, async (req, res) => {
     });
   }
 });
-
 // Get all surat keluar by status
 router.get("/status/:status", authenticateToken, async (req, res) => {
   try {
@@ -114,7 +105,7 @@ router.get("/status/:status", authenticateToken, async (req, res) => {
         { model: KategoriSuratKeluar, as: "kategori" },
         { model: Pegawai, as: "pegawai" },
       ],
-      order: [["id_surat", "DESC"]],
+      order: [["tanggal_surat", "DESC"]],
     });
     res.json(surat);
   } catch (error) {
@@ -124,7 +115,6 @@ router.get("/status/:status", authenticateToken, async (req, res) => {
     });
   }
 });
-
 // Get surat keluar by id
 router.get("/:id_surat", authenticateToken, async (req, res) => {
   try {
@@ -144,7 +134,6 @@ router.get("/:id_surat", authenticateToken, async (req, res) => {
     });
   }
 });
-
 // Get surat keluar by id for validation
 router.get("/valid/:id_surat", async (req, res) => {
   try {
@@ -164,7 +153,6 @@ router.get("/valid/:id_surat", async (req, res) => {
     });
   }
 });
-
 // Create surat keluar
 router.post("/", authenticateToken, async (req, res) => {
   try {
@@ -178,7 +166,6 @@ router.post("/", authenticateToken, async (req, res) => {
     });
   }
 });
-
 // Update surat keluar
 router.put('/:id_surat', authenticateToken, async (req, res) => {
   try {
@@ -210,7 +197,6 @@ router.put('/:id_surat', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Terjadi kesalahan saat mengupdate surat keluar', message: error.message });
   }
 });
-
 // Delete surat keluar
 router.delete("/:id_surat", authenticateToken, async (req, res) => {
   try {
@@ -263,7 +249,6 @@ router.delete("/:id_surat", authenticateToken, async (req, res) => {
     });
   }
 });
-
 // Generate nomor surat
 router.post("/generate-nomor/:id_surat", authenticateToken, async (req, res) => {
     try {
@@ -271,27 +256,12 @@ router.post("/generate-nomor/:id_surat", authenticateToken, async (req, res) => 
       const surat = await SuratKeluar.findByPk(id_surat);
       if (!surat)
         return res.status(404).json({ error: "Surat keluar tidak ditemukan" });
-
       // Ambil tahun dan bulan dari tanggal_surat
       const tanggal = new Date(surat.tanggal_surat);
       const tahun = tanggal.getFullYear();
       const bulan = tanggal.getMonth() + 1;
-      const bulanRomawi = [
-        "I",
-        "II",
-        "III",
-        "IV",
-        "V",
-        "VI",
-        "VII",
-        "VIII",
-        "IX",
-        "X",
-        "XI",
-        "XII",
-      ][bulan - 1];
+      const bulanRomawi = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII",][bulan - 1];
       const kode_kategori = surat.kode_kategori;
-
       // Cari nomor urut terakhir untuk tahun & kategori yang sama
       const lastSurat = await SuratKeluar.findOne({
         where: {
@@ -310,8 +280,6 @@ router.post("/generate-nomor/:id_surat", authenticateToken, async (req, res) => 
       }
       // Format nomor surat
       const nomor_surat = `${nomor_urut}/${kode_kategori}/SDITASM/${bulanRomawi}/${tahun}`;
-
-      // Update surat
       await SuratKeluar.update(
         { nomor_urut_surat: nomor_urut, nomor_surat },
         { where: { id_surat } },

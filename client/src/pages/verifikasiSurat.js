@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback} from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
 import Menu from "../components/Menu";
 import axios from "axios";
 import { FaEye, FaInfoCircle } from "react-icons/fa";
@@ -47,7 +46,7 @@ function VerifikasiSurat() {
     const date = new Date(dateString);
     return date.toLocaleDateString("id-ID", {
       day: "2-digit",
-      month: "2-digit",
+      month: "long",
       year: "numeric",
     });
   };
@@ -111,7 +110,6 @@ function VerifikasiSurat() {
     <div className="flex min-h-screen bg-gray-50">
       <Menu />
       <div className="flex flex-col flex-1 p-4 lg:ml-48 transition-all duration-200">
-        <Header />
         <div className="bg-white shadow-sm rounded-lg p-5 mt-2">
           <div className="mb-4">
             <h1 className="text-xl font-semibold text-gray-800">
@@ -211,106 +209,230 @@ function VerifikasiSurat() {
 
       {/* Modal Detail Surat */}
       {showModal && selectedSurat && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-xl">
+            {/* Header Modal */}
+            <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-green-50 to-blue-50">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-bold text-gray-900">
                 Detail Surat Keluar
               </h2>
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="text-gray-400 hover:text-gray-600 text-2xl font-semibold leading-none"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
 
+            {/* Content Modal */}
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="space-y-6">
+                {/* Grid 2 Kolom: Informasi Surat (Kiri) dan Informasi Pengirim & Penerima (Kanan) */}
+                <div className="grid grid-cols-2 gap-6">
+                  {/* Kolom Kiri: Informasi Surat */}
+                  <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <h3 className="text-sm font-semibold text-gray-700 uppercase mb-4 pb-2 border-b">
+                      Informasi Surat
+                    </h3>
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">
+                        <label className="block text-xs font-medium text-gray-500 mb-1">
                       Nomor Surat
                     </label>
-                    <div className="mt-1 text-sm text-gray-900">
-                      {selectedSurat.nomor_surat || "-"}
+                        <div className="text-sm text-gray-900 font-medium">
+                          {selectedSurat.nomor_surat || (
+                            <span className="text-gray-400 italic">Belum ada nomor surat</span>
+                          )}
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Tanggal
+                        <label className="block text-xs font-medium text-gray-500 mb-1">
+                          Tanggal Surat
                     </label>
-                    <div className="mt-1 text-sm text-gray-900">
+                        <div className="text-sm text-gray-900">
                       {formatDate(selectedSurat.tanggal_surat)}
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">
+                        <label className="block text-xs font-medium text-gray-500 mb-1">
                       Kategori
                     </label>
-                    <div className="mt-1 text-sm text-gray-900">
+                        <div className="text-sm text-gray-900">
                       {selectedSurat.kategori?.nama_kategori || "-"}
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Sifat
+                        <label className="block text-xs font-medium text-gray-500 mb-1">
+                          Sifat Surat
                     </label>
-                    <div className="mt-1 text-sm text-gray-900">
+                        <span
+                          className={`inline-block px-2.5 py-1 rounded text-xs font-semibold
+                            ${selectedSurat.sifat === "Biasa" ? "bg-gray-200 text-gray-700" : ""}
+                            ${selectedSurat.sifat === "Segera" ? "bg-yellow-200 text-yellow-800" : ""}
+                            ${selectedSurat.sifat === "Sangat Segera" ? "bg-red-200 text-red-700" : ""}
+                            ${selectedSurat.sifat === "Rahasia" ? "bg-blue-200 text-blue-700" : ""}
+                          `}
+                        >
                       {selectedSurat.sifat}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                  <div className="col-span-1">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Perihal
+
+                  {/* Kolom Kanan: Informasi Pengirim & Penerima */}
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    {/* Informasi Pengirim */}
+                    <div className="mb-4">
+                      <h3 className="text-sm font-semibold text-gray-700 uppercase mb-3 pb-2 border-b">
+                        Informasi Pengirim
+                      </h3>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">
+                            Nama Pegawai
+                          </label>
+                          <div className="text-sm text-gray-900 font-medium">
+                            {selectedSurat.pegawai?.nama || "-"}
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">
+                            NIK
                     </label>
-                    <div className="mt-1 text-sm text-gray-900">
-                      {selectedSurat.perihal}
+                          <div className="text-sm text-gray-900">
+                            {selectedSurat.NIK || "-"}
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="col-span-1">
-                    <label className="block text-sm font-medium text-gray-700">
+
+                    {/* Informasi Penerima */}
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-700 uppercase mb-3 pb-2 border-b">
+                        Informasi Penerima
+                      </h3>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">
                       Tujuan
                     </label>
-                    <div className="mt-1 text-sm text-gray-900">
-                      {selectedSurat.tujuan}
+                          <div className="text-sm text-gray-900">
+                            {selectedSurat.tujuan || "-"}
+                          </div>
+                        </div>
+                        {selectedSurat.kepada && (
+                          <div>
+                            <label className="block text-xs font-medium text-gray-500 mb-1">
+                              Kepada
+                            </label>
+                            <div className="text-sm text-gray-900">
+                              {selectedSurat.kepada}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                  {selectedSurat.kepada && (
-                    <div className="col-span-2">
-                      <label className="block text-sm font-medium text-gray-700">
-                        Kepada
+                </div>
+
+                {/* Perihal dan Isi Surat */}
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 uppercase mb-3 pb-2 border-b">
+                    Isi Surat
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-1">
+                        Perihal
                       </label>
-                      <div className="mt-1 text-sm text-gray-900">
-                        {selectedSurat.kepada}
+                      <div className="text-sm text-gray-900 font-medium">
+                        {selectedSurat.perihal}
+                      </div>
+                    </div>
+                    {selectedSurat.isi_surat && (
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">
+                          Isi Surat
+                        </label>
+                        <div 
+                          className="text-sm text-gray-700 bg-gray-50 p-3 rounded border max-h-40 overflow-y-auto"
+                          dangerouslySetInnerHTML={{ __html: selectedSurat.isi_surat }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Lampiran */}
+                {selectedSurat.lampiran && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-700 uppercase mb-3 pb-2 border-b">
+                      Lampiran
+                    </h3>
+                    <div className="text-sm text-gray-900">
+                      {selectedSurat.lampiran}
+                      {selectedSurat.lampiran_file && (
+                        <span className="ml-2 text-blue-600">(Ada file)</span>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Catatan Sebelumnya */}
+                {selectedSurat.catatan && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-700 uppercase mb-3 pb-2 border-b">
+                      Catatan Sebelumnya
+                    </h3>
+                    <div className="text-sm text-gray-700 bg-yellow-50 p-3 rounded border border-yellow-200">
+                      {selectedSurat.catatan}
                       </div>
                     </div>
                   )}
-                  <div className="col-span-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Catatan
-                    </label>
+
+                {/* Catatan Verifikasi */}
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 uppercase mb-3 pb-2 border-b">
+                    Catatan Verifikasi
+                  </h3>
                     <textarea
                       value={catatan}
                       onChange={(e) => setCatatan(e.target.value)}
-                      className="mt-1 block w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
-                      rows="3"
-                      placeholder="Tambahkan catatan untuk surat ini..."
+                    className="block w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 resize-none"
+                    rows="4"
+                    placeholder="Tambahkan catatan verifikasi (wajib untuk revisi)..."
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="mt-6 flex justify-end gap-2">
+            {/* Footer Modal - Actions */}
+            <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+              <div className="flex justify-between items-center gap-3">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 border border-gray-300 rounded-md transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 rounded-md transition-colors"
                 >
-                  Tutup
+                  Batal
                 </button>
+                <div className="flex gap-2">
                 <button
                   onClick={() => {
+                      if (!catatan.trim()) {
+                        alert("Harap isi catatan sebelum merevisi surat!");
+                        return;
+                      }
                     if (
                       window.confirm(
-                        "Apakah Anda yakin ingin merevisi surat ini? Pastikan catatan revisi sudah diisi.",
+                          "Apakah Anda yakin ingin merevisi surat ini?",
                       )
                     ) {
                       handleVerifikasi("revisi");
                     }
                   }}
-                  className="px-4 py-2 text-sm font-medium text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 border border-gray-300 rounded-md transition-colors"
+                    className="px-5 py-2 text-sm font-medium text-yellow-700 bg-yellow-100 hover:bg-yellow-200 border border-yellow-300 rounded-md transition-colors"
                 >
                   Revisi
                 </button>
@@ -324,7 +446,7 @@ function VerifikasiSurat() {
                       handleVerifikasi("diproses");
                     }
                   }}
-                  className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 border border-gray-300 rounded-md transition-colors"
+                    className="px-5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors shadow-sm"
                 >
                   Teruskan
                 </button>
@@ -338,10 +460,11 @@ function VerifikasiSurat() {
                       handleVerifikasi("ditolak");
                     }
                   }}
-                  className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 border gray-300 rounded-md transition-colors"
+                    className="px-5 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors shadow-sm"
                 >
                   Tolak
                 </button>
+                </div>
               </div>
             </div>
           </div>

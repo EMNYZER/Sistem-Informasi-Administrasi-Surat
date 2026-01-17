@@ -22,14 +22,17 @@ const jabatan = require("./routes/jabatan");
 app.use("/jabatan", jabatan);
 const kategori = require("./routes/kategori");
 app.use("/kategori", kategori);
-const suratKeluar = require("./routes/suratKeluar");
-app.use("/suratKeluar", suratKeluar);
-const suratMasuk = require("./routes/suratMasuk");
-app.use("/suratMasuk", suratMasuk);
 const template = require("./routes/template");
 app.use("/template", template);
+
+const suratKeluar = require("./routes/suratKeluar");
+app.use("/suratKeluar", suratKeluar);
+
+const suratMasuk = require("./routes/suratMasuk");
+app.use("/suratMasuk", suratMasuk);
 const disposisi = require("./routes/disposisi");
 app.use("/disposisi", disposisi);
+
 const laporan = require("./routes/laporan");
 app.use("/laporan", laporan);
 
@@ -56,7 +59,7 @@ db.sequelize.sync().then(() => {
     res.sendFile(filePath);
   });
 
-  // Start cron job untuk cleanup expired laporan
+  // Start cron job untuk cleanup expired data
   startCleanupCron();
 
   app.listen(PORT, () => {

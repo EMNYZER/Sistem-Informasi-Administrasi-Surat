@@ -2,13 +2,6 @@ const express = require("express");
 const router = express.Router();
 const shortid = require("shortid");
 const { Laporan } = require("../models");
-const { 
-  cleanupExpiredLaporan, 
-  cleanupExpiredMurid, 
-  cleanupExpiredSuratKeluar, 
-  cleanupExpiredSuratMasuk,
-  runAllCleanup 
-} = require("../cron/cleanupExpiredData");
 
 // CREATE - Membuat laporan baru
 router.post("/", async (req, res) => {
@@ -187,125 +180,6 @@ router.get("/filter/jenis/:jenis", async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Gagal mengambil data laporan berdasarkan jenis",
-      error: error.message
-    });
-  }
-});
-
-// GET - Mendapatkan laporan yang belum expired
-router.get("/filter/active", async (req, res) => {
-  try {
-    const currentDate = new Date();
-    
-    const laporans = await Laporan.findAll({
-      where: {
-        Expired_Date: {
-          [require('sequelize').Op.gt]: currentDate
-        }
-      },
-      order: [['createdAt', 'DESC']]
-    });
-    
-    res.status(200).json({
-      success: true,
-      message: "Data laporan aktif berhasil diambil",
-      data: laporans
-    });
-  } catch (error) {
-    console.error("Error fetching active laporan:", error);
-    res.status(500).json({
-      success: false,
-      message: "Gagal mengambil data laporan aktif",
-      error: error.message
-    });
-  }
-});
-
-// POST - Manual cleanup expired laporan (untuk testing/admin)
-router.post("/cleanup-expired", async (req, res) => {
-  try {
-    await cleanupExpiredLaporan();
-    res.status(200).json({
-      success: true,
-      message: "Cleanup expired laporan berhasil dijalankan"
-    });
-  } catch (error) {
-    console.error("Error manual cleanup:", error);
-    res.status(500).json({
-      success: false,
-      message: "Gagal menjalankan cleanup",
-      error: error.message
-    });
-  }
-});
-
-// POST - Manual cleanup semua data expired (untuk testing/admin)
-router.post("/cleanup-all", async (req, res) => {
-  try {
-    await runAllCleanup();
-    res.status(200).json({
-      success: true,
-      message: "Cleanup semua data expired berhasil dijalankan"
-    });
-  } catch (error) {
-    console.error("Error manual cleanup all:", error);
-    res.status(500).json({
-      success: false,
-      message: "Gagal menjalankan cleanup",
-      error: error.message
-    });
-  }
-});
-
-// POST - Manual cleanup data murid expired (untuk testing/admin)
-router.post("/cleanup-murid", async (req, res) => {
-  try {
-    await cleanupExpiredMurid();
-    res.status(200).json({
-      success: true,
-      message: "Cleanup data murid expired berhasil dijalankan"
-    });
-  } catch (error) {
-    console.error("Error manual cleanup murid:", error);
-    res.status(500).json({
-      success: false,
-      message: "Gagal menjalankan cleanup murid",
-      error: error.message
-    });
-  }
-});
-
-// POST - Manual cleanup data surat keluar expired (untuk testing/admin)
-router.post("/cleanup-surat-keluar", async (req, res) => {
-  try {
-    await cleanupExpiredSuratKeluar();
-    res.status(200).json({
-      success: true,
-      message: "Cleanup data surat keluar expired berhasil dijalankan"
-    });
-  } catch (error) {
-    console.error("Error manual cleanup surat keluar:", error);
-    res.status(500).json({
-      success: false,
-      message: "Gagal menjalankan cleanup surat keluar",
-      error: error.message
-    });
-  }
-});
-
-// POST - Manual cleanup data surat masuk expired (untuk testing/admin)
-router.post("/cleanup-surat-masuk", async (req, res) => {
-  try {
-    await cleanupExpiredSuratMasuk();
-    res.status(200).json({
-      success: true,
-      message: "Cleanup data surat masuk expired berhasil dijalankan"
-    });
-  } catch (error) {
-    console.error("Error manual cleanup surat masuk:", error);
-    res.status(500).json({
-      success: false,
-      message: "Gagal menjalankan cleanup surat masuk",
       error: error.message
     });
   }

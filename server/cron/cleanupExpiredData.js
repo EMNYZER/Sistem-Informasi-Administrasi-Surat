@@ -119,21 +119,20 @@ const cleanupExpiredSuratMasuk = async () => {
 
 // Function untuk menjalankan semua cleanup
 const runAllCleanup = async () => {
-  console.log('Running all cleanup tasks...');
   await cleanupExpiredLaporan();
   await cleanupExpiredMurid();
   await cleanupExpiredSuratKeluar();
   await cleanupExpiredSuratMasuk();
-  console.log('All cleanup tasks completed');
+  console.log('CLEANUP TASKS COMPLETED');
 };
 
 // Schedule cron job untuk menjalankan cleanup setiap hari jam 00:00
 const startCleanupCron = () => {
-  console.log('Starting cleanup cron jobs...');
+  console.log('================= Starting cleanup cron jobs ===========================');
   
   // Jalankan setiap hari jam 00:00
   cron.schedule('0 0 * * *', async () => {
-    console.log('Running daily cleanup tasks...');
+    console.log('#### Running daily cleanup tasks... ####');
     await runAllCleanup();
   }, {
     scheduled: true,
@@ -141,7 +140,7 @@ const startCleanupCron = () => {
   });
 
   // Jalankan sekali saat server start untuk membersihkan data yang sudah expired
-  console.log('Running initial cleanup on server start...');
+  console.log('CLEANUP ON SERVER START...');
   runAllCleanup();
 };
 

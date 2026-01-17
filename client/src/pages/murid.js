@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
 import Menu from "../components/Menu";
 import axios from "axios";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
@@ -37,6 +36,7 @@ function Murid() {
   const [showImportModal, setShowImportModal] = useState(false);
   const [importFile, setImportFile] = useState(null);
   const [importLoading, setImportLoading] = useState(false);
+  const [expandedMurid, setExpandedMurid] = useState(null);
 
   const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
@@ -187,10 +187,31 @@ function Murid() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Menu />
-      <div className="flex flex-col flex-1 p-4 lg:ml-48 transition-all duration-200">
-        <Header />
-        <div className="bg-white shadow-sm rounded-lg p-5 mt-2">
-          <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col flex-1 p-2 md:p-4 lg:ml-48 transition-all duration-200">
+        <div className="bg-white shadow-sm rounded-lg p-3 md:p-5 mt-2">
+          {/* Mobile Header */}
+          <div className="md:hidden mb-4">
+            <h1 className="text-lg font-semibold text-gray-800 mb-3">
+              Data Murid
+            </h1>
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={handleOpenImportModal}
+                className="w-full bg-blue-600 text-white px-3 py-2 rounded text-sm active:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+              >
+                <FaFileImport /> Import Data
+              </button>
+              <button
+                onClick={handleOpenAddModal}
+                className="w-full bg-green-600 text-white px-3 py-2 rounded text-sm active:bg-green-700 transition-colors flex items-center justify-center gap-2"
+              >
+                <FaPlus /> Tambah Murid
+              </button>
+            </div>
+          </div>
+
+          {/* Desktop Header */}
+          <div className="hidden md:flex justify-between items-center mb-4">
             <h1 className="text-xl font-semibold text-gray-800">
               Data Murid
             </h1>
@@ -211,64 +232,136 @@ function Murid() {
           </div>
 
           {loading ? (
-            <div className="text-center py-4">Loading...</div>
+            <div className="text-center py-4 text-sm md:text-base">Loading...</div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NIS</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis Kelamin</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tahun Ajaran</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rombel</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {murid.map((item) => (
-                    <tr key={item.NIS}>
-                      <td className="px-4 py-2 text-sm text-gray-900">{item.NIS}</td>
-                      <td className="px-4 py-2 text-sm text-gray-900">{item.nama}</td>
-                      <td className="px-4 py-2 text-sm text-gray-900">{item.jenis_kelamin}</td>
-                      <td className="px-4 py-2 text-sm text-gray-900">{item.tahun_ajaran}</td>
-                      <td className="px-4 py-2 text-sm text-gray-900">{item.rombel}</td>
-                      <td className="px-4 py-2 text-sm text-gray-900">
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleEdit(item)}
-                            className="text-yellow-600 hover:text-yellow-800"
-                          >
-                            <FaEdit />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(item.NIS)}
-                            className="text-red-600 hover:text-red-800"
-                          >
-                            <FaTrash />
-                          </button>
+            <>
+              {/* Mobile Card Layout */}
+              <div className="md:hidden space-y-2">
+                {murid.map((item) => (
+                  <div key={item.NIS} className="bg-gray-50 border border-gray-200 rounded-lg overflow-hidden">
+                    <div 
+                      className="flex justify-between items-center p-3 cursor-pointer"
+                      onClick={() => setExpandedMurid(expandedMurid === item.NIS ? null : item.NIS)}
+                    >
+                      <h3 className="text-sm font-semibold text-gray-900 flex-1">{item.nama}</h3>
+                      <div className="flex gap-2 items-center">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit(item);
+                          }}
+                          className="text-yellow-600 active:text-yellow-800 p-1"
+                          title="Edit"
+                        >
+                          <FaEdit size={16} />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(item.NIS);
+                          }}
+                          className="text-red-600 active:text-red-800 p-1"
+                          title="Hapus"
+                        >
+                          <FaTrash size={16} />
+                        </button>
+                        <svg
+                          className={`w-4 h-4 text-gray-500 transition-transform ${expandedMurid === item.NIS ? 'rotate-180' : ''}`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+                    {expandedMurid === item.NIS && (
+                      <div className="px-3 pb-3 pt-2 bg-white border-t border-gray-200 space-y-2 transition-all duration-200">
+                        <div className="flex items-center text-xs text-gray-700">
+                          <span className="font-medium w-20">NIS:</span>
+                          <span>{item.NIS}</span>
                         </div>
-                      </td>
+                        <div className="flex items-center text-xs text-gray-700">
+                          <span className="font-medium w-20">JK:</span>
+                          <span>{item.jenis_kelamin}</span>
+                        </div>
+                        <div className="flex items-center text-xs text-gray-700">
+                          <span className="font-medium w-20">Tahun:</span>
+                          <span>{item.tahun_ajaran}</span>
+                        </div>
+                        <div className="flex items-center text-xs text-gray-700">
+                          <span className="font-medium w-20">Rombel:</span>
+                          <span>{item.rombel}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+                {murid.length === 0 && (
+                  <div className="text-center py-8 text-gray-500 text-sm">
+                    Tidak ada data murid
+                  </div>
+                )}
+              </div>
+
+              {/* Desktop Table Layout */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NIS</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis Kelamin</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tahun Ajaran</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rombel</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {murid.map((item) => (
+                      <tr key={item.NIS}>
+                        <td className="px-4 py-2 text-sm text-gray-900">{item.NIS}</td>
+                        <td className="px-4 py-2 text-sm text-gray-900">{item.nama}</td>
+                        <td className="px-4 py-2 text-sm text-gray-900">{item.jenis_kelamin}</td>
+                        <td className="px-4 py-2 text-sm text-gray-900">{item.tahun_ajaran}</td>
+                        <td className="px-4 py-2 text-sm text-gray-900">{item.rombel}</td>
+                        <td className="px-4 py-2 text-sm text-gray-900">
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleEdit(item)}
+                              className="text-yellow-600 hover:text-yellow-800"
+                            >
+                              <FaEdit />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(item.NIS)}
+                              className="text-red-600 hover:text-red-800"
+                            >
+                              <FaTrash />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
       </div>
 
       {/* Modal Tambah/Edit Murid */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-gray-200 border-2 border-gray-700 rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-xl">
-            <h2 className="sticky top-0 z-10 bg-gray-700 text-white p-4 text-center uppercase text-xl font-semibold rounded-t-2xl border-b-2 border-gray-800">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 md:p-4 z-50">
+          <div className="bg-gray-200 border-2 border-gray-700 rounded-lg md:rounded-2xl w-full max-w-4xl max-h-[95vh] md:max-h-[90vh] flex flex-col shadow-xl">
+            <h2 className="sticky top-0 z-10 bg-gray-700 text-white p-3 md:p-4 text-center uppercase text-sm md:text-xl font-semibold rounded-t-lg md:rounded-t-2xl border-b-2 border-gray-800">
               {isEditing ? "Edit Murid" : "Tambah Murid"}
             </h2>
-            <div className="overflow-y-auto p-6">
-              <form onSubmit={handleFormSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <h3 className="md:col-span-4 text-md font-semibold text-gray-700 border-b pb-2">
+            <div className="overflow-y-auto p-3 md:p-6">
+              <form onSubmit={handleFormSubmit} className="space-y-3 md:space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-4">
+                  <h3 className="md:col-span-4 text-sm md:text-md font-semibold text-gray-700 border-b pb-2">
                     Data Siswa
                   </h3>
                   <div className="md:col-span-4 grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -313,7 +406,7 @@ function Murid() {
                       <textarea name="alamat" rows="2" className="mt-1 block w-full rounded-md border border-gray-600 shadow-sm " value={currentMurid.alamat} onChange={handleInputChange} placeholder="Masukkan alamat lengkap" />
                     </div>
                   </div>
-                  <h3 className="md:col-span-4 text-md font-semibold text-gray-700 border-b pb-2 mt-4">Status dan Tahun Ajaran</h3>
+                  <h3 className="md:col-span-4 text-sm md:text-md font-semibold text-gray-700 border-b pb-2 mt-3 md:mt-4">Status dan Tahun Ajaran</h3>
                   <div className="md:col-span-4 grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700">Rombel</label>
@@ -339,7 +432,7 @@ function Murid() {
                       </select>
                     </div>
                   </div>
-                  <h3 className="md:col-span-4 text-md font-semibold text-gray-700 border-b pb-2 mt-4">
+                  <h3 className="md:col-span-4 text-sm md:text-md font-semibold text-gray-700 border-b pb-2 mt-3 md:mt-4">
                     Data Orang Tua
                   </h3>
                   <div className="md:col-span-2">
@@ -405,17 +498,17 @@ function Murid() {
                     />
                   </div>
                 </div>
-                <div className="mt-6 flex justify-end gap-2 pt-4 border-t">
+                <div className="mt-4 md:mt-6 flex flex-col md:flex-row justify-end gap-2 pt-3 md:pt-4 border-t">
                   <button
                     type="button"
                     onClick={handleCloseModal}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+                    className="w-full md:w-auto px-4 py-2 text-xs md:text-sm font-medium text-gray-700 bg-gray-100 active:bg-gray-200 md:hover:bg-gray-200 rounded-md"
                   >
                     Batal
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md"
+                    className="w-full md:w-auto px-4 py-2 text-xs md:text-sm font-medium text-white bg-green-600 active:bg-green-700 md:hover:bg-green-700 rounded-md"
                   >
                     {isEditing ? "Simpan Perubahan" : "Simpan"}
                   </button>
@@ -427,12 +520,12 @@ function Murid() {
       )}
 
       {showImportModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-gray-200 border-2 border-gray-700 rounded-2xl w-full max-w-md flex flex-col shadow-xl">
-            <h2 className="bg-gray-700 text-white p-4 text-center uppercase text-xl font-semibold rounded-t-2xl border-b-2 border-gray-800">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 md:p-4 z-50">
+          <div className="bg-gray-200 border-2 border-gray-700 rounded-lg md:rounded-2xl w-full max-w-md flex flex-col shadow-xl max-h-[95vh] md:max-h-auto">
+            <h2 className="bg-gray-700 text-white p-3 md:p-4 text-center uppercase text-sm md:text-xl font-semibold rounded-t-lg md:rounded-t-2xl border-b-2 border-gray-800">
               Import Data Murid
             </h2>
-            <div className="p-6 flex flex-col gap-4">
+            <div className="p-4 md:p-6 flex flex-col gap-3 md:gap-4 overflow-y-auto">
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
                 <h3 className="text-sm font-semibold text-blue-800 mb-2">Panduan Import Data:</h3>
                 <ol className="text-xs text-blue-700 space-y-1">

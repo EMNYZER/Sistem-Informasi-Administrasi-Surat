@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import profile_pic from "../assets/profile.jpg";
-import Header from "../components/Header";
 import Menu from "../components/Menu";
 import axios from "axios";
 
@@ -258,7 +257,6 @@ function Profile() {
     <div className="flex min-h-screen bg-gray-50">
       <Menu />
       <div className="flex flex-col flex-1 p-4 lg:ml-48 transition-all duration-200">
-        <Header />
         <div className="bg-white shadow-sm rounded-lg p-5 mt-2">
           <div className="flex flex-col md:flex-row gap-6">
             {profileData ? (

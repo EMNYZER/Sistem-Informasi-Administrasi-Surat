@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import profile_pic from "../assets/profile.jpg";
-import { MdDashboard, MdSettings, MdMail } from "react-icons/md";
-import { FaFile, FaUser } from "react-icons/fa6";
+import { MdDashboard, MdSettings, MdMail, MdExitToApp } from "react-icons/md";
+import { FaFile, FaUser} from "react-icons/fa6";
 
 
 function Menu() {
@@ -15,6 +15,7 @@ function Menu() {
   });
   const [expandedMenu, setExpandedMenu] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
 
   
@@ -82,6 +83,7 @@ function Menu() {
         ],
       },
       { name: "Laporan", path: "/laporan", icon: <FaFile/> },
+      // { name: "Buku Agenda", path: "/buku-agenda", icon: <FaBook/> },
     ],
     User: [
       { name: "Dashboard", path: "/dashboard", icon: <MdDashboard/> },
@@ -121,6 +123,14 @@ function Menu() {
 
   const toggleSubmenu = (menuName) => {
     setExpandedMenu(expandedMenu === menuName ? null : menuName);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("nik");
+    navigate("/");
+    setShowLogoutModal(false);
+    setMobileOpen(false);
   };
 
   const Hamburger = () => (
@@ -214,6 +224,17 @@ function Menu() {
           ))}
         </ul>
       </nav>
+      <div className="mt-auto p-3 border-t border-green-700/30">
+        <button
+          onClick={() => setShowLogoutModal(true)}
+          className="w-full flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600/50 transition-all duration-200 text-sm group text-red-200 hover:text-white"
+        >
+          <span className="text-small group-hover:scale-110 transition-transform">
+            <MdExitToApp size={20} />
+          </span>
+          <span className="font-medium">Keluar</span>
+        </button>
+      </div>
     </>
   );
 
@@ -221,11 +242,11 @@ function Menu() {
     <>
       <Hamburger />
       {mobileOpen && <Overlay />}
-      <div className="hidden lg:block bg-gray-900 h-screen w-48 shadow-xl text-white fixed z-30">
+      <div className="hidden lg:flex lg:flex-col bg-gray-900 h-screen w-48 shadow-xl text-white fixed z-30">
         <SidebarContent />
       </div>
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-gray-900 shadow-xl text-white z-50 transform transition-transform duration-300 lg:hidden ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}
+        className={`fixed top-0 left-0 h-full w-64 bg-gray-900 shadow-xl text-white z-50 transform transition-transform duration-300 lg:hidden flex flex-col ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}
         style={{ maxWidth: "80vw" }}
       >
         <button
@@ -237,6 +258,34 @@ function Menu() {
         </button>
         <SidebarContent />
       </div>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl w-[90%] max-w-md p-6">
+            <div className="mb-6">
+              <p className="text-sm text-gray-600">
+                Apakah Anda yakin ingin keluar dari sistem? Anda akan diarahkan ke halaman utama.
+              </p>
+            </div>
+            
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              >
+                Ya, Keluar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

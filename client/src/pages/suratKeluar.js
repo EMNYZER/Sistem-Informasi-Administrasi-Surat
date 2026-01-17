@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
 import Menu from "../components/Menu";
 import axios from "axios";
 import { FaEdit, FaTrash, FaEye, FaPlus } from "react-icons/fa";
@@ -135,13 +134,6 @@ function SuratKeluar() {
       return (
         <div className="flex gap-2">
           <button
-            onClick={() => handleEdit(surat)}
-            className="text-yellow-600 hover:text-yellow-800"
-            title="Detail"
-          >
-            <FaEdit />
-          </button>
-          <button
             onClick={() => handlePreview(surat)}
             className="text-blue-600 hover:text-blue-800"
             title="Preview"
@@ -203,7 +195,6 @@ function SuratKeluar() {
     <div className="flex min-h-screen bg-gray-50">
       <Menu />
       <div className="flex flex-col flex-1 p-4 lg:ml-48 transition-all duration-200">
-        <Header />
         <div className="bg-white shadow-sm rounded-lg p-5 mt-2">
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-xl font-semibold text-gray-800">

@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
 import Menu from "../components/Menu";
 import axios from "axios";
 import { FaEdit, FaTrash, FaEye, FaFilePdf, FaPlus, FaHistory, FaCheck } from "react-icons/fa";
@@ -81,11 +80,58 @@ function SuratMasuk() {
     navigate(`/catat-surat/${id_surat}`);
   };
 
-  const handleViewDocument = (fileUrl) => {
+  const handleViewDocument = async (fileUrl) => {
     if (fileUrl) {
-      const filename = fileUrl.split("/").pop();
-      const fullUrl = `${BACKEND_API_URL}/${filename}`;
-      window.open(fullUrl, "_blank", "noopener,noreferrer");
+      try {
+        let fullUrl;
+        const filename = fileUrl.split("/").pop();
+        
+        // Jika fileUrl sudah lengkap dengan http/https, gunakan langsung
+        if (fileUrl.startsWith("http://") || fileUrl.startsWith("https://")) {
+          fullUrl = fileUrl;
+        } else if (fileUrl.startsWith("/")) {
+          // Jika sudah dimulai dengan /, tambahkan BACKEND_API_URL
+          fullUrl = `${BACKEND_API_URL}${fileUrl}`;
+        } else {
+          // Jika path relatif (uploads/surat-masuk/filename.pdf), tambahkan BACKEND_API_URL
+          fullUrl = `${BACKEND_API_URL}/${fileUrl}`;
+        }
+        
+        // Buka file di tab baru untuk preview
+        window.open(fullUrl, "_blank", "noopener,noreferrer");
+        
+        // Konfirmasi download
+        const confirmDownload = window.confirm(`Apakah Anda ingin mengunduh file "${filename}"?`);
+        
+        if (confirmDownload) {
+          // Download file setelah konfirmasi
+          const token = localStorage.getItem("token");
+          const response = await fetch(fullUrl, {
+            method: 'GET',
+            headers: token ? {
+              'Authorization': `Bearer ${token}`,
+            } : {},
+          });
+          
+          if (response.ok) {
+            const blob = await response.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(blobUrl);
+          } else {
+            console.error("Gagal mengunduh file");
+            alert("Gagal mengunduh file. Silakan coba lagi.");
+          }
+        }
+      } catch (error) {
+        console.error("Error saat membuka/mengunduh dokumen:", error);
+        alert("Terjadi kesalahan saat membuka dokumen.");
+      }
     } else {
       alert("File dokumen tidak tersedia.");
     }
@@ -134,7 +180,7 @@ function SuratMasuk() {
     const statusConfig = {
       Belum: {
         color: "bg-yellow-100 text-yellow-800",
-        text: "Belum",
+        text: "Diteruskan",
       },
       disposisi: {
         color: "bg-blue-100 text-blue-800",
@@ -181,19 +227,26 @@ function SuratMasuk() {
     <div className="flex min-h-screen bg-gray-50">
       <Menu />
       <div className="flex flex-col flex-1 p-4 lg:ml-48 transition-all duration-200">
-        <Header />
         <div className="bg-white shadow-sm rounded-lg p-5 mt-2">
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-xl font-semibold text-gray-800">
               Data Surat Masuk
             </h1>
             {role === "Admin" && (
-              <button
-                onClick={() => navigate("/catat-surat")}
-                className="bg-green-600 text-white px-3 py-1.5 rounded text-sm hover:bg-green-700 transition-colors flex items-center gap-2"
-              >
-                <FaPlus /> Tambah Surat
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => navigate("/catat-surat")}
+                  className="bg-green-600 text-white px-3 py-1.5 rounded text-sm hover:bg-green-700 transition-colors flex items-center gap-2"
+                >
+                  <FaPlus /> Tambah Surat
+                </button>
+                <button
+                  onClick={() => navigate("/riwayat-disposisi")}
+                  className="bg-blue-600 text-white px-3 py-1.5 rounded text-sm hover:bg-blue-700 transition-colors flex items-center gap-2"
+                >
+                  <FaHistory /> Riwayat Disposisi
+                </button>
+            </div>
             )}
             {role === "Approval" && (
               <button
@@ -264,7 +317,7 @@ function SuratMasuk() {
                         {getStatusBadge(item.status_disposisi)}
                       </td>
                       <td className="px-4 py-2 text-sm text-gray-900 flex gap-2 items-center">
-                        {role !== "Approval" && (
+                        {role !== "Approval" && item.status_disposisi === "Belum" && (
                           <button
                             onClick={() => handleEdit(item.id_surat)}
                             className="text-yellow-600 hover:text-yellow-800"
@@ -272,22 +325,6 @@ function SuratMasuk() {
                           >
                             <FaEdit />
                           </button>
-                        )}
-                        {item.file_surat ? (
-                          <button
-                            onClick={() => handleViewDocument(item.file_surat)}
-                            className="text-blue-600 hover:text-blue-800"
-                            title="Lihat Dokumen"
-                          >
-                            <FaFilePdf />
-                          </button>
-                        ) : (
-                          <span
-                            className="text-gray-400 cursor-not-allowed"
-                            title="Belum ada file"
-                          >
-                            <FaFilePdf />
-                          </span>
                         )}
                         <button
                           onClick={() => handleDetail(item.id_surat)}
@@ -433,7 +470,7 @@ function SuratMasuk() {
               </div>
 
               <div className="mt-6 flex justify-end gap-2">
-                {role === "Approval" && (
+                {role === "Approval" &&(
                   <button
                     onClick={() => handleTambahDisposisi(selectedSurat.id_surat)}
                     className="px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors"

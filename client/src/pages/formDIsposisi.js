@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Header from "../components/Header";
 import Menu from "../components/Menu";
 import axios from "axios";
 
@@ -95,7 +94,6 @@ function FormDisposisi() {
     <div className="flex min-h-screen bg-gray-50">
       <Menu />
       <div className="flex flex-col flex-1 p-4 lg:ml-48 transition-all duration-200">
-        <Header />
         <div className="bg-white shadow-sm rounded-lg p-5 mt-2 w-full max-w-4xl mx-auto overflow-x-auto">
           <h1 className="text-xl font-semibold text-gray-800 mb-6 text-center">Form Disposisi Surat Masuk</h1>
           {/* Section 1 & 2 sejajar */}

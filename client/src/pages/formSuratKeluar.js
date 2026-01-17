@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback} from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Header from "../components/Header";
 import Menu from "../components/Menu";
 import SearchData from "../components/SearchData";
 import axios from "axios";
@@ -287,7 +286,6 @@ function FormSuratKeluar() {
     <div className="flex min-h-screen bg-gray-50">
       <Menu />
       <div className="flex flex-col flex-1 p-4 lg:ml-48 transition-all duration-200">
-        <Header />
         <div className="mt-4">
           {/* Form Section */}
           <div className="bg-white shadow-sm rounded-lg p-3 mt-2 px-0 sm:px-2 md:px-4">

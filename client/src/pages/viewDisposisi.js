@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import logo from "../assets/logo.png";
+// import logo from "../assets/logo.png";
+import kopSurat from "../assets/KOP_surat.jpg";
 
 function ViewDisposisi() {
   const { id_disposisi } = useParams();
@@ -78,7 +79,7 @@ function ViewDisposisi() {
         <div className="border-2 border-black">
           {/* KOP Surat */}
           <div className="text-center border-b-2 border-black pb-2">
-            <div className="flex justify-center items-center gap-4 ">
+           {/* <div className="flex justify-center items-center gap-4 ">
               <img src={logo} alt="Logo" className="h-24 w-auto" />
               <div>
                 <h1 className="text-xl font-bold">SEKOLAH DASAR ISLAM TERPADU</h1>
@@ -91,7 +92,8 @@ function ViewDisposisi() {
                   anaksholehs989@gmail.com
                 </p>
               </div>
-            </div>
+            </div> */}
+            <img src={kopSurat} alt="KOP Surat" className="w-full max-h-40 object-contain mx-auto" />
           </div>
           {/* Judul & Peringatan */}
           <div className="text-center border-b-2 border-black p-3">
