@@ -5,6 +5,7 @@ const db = require("./models");
 const { startCleanupCron } = require("./cron/cleanupExpiredData");
 const path = require("path");
 const fs = require("fs");
+const bcrypt = require("bcryptjs");
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -36,12 +37,56 @@ app.use("/disposisi", disposisi);
 const laporan = require("./routes/laporan");
 app.use("/laporan", laporan);
 
+// Fungsi untuk membuat akun ADMIN default jika belum ada
+async function ensureDefaultAdmin() {
+  try {
+    const defaultNIK = "12345678";
+    const existing = await db.Pegawai.findOne({ where: { NIK: defaultNIK } });
+
+    if (existing) {
+      console.log("ℹ️ Default admin already exists (NIK 12345678)");
+      return;
+    }
+
+    const hashedPassword = await bcrypt.hash(defaultNIK, 10);
+
+    await db.Pegawai.create({
+      NIK: defaultNIK,
+      nama: "ADMIN",
+      jenis_kelamin: "Laki-laki",
+      tempat_lahir: "-",
+      tanggal_lahir: new Date(),
+      alamat: "-",
+      agama: "Islam",
+      jabatan_id: null,
+      status: "Aktif",
+      NRG: null,
+      No_induk_yayasan: null,
+      UKG: null,
+      NUPTK: null,
+      no_HP: "-",
+      email: "admin@sias.local",
+      password: hashedPassword,
+      role: "Admin",
+      profile_picture: null,
+      tanda_tangan: null,
+    });
+
+    console.log("✅ Default admin created (NIK 12345678 / password 12345678)");
+  } catch (err) {
+    console.error("❌ Failed to create default admin:", err);
+  }
+}
+
 db.sequelize.authenticate()
   .then(() => console.log('✅ Connected to TiDB Cloud successfully'))
   .catch(err => console.error('❌ Connection error:', err));
 
 const PORT = process.env.PORT || 3001;
-db.sequelize.sync().then(() => {
+db.sequelize.sync().then(async () => {
+
+  await ensureDefaultAdmin();
+  
   app.use("/uploads", express.static("public/uploads"));
   app.use("/qrcodes", express.static("public/qrcodes"));
   app.use("/public", express.static("public"));
