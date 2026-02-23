@@ -25,7 +25,7 @@ module.exports = {
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: false // Ubah ke true jika kamu punya CA certificate
+        rejectUnauthorized: false
       }
     },
     logging: false
