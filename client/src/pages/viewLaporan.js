@@ -121,9 +121,9 @@ function ViewLaporan() {
         return [
           index + 1,
           formatDate(item.tanggal_disposisi),
-          item.nomor_surat,
-          item.perihal,
-          item.disposisi_kepada
+          item.suratMasuk?.nomor_surat || '-',
+          item.suratMasuk?.perihal || '-',
+          item.jabatan_penerima || '-'
         ];
       default:
         return [index + 1, '-', '-', '-', '-'];

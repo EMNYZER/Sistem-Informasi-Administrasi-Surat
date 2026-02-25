@@ -374,7 +374,14 @@ function VerifikasiSurat() {
                     <div className="text-sm text-gray-900">
                       {selectedSurat.lampiran}
                       {selectedSurat.lampiran_file && (
-                        <span className="ml-2 text-blue-600">(Ada file)</span>
+                        <a
+                          href={selectedSurat.lampiran_file}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="ml-3 text-blue-600 hover:underline"
+                        >
+                          Lihat lampiran
+                        </a>
                       )}
                     </div>
                   </div>
