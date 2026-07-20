@@ -1,10 +1,10 @@
 # Letter Administration Information System – SDIT Anak Sholeh Mataram
 
-This repository is a final project developed to fulfill the requirements for a Bachelor's degree in Informatics. The project is a **Letter Administration Information System** built for **SDIT Anak Sholeh Mataram**.
+<img src="demosias.png" alt="Letter Administration Information System">
 
 ## 📌 Project Overview
 
-This system was designed to streamline and digitalize letter-related administrative processes in a school environment. It provides features that support the creation, archiving, and reporting of official letters.
+This repository is a final project developed to fulfill the requirements for a Bachelor's degree in Informatics. The project is a **Letter Administration Information System** built for **SDIT Anak Sholeh Mataram**. This system was designed to streamline and digitalize letter-related administrative processes in a school environment. It provides features that support the creation, archiving, and reporting of official letters.
 
 ## ✅ Key Features
 
